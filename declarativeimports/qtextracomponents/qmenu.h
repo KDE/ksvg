@@ -20,45 +20,8 @@
 #ifndef QMENU_PROXY_H
 #define QMENU_PROXY_H
 
-#include <QAction>
 #include <QDeclarativeListProperty>
-
-class QMenuItem : public QObject
-{
-    Q_OBJECT
-
-    Q_PROPERTY(bool checkable READ checkable WRITE setCheckable)
-    Q_PROPERTY(bool checked READ checked WRITE setChecked)
-    Q_PROPERTY(bool enabled READ enabled WRITE setEnabled)
-    Q_PROPERTY(QString text READ text WRITE setText)
-    Q_PROPERTY(QIcon icon READ icon WRITE setIcon)
-
-public:
-    QMenuItem(QObject *parent = 0) : QObject(parent) { m_action = new QAction(0); }
-    ~QMenuItem() { }
-
-    bool enabled() const { return m_action->isEnabled(); }
-    void setEnabled(const bool enabled) { m_action->setEnabled(enabled); }
-
-    bool checkable() const { return m_action->isCheckable(); }
-    void setCheckable(const bool checkable) { m_action->setCheckable(checkable); }
-
-    bool checked() const { return m_action->isChecked(); }
-    void setChecked(const bool checked) { m_action->setChecked(checked); }
-
-    QString text() const { return m_action->text(); }
-    void setText(const QString &text) { m_action->setText(text); }
-
-    QIcon icon() const { return m_action->icon(); }
-    void setIcon(const QIcon &icon) { m_action->setIcon(icon); }
-
-    QAction *nativeAction() { return m_action; }
-
-private:
-    QAction *m_action;
-};
-
-typedef QList<QMenuItem*> QMenuItems;
+#include "qmenuitem.h"
 
 class QMenuProxy : public QObject
 {
@@ -81,7 +44,8 @@ Q_SIGNALS:
     void actionTriggered(QString itemName);
 
 private:
-    QMenuItems m_actions;
+    QList<QMenuItem*> m_actions;
+    QMenu *m_menu;
 };
 
 #endif //QMENU_PROXY_H
