@@ -23,27 +23,29 @@
 #include <QObject>
 #include <QMenu>
 #include <QDeclarativeListProperty>
-#include "qmenuaction.h"
+#include "qmenuitem.h"
 
 class QMenuProxy : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QDeclarativeListProperty<QMenuAction> actions READ actions)
+    Q_PROPERTY(QDeclarativeListProperty<QMenuItem> actions READ actions)
     Q_CLASSINFO("DefaultProperty", "actions")
 
 public:
     QMenuProxy(QObject *parent = 0);
     ~QMenuProxy();
 
-    QDeclarativeListProperty<QMenuAction> actions();
+    QDeclarativeListProperty<QMenuItem> actions();
     int actionCount() const;
-    QMenuAction *action(int) const;
+    QMenuItem *action(int) const;
 
-    Q_INVOKABLE void showMenu(int x, int y);
+    void showMenu(int x, int y);
+    Q_INVOKABLE void open();
+    Q_INVOKABLE void close();
 
 private:
-    QList<QMenuAction*> m_actions;
+    QList<QMenuItem*> m_actions;
     QMenu *m_menu;
 };
 
