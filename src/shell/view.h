@@ -34,8 +34,10 @@ public:
     explicit View(Plasma::Corona *corona, QWindow *parent = 0);
     virtual ~View();
 
+    Plasma::Corona *corona() const;
+
     //FIXME: not super nice, but we have to be sure qml assignment is done after window flags
-    void init();
+    virtual void init();
 
     void setContainment(Plasma::Containment *cont);
     Plasma::Containment *containment() const;
