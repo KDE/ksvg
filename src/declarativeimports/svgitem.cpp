@@ -12,7 +12,7 @@
 #include <QRectF>
 #include <QSGTexture>
 
-#include "plasma/svg.h"
+#include "plasmasvg/svg.h"
 
 #include "managedtexturenode.h"
 

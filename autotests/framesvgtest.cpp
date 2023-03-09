@@ -27,10 +27,10 @@ void FrameSvgTest::cleanupTestCase()
 
 void FrameSvgTest::margins()
 {
-    QCOMPARE(m_frameSvg->marginSize(Plasma::Types::LeftMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::Types::TopMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::Types::RightMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::Types::BottomMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::LeftMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::TopMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::RightMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::BottomMargin), (qreal)26);
 }
 
 void FrameSvgTest::contentsRect()

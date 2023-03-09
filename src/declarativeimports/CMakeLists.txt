@@ -1,27 +1,50 @@
-add_subdirectory(core)
-add_subdirectory(plasmaextracomponents)
-add_subdirectory(kirigamiplasmastyle)
+if(HAVE_X11 AND XCB_XCB_FOUND AND XCB_COMPOSITE_FOUND AND XCB_DAMAGE_FOUND)
+    set(HAVE_XCB_COMPOSITE TRUE)
+else()
+    set(HAVE_XCB_COMPOSITE FALSE)
+endif()
 
-set(QQC2_VERSION "6.${Qt6Quick_VERSION_MINOR}")
+configure_file(config-x11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-x11.h)
 
-# Find all the source qml files
-FILE(GLOB_RECURSE inFiles RELATIVE "${CMAKE_CURRENT_SOURCE_DIR}"
-    "${CMAKE_CURRENT_SOURCE_DIR}/plasmacomponents3/*")
+ecm_add_qml_module(corebindingsplugin URI "org.kde.plasmasvg")
 
-    #for each file, replace @QQC2_VERSION@ with the version we found
-FOREACH(infileName ${inFiles})
-    configure_file(
-        "${CMAKE_CURRENT_SOURCE_DIR}/${infileName}"
-        "${CMAKE_CURRENT_BINARY_DIR}/${infileName}"
-        @ONLY
-    )
-ENDFOREACH(infileName)
+target_sources(corebindingsplugin PRIVATE
+    corebindingsplugin.cpp
+    svgitem.cpp
+    framesvgitem.cpp
+    managedtexturenode.cpp
+    imagetexturescache.cpp
+    quicktheme.cpp
+    units.cpp
+)
 
-ecm_add_qml_module(org_kde_plasmacomponents3 URI "org.kde.plasma.components" VERSION 3.0 NO_PLUGIN)
-file(GLOB _public_qml "${CMAKE_CURRENT_BINARY_DIR}/plasmacomponents3/*.qml")
-ecm_target_qml_sources(org_kde_plasmacomponents3 VERSION 3.0 SOURCES ${_public_qml})
-file(GLOB _mobiletextselection_qml "${CMAKE_CURRENT_BINARY_DIR}/plasmacomponents3/mobiletextselection/*.qml")
-ecm_target_qml_sources(org_kde_plasmacomponents3 VERSION 3.0 PATH mobiletextselection SOURCES ${_mobiletextselection_qml})
-file(GLOB _private_qml "${CMAKE_CURRENT_BINARY_DIR}/plasmacomponents3/private/*.qml")
-ecm_target_qml_sources(org_kde_plasmacomponents3 VERSION 3.0 PATH private SOURCES ${_private_qml})
-ecm_finalize_qml_module(org_kde_plasmacomponents3 DESTINATION ${KDE_INSTALL_QMLDIR})
+target_link_libraries(corebindingsplugin
+        Qt6::Quick
+        Qt6::Qml
+        KF6::IconThemes
+        KF6::I18n
+        Qt6::Svg
+        KF6::WindowSystem
+        KF6::PlasmaSvg
+)
+
+if(HAVE_X11)
+  target_link_libraries(corebindingsplugin ${X11_LIBRARIES} XCB::XCB Qt6::GuiPrivate)
+
+  if(XCB_COMPOSITE_FOUND AND XCB_DAMAGE_FOUND)
+    target_link_libraries(corebindingsplugin
+        XCB::DAMAGE
+        XCB::COMPOSITE
+        )
+  endif()
+
+  if(HAVE_GLX)
+    target_link_libraries(corebindingsplugin OpenGL::GLX)
+  endif()
+endif()
+
+if(HAVE_EGL)
+    target_link_libraries(corebindingsplugin OpenGL::EGL)
+endif()
+
+ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})

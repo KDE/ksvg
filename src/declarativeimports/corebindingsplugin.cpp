@@ -16,18 +16,10 @@
 #include <plasma/framesvg.h>
 #include <plasma/svg.h>
 
-#include "colorscope.h"
-#include "datamodel.h"
-#include "dialog.h"
 #include "framesvgitem.h"
-#include "iconitem.h"
 #include "quicktheme.h"
 #include "svgitem.h"
 #include "theme.h"
-
-#include "tooltip.h"
-#include "units.h"
-#include "windowthumbnail.h"
 
 #include <QDebug>
 #include <QWindow>
@@ -55,7 +47,6 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QByteArray("org.kde.plasma.core"));
 
-    qmlRegisterUncreatableType<Plasma::Types>(uri, 2, 0, "Types", {});
     qmlRegisterSingletonType<Units>(uri, 2, 0, "Units", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
         engine->setObjectOwnership(&Units::instance(), QQmlEngine::CppOwnership);
         return &Units::instance();
@@ -70,22 +61,4 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
     qmlRegisterSingletonType<Plasma::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
         return new Plasma::QuickTheme(engine);
     });
-    qmlRegisterType<ColorScope>(uri, 2, 0, "ColorScope");
-
-    // TODO: remove
-    qmlRegisterType<Plasma::SortFilterModel, 0>(uri, 2, 0, "SortFilterModel");
-    qmlRegisterType<Plasma::SortFilterModel, 1>(uri, 2, 1, "SortFilterModel");
-
-    qmlRegisterType<PlasmaQuick::Dialog>(uri, 2, 0, "Dialog");
-    // HACK make properties like "opacity" work that are in REVISION 1 of QWindow
-    qmlRegisterRevision<QWindow, 1>(uri, 2, 0);
-    qmlRegisterRevision<QQuickItem, 1>(uri, 2, 0);
-    qmlRegisterType<ToolTip>(uri, 2, 0, "ToolTipArea");
-
-    qmlRegisterAnonymousType<QAbstractItemModel>(uri, 1);
-
-    qmlRegisterAnonymousType<QQmlPropertyMap>(uri, 1);
-    qmlRegisterType<IconItem>(uri, 2, 0, "IconItem");
-
-    qmlRegisterType<Plasma::WindowThumbnail>(uri, 2, 0, "WindowThumbnail");
 }

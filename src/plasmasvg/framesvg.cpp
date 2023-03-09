@@ -204,13 +204,13 @@ qreal FrameSvg::marginSize(const FrameSvg::MarginEdge edge) const
     }
 
     switch (edge) {
-    case Plasma::Types::TopMargin:
+    case FrameSvg::TopMargin:
         return d->frame->topMargin;
 
-    case Plasma::Types::LeftMargin:
+    case FrameSvg::LeftMargin:
         return d->frame->leftMargin;
 
-    case Plasma::Types::RightMargin:
+    case FrameSvg::RightMargin:
         return d->frame->rightMargin;
 
     // Plasma::BottomMargin
@@ -230,13 +230,13 @@ qreal FrameSvg::insetSize(const FrameSvg::MarginEdge edge) const
     }
 
     switch (edge) {
-    case Plasma::Types::TopMargin:
+    case FrameSvg::TopMargin:
         return d->frame->insetTopMargin;
 
-    case Plasma::Types::LeftMargin:
+    case FrameSvg::LeftMargin:
         return d->frame->insetLeftMargin;
 
-    case Plasma::Types::RightMargin:
+    case FrameSvg::RightMargin:
         return d->frame->insetRightMargin;
 
     // Plasma::BottomMargin
@@ -256,13 +256,13 @@ qreal FrameSvg::fixedMarginSize(const FrameSvg::MarginEdge edge) const
     }
 
     switch (edge) {
-    case Plasma::Types::TopMargin:
+    case FrameSvg::TopMargin:
         return d->frame->fixedTopMargin;
 
-    case Plasma::Types::LeftMargin:
+    case FrameSvg::LeftMargin:
         return d->frame->fixedLeftMargin;
 
-    case Plasma::Types::RightMargin:
+    case FrameSvg::RightMargin:
         return d->frame->fixedRightMargin;
 
     // Plasma::BottomMargin
@@ -429,7 +429,6 @@ int FrameSvg::minimumDrawingWidth()
         return d->frame->fixedRightWidth + d->frame->fixedLeftWidth;
     }
     return 0;
-    
 }
 
 //#define DEBUG_FRAMESVG_CACHE

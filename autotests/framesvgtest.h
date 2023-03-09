@@ -8,7 +8,7 @@
 
 #include <QTest>
 
-#include "plasma/framesvg.h"
+#include "plasmasvg/framesvg.h"
 
 class FrameSvgTest : public QObject
 {

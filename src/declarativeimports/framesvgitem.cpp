@@ -17,8 +17,8 @@
 #include <QDebug>
 #include <QPainter>
 
-#include <plasma/private/framesvg_helpers.h>
-#include <plasma/private/framesvg_p.h>
+#include <plasmasvg/private/framesvg_helpers.h>
+#include <plasmasvg/private/framesvg_p.h>
 
 #include <cmath> //floor()
 
@@ -178,44 +178,44 @@ FrameSvgItemMargins::FrameSvgItemMargins(Plasma::FrameSvg *frameSvg, QObject *pa
 qreal FrameSvgItemMargins::left() const
 {
     if (m_fixed) {
-        return m_frameSvg->fixedMarginSize(Types::LeftMargin);
+        return m_frameSvg->fixedMarginSize(FrameSvg::LeftMargin);
     } else if (m_inset) {
-        return m_frameSvg->insetSize(Types::LeftMargin);
+        return m_frameSvg->insetSize(FrameSvg::LeftMargin);
     } else {
-        return m_frameSvg->marginSize(Types::LeftMargin);
+        return m_frameSvg->marginSize(FrameSvg::LeftMargin);
     }
 }
 
 qreal FrameSvgItemMargins::top() const
 {
     if (m_fixed) {
-        return m_frameSvg->fixedMarginSize(Types::TopMargin);
+        return m_frameSvg->fixedMarginSize(FrameSvg::TopMargin);
     } else if (m_inset) {
-        return m_frameSvg->insetSize(Types::TopMargin);
+        return m_frameSvg->insetSize(FrameSvg::TopMargin);
     } else {
-        return m_frameSvg->marginSize(Types::TopMargin);
+        return m_frameSvg->marginSize(FrameSvg::TopMargin);
     }
 }
 
 qreal FrameSvgItemMargins::right() const
 {
     if (m_fixed) {
-        return m_frameSvg->fixedMarginSize(Types::RightMargin);
+        return m_frameSvg->fixedMarginSize(FrameSvg::RightMargin);
     } else if (m_inset) {
-        return m_frameSvg->insetSize(Types::RightMargin);
+        return m_frameSvg->insetSize(FrameSvg::RightMargin);
     } else {
-        return m_frameSvg->marginSize(Types::RightMargin);
+        return m_frameSvg->marginSize(FrameSvg::RightMargin);
     }
 }
 
 qreal FrameSvgItemMargins::bottom() const
 {
     if (m_fixed) {
-        return m_frameSvg->fixedMarginSize(Types::BottomMargin);
+        return m_frameSvg->fixedMarginSize(FrameSvg::BottomMargin);
     } else if (m_inset) {
-        return m_frameSvg->insetSize(Types::BottomMargin);
+        return m_frameSvg->insetSize(FrameSvg::BottomMargin);
     } else {
-        return m_frameSvg->marginSize(Types::BottomMargin);
+        return m_frameSvg->marginSize(FrameSvg::BottomMargin);
     }
 }
 
@@ -333,11 +333,11 @@ void FrameSvgItem::setImagePath(const QString &path)
     m_frameSvg->setImagePath(path);
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(Plasma::Types::LeftMargin) + m_frameSvg->marginSize(Plasma::Types::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(Plasma::FrameSvg::LeftMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(Plasma::Types::TopMargin) + m_frameSvg->marginSize(Plasma::Types::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(Plasma::FrameSvg::TopMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::BottomMargin));
     }
 
     Q_EMIT imagePathChanged();
@@ -378,11 +378,11 @@ void FrameSvgItem::setPrefix(const QVariant &prefixes)
     applyPrefixes();
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(Plasma::Types::LeftMargin) + m_frameSvg->marginSize(Plasma::Types::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(Plasma::FrameSvg::LeftMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(Plasma::Types::TopMargin) + m_frameSvg->marginSize(Plasma::Types::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(Plasma::FrameSvg::TopMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::BottomMargin));
     }
 
     Q_EMIT prefixChanged();
@@ -536,11 +536,11 @@ void FrameSvgItem::doUpdate()
     applyPrefixes();
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(Plasma::Types::LeftMargin) + m_frameSvg->marginSize(Plasma::Types::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(Plasma::FrameSvg::LeftMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(Plasma::Types::TopMargin) + m_frameSvg->marginSize(Plasma::Types::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(Plasma::FrameSvg::TopMargin) + m_frameSvg->marginSize(Plasma::FrameSvg::BottomMargin));
     }
 
     QString prefix = m_frameSvg->actualPrefix();

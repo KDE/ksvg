@@ -42,7 +42,7 @@ ecm_qt_declare_logging_category(KF6PlasmaSvg
 )
 
 ecm_generate_export_header(KF6PlasmaSvg
-    EXPORT_FILE_NAME plasma/plasmasvg_export.h
+    EXPORT_FILE_NAME plasmasvg/plasmasvg_export.h
     BASE_NAME PlasmaSvg
     GROUP_BASE_NAME KF
     VERSION ${KF_VERSION}

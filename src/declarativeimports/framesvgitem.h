@@ -10,7 +10,7 @@
 #include <QQmlParserStatus>
 #include <QQuickItem>
 
-#include <Plasma/FrameSvg>
+#include <PlasmaSvg/FrameSvg>
 
 #include "units.h"
 

@@ -13,7 +13,7 @@
 #include <QObject>
 
 #include <KSharedConfig>
-#include <plasma/plasma_export.h>
+#include <plasmasvg/plasmasvg_export.h>
 
 class KPluginMetaData;
 
@@ -36,7 +36,7 @@ class SvgPrivate;
  * SVG data. Alternatively, Plasma::Theme can be used directly to retrieve
  * file system paths to SVGs by name.
  */
-class PLASMA_EXPORT Theme : public QObject
+class PLASMASVG_EXPORT Theme : public QObject
 {
     Q_OBJECT
 

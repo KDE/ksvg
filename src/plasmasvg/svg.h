@@ -10,8 +10,8 @@
 #include <QObject>
 #include <QPixmap>
 
-#include <plasma/plasma_export.h>
-#include <plasma/theme.h>
+#include <plasmasvg/plasmasvg_export.h>
+#include <plasmasvg/theme.h>
 
 class QPainter;
 class QPoint;
@@ -39,7 +39,7 @@ class SvgPrivate;
  *
  * @see Plasma::FrameSvg
  **/
-class PLASMA_EXPORT Svg : public QObject
+class PLASMASVG_EXPORT Svg : public QObject
 {
     Q_OBJECT
     Q_PROPERTY(QSize size READ size WRITE resize NOTIFY sizeChanged)

@@ -1,6 +1,6 @@
-libplasma
+libplasmasvg
 
-This directory contains the classes making up libplasma, which provides the
+This directory contains the classes making up libplasmasvg, which provides the
 core framework used by Plasma applications, such as the Plasma desktop shell
 and its components. This includes applet and extension definitions and loading,
 common GUI elements, data and service interaction, search system, etc.
@@ -20,7 +20,7 @@ Commit Guidelines:
   through an API review with another Plasma developer. We have to maintain
   binary compatibility, remember!
 
-Unit tests are next to godliness. (Though as you can see, right now libplasma
+Unit tests are next to godliness. (Though as you can see, right now libplasmasvg
 is hellbound.)
 
 Please refer to the Plasma website (https://plasma.kde.org) and Plasma wiki

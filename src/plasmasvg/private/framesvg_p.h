@@ -14,7 +14,7 @@
 
 #include <QDebug>
 
-#include <Plasma/Theme>
+#include <PlasmaSvg/Theme>
 
 #include "svg_p.h"
 

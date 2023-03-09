@@ -11,10 +11,9 @@
 #include <QObject>
 #include <QPixmap>
 
-#include <plasma/plasma_export.h>
+#include <plasmasvg/plasmasvg_export.h>
 
-#include <plasma/plasma.h>
-#include <plasma/svg.h>
+#include <plasmasvg/svg.h>
 
 class QPainter;
 class QPoint;
@@ -59,7 +58,7 @@ class FrameSvgPrivate;
  *
  * @see Plasma::Svg
  **/
-class PLASMA_EXPORT FrameSvg : public Svg
+class PLASMASVG_EXPORT FrameSvg : public Svg
 {
     Q_OBJECT
 
@@ -335,14 +334,14 @@ public:
 
     /**
      * This will return the minimum height required to correctly draw this
-     * SVG. 
+     * SVG.
      * @since 5.101
      */
     Q_INVOKABLE int minimumDrawingHeight();
 
     /**
      * This will return the minimum width required to correctly draw this
-     * SVG. 
+     * SVG.
      * @since 5.101
      */
     Q_INVOKABLE int minimumDrawingWidth();

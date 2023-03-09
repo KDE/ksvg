@@ -1,7 +1,6 @@
 add_subdirectory(desktoptheme)
-add_subdirectory(plasma)
-#add_subdirectory(declarativeimports)
-#add_subdirectory(plasmaquick)
+add_subdirectory(plasmasvg)
+add_subdirectory(declarativeimports)
 
 ecm_qt_install_logging_categories(
     EXPORT PLASMASVG

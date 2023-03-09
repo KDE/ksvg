@@ -142,12 +142,7 @@ include(KF6PlasmaMacros.cmake)
 #########################################################################
 
 
-option(BUILD_EXAMPLES "Build and install Plasma examples." OFF)
 option(BUILD_COVERAGE "Build Plasma Frameworks with gcov support" OFF)
-
-if (BUILD_EXAMPLES)
-    find_package(KF6DBusAddons ${KF6_MIN_VERSION})
-endif()
 
 if(BUILD_COVERAGE)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fprofile-arcs -ftest-coverage")
@@ -162,15 +157,9 @@ add_definitions(-DTRANSLATION_DOMAIN=\"libplasma5\")
 ki18n_install(po)
 add_subdirectory(src)
 
-if (BUILD_EXAMPLES)
-    add_subdirectory(examples)
-endif()
-
 if (BUILD_TESTING)
-    #add_subdirectory(autotests)
-    #add_subdirectory(tests)
+    add_subdirectory(autotests)
 endif()
-add_subdirectory(templates)
 
 ################ create PlasmaConfig.cmake and install it ###########################
 
