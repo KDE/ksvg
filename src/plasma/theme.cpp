@@ -126,7 +126,7 @@ QString Theme::imagePath(const QString &name) const
     // look for a compressed svg file in the theme
     if (name.contains(QLatin1String("../")) || name.isEmpty()) {
         // we don't support relative paths
-        // qCDebug(LOG_PLASMA) << "Theme says: bad image path " << name;
+        // qCDebug(LOG_PLASMASVG) << "Theme says: bad image path " << name;
         return QString();
     }
 
@@ -211,14 +211,14 @@ QString Theme::wallpaperPath(const QSize &size) const
 
     if (fullPath.isEmpty()) {
         // we failed to find it in the theme, so look in the standard directories
-        // qCDebug(LOG_PLASMA) << "looking for" << image;
+        // qCDebug(LOG_PLASMASVG) << "looking for" << image;
         fullPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("wallpapers/") + image);
     }
 
     if (fullPath.isEmpty()) {
         // we still failed to find it in the theme, so look for the default in
         // the standard directories
-        // qCDebug(LOG_PLASMA) << "looking for" << defaultImage;
+        // qCDebug(LOG_PLASMASVG) << "looking for" << defaultImage;
         fullPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("wallpapers/") + defaultImage);
     }
 
@@ -275,7 +275,7 @@ bool Theme::findInCache(const QString &key, QPixmap &pix, unsigned int lastModif
 {
     // TODO KF6: Make lastModified non-optional.
     if (lastModified == 0) {
-        qCWarning(LOG_PLASMA) << "findInCache with a lastModified timestamp of 0 is deprecated";
+        qCWarning(LOG_PLASMASVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
         return false;
     }
 

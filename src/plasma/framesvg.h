@@ -80,6 +80,24 @@ public:
     Q_DECLARE_FLAGS(EnabledBorders, EnabledBorder)
     Q_FLAG(EnabledBorders)
 
+    // TODO: merge those two?
+    enum LocationPrefix {
+        Floating = 0, /**< Free floating.*/
+        TopEdge, /**< Along the top of the screen*/
+        BottomEdge, /**< Along the bottom of the screen*/
+        LeftEdge, /**< Along the left side of the screen */
+        RightEdge, /**< Along the right side of the screen */
+    };
+    Q_ENUM(LocationPrefix)
+
+    enum MarginEdge {
+        TopMargin = 0, /**< The top margin **/
+        BottomMargin, /**< The bottom margin **/
+        LeftMargin, /**< The left margin **/
+        RightMargin, /**< The right margin **/
+    };
+    Q_ENUM(MarginEdge)
+
     /**
      * Constructs a new FrameSvg that paints the proper named subelements
      * as borders. It may also be used as a regular Plasma::Svg object
@@ -128,7 +146,7 @@ public:
      * @param edge the margin edge we want, top, bottom, left or right
      * @return the margin size
      */
-    Q_INVOKABLE qreal marginSize(const Plasma::Types::MarginEdge edge) const;
+    Q_INVOKABLE qreal marginSize(const FrameSvg::MarginEdge edge) const;
 
     /**
      * Convenience method that extracts the size of the four margins
@@ -148,7 +166,7 @@ public:
      * @param edge the margin edge we want, top, bottom, left or right
      * @return the margin size
      */
-    Q_INVOKABLE qreal fixedMarginSize(const Plasma::Types::MarginEdge edge) const;
+    Q_INVOKABLE qreal fixedMarginSize(const FrameSvg::MarginEdge edge) const;
 
     /**
      * Convenience method that extracts the size of the four margins
@@ -167,7 +185,7 @@ public:
      * @return the margin size
      * @since 5.77
      */
-    Q_INVOKABLE qreal insetSize(const Plasma::Types::MarginEdge edge) const;
+    Q_INVOKABLE qreal insetSize(const FrameSvg::MarginEdge edge) const;
 
     /**
      * Convenience method that extracts the size of the four inset margins
@@ -194,7 +212,7 @@ public:
      * called successfully after setImagePath is called.
      * @param location location in the UI this frame will be drawn
      */
-    Q_INVOKABLE void setElementPrefix(Plasma::Types::Location location);
+    Q_INVOKABLE void setElementPrefix(Plasma::FrameSvg::LocationPrefix location);
 
     /**
      * Sets the prefix for the SVG elements to be used for painting. For example,
@@ -229,7 +247,7 @@ public:
      * to draw a frame.
      * @param location the given prefix we want to check if drawable
      */
-    Q_INVOKABLE bool hasElementPrefix(Plasma::Types::Location location) const;
+    Q_INVOKABLE bool hasElementPrefix(Plasma::FrameSvg::LocationPrefix location) const;
 
     /**
      * Returns the prefix for SVG elements of the FrameSvg (including a '-' at the end if not empty)

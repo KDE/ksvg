@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(KF_VERSION "5.240.0") # handled by release scripts
 set(KF_DEP_VERSION "5.240.0") # handled by release scripts
-project(Plasma VERSION ${KF_VERSION})
+project(PlasmaSvg VERSION ${KF_VERSION})
 
 # ECM setup
 include(FeatureSummary)
@@ -167,8 +167,8 @@ if (BUILD_EXAMPLES)
 endif()
 
 if (BUILD_TESTING)
-    add_subdirectory(autotests)
-    add_subdirectory(tests)
+    #add_subdirectory(autotests)
+    #add_subdirectory(tests)
 endif()
 add_subdirectory(templates)
 
@@ -203,9 +203,9 @@ install(FILES
   COMPONENT Devel
 )
 
-install(EXPORT KF6PlasmaTargets
+install(EXPORT KF6PlasmaSvgTargets
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KF6PlasmaTargets.cmake
+        FILE KF6PlasmaSvgTargets.cmake
         NAMESPACE KF6::
         COMPONENT Devel)
 

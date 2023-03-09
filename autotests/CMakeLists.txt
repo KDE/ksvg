@@ -32,13 +32,7 @@ MACRO(PLASMA_UNIT_TESTS)
 ENDMACRO(PLASMA_UNIT_TESTS)
 
 PLASMA_UNIT_TESTS(
-    dialogqmltest
-    dialogstatetest
-    pluginloadertest
     framesvgtest
-    iconitemtest
-    themetest
-    sharedqmlenginetest
 )
 
 if(HAVE_X11)

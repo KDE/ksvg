@@ -1,4 +1,3 @@
-add_subdirectory(packagestructure)
 
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
     set(PLASMA_NO_PACKAGE_EXTRADATA TRUE)
@@ -7,34 +6,20 @@ endif()
 # Consumer's include dir which has to be explicitly used to make headers of this lib visible to documented includes
 # Results in duplicate of prefix-dir & C++ namespace below, but part of different things, so by design:
 # <visibility-layer>/<C++ namespace>/class header files
-set(PLASMA_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/Plasma")
+set(PLASMA_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/PlasmaSvg")
 
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-plasma.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plasma.h)
 
-add_library(KF6Plasma)
-add_library(KF6::Plasma ALIAS KF6Plasma)
+add_library(KF6PlasmaSvg)
+add_library(KF6::PlasmaSvg ALIAS KF6PlasmaSvg)
 
-set_target_properties(KF6Plasma PROPERTIES
+set_target_properties(KF6PlasmaSvg PROPERTIES
     VERSION     ${PLASMA_VERSION}
     SOVERSION   ${PLASMA_SOVERSION}
-    EXPORT_NAME Plasma
+    EXPORT_NAME PlasmaSvg
 )
 
-target_sources(KF6Plasma PRIVATE
-#global
-    plasma.cpp
-    pluginloader.cpp
-
-#applets,containments,corona
-    applet.cpp
-    containment.cpp
-    containmentactions.cpp
-    corona.cpp
-    private/applet_p.cpp
-    private/containment_p.cpp
-    private/timetracker.cpp
-
-#graphics
+target_sources(KF6PlasmaSvg PRIVATE
     framesvg.cpp
     svg.cpp
     theme.cpp
@@ -42,23 +27,23 @@ target_sources(KF6Plasma PRIVATE
 )
 
 if(HAVE_X11)
-    target_sources(KF6Plasma PRIVATE private/effectwatcher.cpp)
+    target_sources(KF6PlasmaSvg PRIVATE private/effectwatcher.cpp)
 endif()
 
-kconfig_add_kcfg_files(KF6Plasma data/kconfigxt/libplasma-theme-global.kcfgc)
+kconfig_add_kcfg_files(KF6PlasmaSvg data/kconfigxt/libplasma-theme-global.kcfgc)
 
-ecm_qt_declare_logging_category(KF6Plasma
+ecm_qt_declare_logging_category(KF6PlasmaSvg
     HEADER debug_p.h
-    IDENTIFIER LOG_PLASMA
-    CATEGORY_NAME kf.plasma.core
+    IDENTIFIER LOG_PLASMASVG
+    CATEGORY_NAME kf.plasmasvg
     OLD_CATEGORY_NAMES org.kde.plasma
-    DESCRIPTION "Plasma Core lib"
-    EXPORT PLASMA
+    DESCRIPTION "PlasmaSvg lib"
+    EXPORT PLASMASVG
 )
 
-ecm_generate_export_header(KF6Plasma
-    EXPORT_FILE_NAME plasma/plasma_export.h
-    BASE_NAME Plasma
+ecm_generate_export_header(KF6PlasmaSvg
+    EXPORT_FILE_NAME plasma/plasmasvg_export.h
+    BASE_NAME PlasmaSvg
     GROUP_BASE_NAME KF
     VERSION ${KF_VERSION}
     DEPRECATED_BASE_VERSION 0
@@ -67,10 +52,10 @@ ecm_generate_export_header(KF6Plasma
 )
 
 if(HAVE_X11)
-    set(PLASMA_EXTRA_LIBS ${PLASMA_EXTRA_LIBS} XCB::XCB Qt6::GuiPrivate)
+    set(PLASMASVG_EXTRA_LIBS ${PLASMA_EXTRA_LIBS} XCB::XCB Qt6::GuiPrivate)
 endif()
 
-target_link_libraries(KF6Plasma
+target_link_libraries(KF6PlasmaSvg
 PUBLIC
     Qt6::Gui
     KF6::ConfigCore
@@ -85,17 +70,17 @@ PRIVATE
     KF6::GlobalAccel #Applet::setGlobalShortcut
     KF6::Notifications
     KF6::IconThemes
-    ${PLASMA_EXTRA_LIBS}
+    ${PLASMASVG_EXTRA_LIBS}
 )
 
-target_link_libraries(KF6Plasma PRIVATE KF6::Package)
+target_link_libraries(KF6PlasmaSvg PRIVATE KF6::Package)
 
 set(Plasma_BUILD_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/Plasma
+    ${CMAKE_CURRENT_BINARY_DIR}/PlasmaSvg
 )
-target_include_directories(KF6Plasma
+target_include_directories(KF6PlasmaSvg
     PUBLIC
         "$<BUILD_INTERFACE:${Plasma_BUILD_INCLUDE_DIRS}>"
     INTERFACE
@@ -105,39 +90,33 @@ target_include_directories(KF6Plasma
 ########### install files ###############
 ecm_generate_headers(Plasma_CamelCase_HEADERS
     HEADER_NAMES
-        Applet
-        Containment
-        ContainmentActions
-        Corona
-        PluginLoader
         FrameSvg
         Svg
         Theme
-        Plasma
-    REQUIRED_HEADERS Plasma_HEADERS
-    PREFIX Plasma
+    REQUIRED_HEADERS PlasmaSvg_HEADERS
+    PREFIX PlasmaSvg
 )
 
 install(FILES
         ${Plasma_HEADERS}
-        ${CMAKE_CURRENT_BINARY_DIR}/plasma/plasma_export.h
-    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/plasma # C++ namespace
+        ${CMAKE_CURRENT_BINARY_DIR}/plasmasvg/plasmasvg_export.h
+    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/plasmasvg # C++ namespace
     COMPONENT Devel
 )
 
 install(
     FILES ${Plasma_CamelCase_HEADERS}
-    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/Plasma # C++ namespace
+    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/PlasmaSvg # C++ namespace
     COMPONENT Devel
 )
 
-install(TARGETS KF6Plasma EXPORT KF6PlasmaTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
+install(TARGETS KF6PlasmaSvg EXPORT KF6PlasmaSvgTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 if(BUILD_QCH)
     ecm_add_qch(
-        KF6Plasma_QCH
+        KF6PlasmaSvg_QCH
         NAME Plasma
-        BASE_NAME KF6Plasma
+        BASE_NAME KF6PlasmaSvg
         VERSION ${KF_VERSION}
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
@@ -146,8 +125,6 @@ if(BUILD_QCH)
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS
             Qt6Gui_QCH
-            KF6Service_QCH
-            KF6Package_QCH
         INCLUDE_DIRS
             ${Plasma_BUILD_INCLUDE_DIRS}
         BLANK_MACROS

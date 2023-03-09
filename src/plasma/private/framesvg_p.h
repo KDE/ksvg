@@ -171,7 +171,7 @@ public:
     void updateFrameData(uint lastModified, UpdateType updateType = UpdateFrameAndMargins);
     QSharedPointer<FrameData> lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame, const QString &maskPrefix, const QString &maskRequestedPrefix);
 
-    Types::Location location = Types::Floating;
+    FrameSvg::LocationPrefix location = FrameSvg::Floating;
     QString prefix;
     // sometimes the prefix we requested is not available, so prefix will be empty
     // keep track of the requested one anyways, we'll try again when the theme changes

@@ -6,6 +6,7 @@
 */
 
 #include "svg.h"
+#include "framesvg.h"
 #include "private/svg_p.h"
 #include "private/theme_p.h"
 
@@ -30,7 +31,6 @@
 #include <KPackage/Package>
 #include <QDebug>
 
-#include "applet.h"
 #include "debug_p.h"
 #include "theme.h"
 
@@ -483,7 +483,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         path = actualPath;
     } else {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMA) << "file '" << path << "' does not exist!";
+        // qCDebug(LOG_PLASMASVG) << "file '" << path << "' does not exist!";
 #endif
     }
 
@@ -597,7 +597,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     if (cacheRendering && lastModified == SvgRectsCache::instance()->lastModifiedTimeFromCache(path)
         && cacheAndColorsTheme()->findInCache(id, p, lastModified)) {
         p.setDevicePixelRatio(ratio);
-        // qCDebug(LOG_PLASMA) << "found cached version of " << id << p.size();
+        // qCDebug(LOG_PLASMASVG) << "found cached version of " << id << p.size();
         return p;
     }
 
@@ -644,23 +644,25 @@ void SvgPrivate::createRenderer()
     }
 
     if (themed && path.isEmpty() && !themeFailed) {
-        Applet *applet = qobject_cast<Applet *>(q->parent());
-        // FIXME: this maybe could be more efficient if we knew if the package was empty, e.g. for
-        // C++; however, I'm not sure this has any real world runtime impact. something to measure
-        // for.
-        if (applet) {
-            path = applet->filePath("images", themePath + QLatin1String(".svg"));
+        /*
+         * FIXME: how to port?
+                Applet *applet = qobject_cast<Applet *>(q->parent());
+                // FIXME: this maybe could be more efficient if we knew if the package was empty, e.g. for
+                // C++; however, I'm not sure this has any real world runtime impact. something to measure
+                // for.
+                if (applet) {
+                    path = applet->filePath("images", themePath + QLatin1String(".svg"));
 
-            if (path.isEmpty()) {
-                path = applet->filePath("images", themePath + QLatin1String(".svgz"));
-            }
-        }
-
+                    if (path.isEmpty()) {
+                        path = applet->filePath("images", themePath + QLatin1String(".svgz"));
+                    }
+                }
+        */
         if (path.isEmpty()) {
             path = actualTheme()->imagePath(themePath);
             themeFailed = path.isEmpty();
             if (themeFailed) {
-                qCWarning(LOG_PLASMA) << "No image path found for" << themePath;
+                qCWarning(LOG_PLASMASVG) << "No image path found for" << themePath;
             }
         }
     }
@@ -867,7 +869,7 @@ void SvgPrivate::themeChanged()
     setImagePath(currentPath);
     q->resize();
 
-    // qCDebug(LOG_PLASMA) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
+    // qCDebug(LOG_PLASMASVG) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
     Q_EMIT q->repaintNeeded();
 }
 
@@ -878,7 +880,7 @@ void SvgPrivate::colorsChanged()
     }
 
     eraseRenderer();
-    qCDebug(LOG_PLASMA) << "repaint needed from colorsChanged";
+    qCDebug(LOG_PLASMASVG) << "repaint needed from colorsChanged";
 
     Q_EMIT q->repaintNeeded();
 }

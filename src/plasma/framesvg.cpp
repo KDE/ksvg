@@ -84,19 +84,19 @@ FrameSvg::EnabledBorders FrameSvg::enabledBorders() const
     return d->enabledBorders;
 }
 
-void FrameSvg::setElementPrefix(Plasma::Types::Location location)
+void FrameSvg::setElementPrefix(Plasma::FrameSvg::LocationPrefix location)
 {
     switch (location) {
-    case Types::TopEdge:
+    case TopEdge:
         setElementPrefix(QStringLiteral("north"));
         break;
-    case Types::BottomEdge:
+    case BottomEdge:
         setElementPrefix(QStringLiteral("south"));
         break;
-    case Types::LeftEdge:
+    case LeftEdge:
         setElementPrefix(QStringLiteral("west"));
         break;
-    case Types::RightEdge:
+    case RightEdge:
         setElementPrefix(QStringLiteral("east"));
         break;
     default:
@@ -119,7 +119,7 @@ void FrameSvg::setElementPrefix(const QString &prefix)
     }
     d->requestedPrefix = prefix;
 
-    d->location = Types::Floating;
+    d->location = FrameSvg::Floating;
 
     if (!d->repaintBlocked) {
         d->updateFrameData(Svg::d->lastModified);
@@ -140,16 +140,16 @@ bool FrameSvg::hasElementPrefix(const QString &prefix) const
     return hasElement(prefix % QLatin1String("-center"));
 }
 
-bool FrameSvg::hasElementPrefix(Plasma::Types::Location location) const
+bool FrameSvg::hasElementPrefix(Plasma::FrameSvg::LocationPrefix location) const
 {
     switch (location) {
-    case Types::TopEdge:
+    case TopEdge:
         return hasElementPrefix(QStringLiteral("north"));
-    case Types::BottomEdge:
+    case BottomEdge:
         return hasElementPrefix(QStringLiteral("south"));
-    case Types::LeftEdge:
+    case LeftEdge:
         return hasElementPrefix(QStringLiteral("west"));
-    case Types::RightEdge:
+    case RightEdge:
         return hasElementPrefix(QStringLiteral("east"));
     default:
         return hasElementPrefix(QString());
@@ -169,7 +169,7 @@ void FrameSvg::resizeFrame(const QSizeF &size)
 
     if (size.isEmpty()) {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMA) << "Invalid size" << size;
+        // qCDebug(LOG_PLASMASVG) << "Invalid size" << size;
 #endif
         return;
     }
@@ -193,7 +193,7 @@ QSizeF FrameSvg::frameSize() const
     }
 }
 
-qreal FrameSvg::marginSize(const Plasma::Types::MarginEdge edge) const
+qreal FrameSvg::marginSize(const FrameSvg::MarginEdge edge) const
 {
     if (!d->frame) {
         return .0;
@@ -219,7 +219,7 @@ qreal FrameSvg::marginSize(const Plasma::Types::MarginEdge edge) const
     }
 }
 
-qreal FrameSvg::insetSize(const Plasma::Types::MarginEdge edge) const
+qreal FrameSvg::insetSize(const FrameSvg::MarginEdge edge) const
 {
     if (!d->frame) {
         return .0;
@@ -245,7 +245,7 @@ qreal FrameSvg::insetSize(const Plasma::Types::MarginEdge edge) const
     }
 }
 
-qreal FrameSvg::fixedMarginSize(const Plasma::Types::MarginEdge edge) const
+qreal FrameSvg::fixedMarginSize(const FrameSvg::MarginEdge edge) const
 {
     if (!d->frame) {
         return .0;
@@ -591,17 +591,17 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
 
 void FrameSvgPrivate::generateFrameBackground(const QSharedPointer<FrameData> &frame)
 {
-    // qCDebug(LOG_PLASMA) << "generating background";
+    // qCDebug(LOG_PLASMASVG) << "generating background";
     const QSize size = frameSize(frame).toSize() * q->devicePixelRatio();
 
     if (!size.isValid()) {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMA) << "Invalid frame size" << size;
+        // qCDebug(LOG_PLASMASVG) << "Invalid frame size" << size;
 #endif
         return;
     }
     if (size.width() >= MAX_FRAME_SIZE || size.height() >= MAX_FRAME_SIZE) {
-        qCWarning(LOG_PLASMA) << "Not generating frame background for a size whose width or height is more than" << MAX_FRAME_SIZE << size;
+        qCWarning(LOG_PLASMASVG) << "Not generating frame background for a size whose width or height is more than" << MAX_FRAME_SIZE << size;
         return;
     }
 
@@ -678,10 +678,10 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
             return;
         }
 
-        // qCDebug(LOG_PLASMA) << "looking for" << newKey;
+        // qCDebug(LOG_PLASMASVG) << "looking for" << newKey;
         auto newFd = FrameSvgPrivate::s_sharedFrames[q->theme()->d].value(newKey);
         if (newFd) {
-            // qCDebug(LOG_PLASMA) << "FOUND IT!" << newFd->refcount;
+            // qCDebug(LOG_PLASMASVG) << "FOUND IT!" << newFd->refcount;
             // we've found a match, use that one
             Q_ASSERT(newKey == newFd.lock()->cacheId);
             frame = newFd;
@@ -814,7 +814,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
     const uint id = qHash(cacheId(frame.data(), prefixToSave));
 
-    // qCDebug(LOG_PLASMA)<<"Saving to cache frame"<<id;
+    // qCDebug(LOG_PLASMASVG)<<"Saving to cache frame"<<id;
 
     q->theme()->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
 
@@ -827,7 +827,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
 void FrameSvgPrivate::updateSizes(FrameData *frame) const
 {
-    // qCDebug(LOG_PLASMA) << "!!!!!!!!!!!!!!!!!!!!!! updating sizes" << prefix;
+    // qCDebug(LOG_PLASMASVG) << "!!!!!!!!!!!!!!!!!!!!!! updating sizes" << prefix;
     Q_ASSERT(frame);
 
     QSize s = q->size();

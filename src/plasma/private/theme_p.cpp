@@ -56,14 +56,14 @@ KPluginMetaData metaDataForTheme(const QString &theme)
     const QString packageBasePath =
         QSP::locate(QSP::GenericDataLocation, QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme, QSP::LocateDirectory);
     if (packageBasePath.isEmpty()) {
-        qWarning(LOG_PLASMA) << "Could not locate plasma theme" << theme << "in" << PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/"
-                             << "using search path" << QSP::standardLocations(QSP::GenericDataLocation);
+        qWarning(LOG_PLASMASVG) << "Could not locate plasma theme" << theme << "in" << PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/"
+                                << "using search path" << QSP::standardLocations(QSP::GenericDataLocation);
         return {};
     }
     if (QFileInfo::exists(packageBasePath + QLatin1String("/metadata.json"))) {
         return KPluginMetaData::fromJsonFile(packageBasePath + QLatin1String("/metadata.json"));
     } else {
-        qCWarning(LOG_PLASMA) << "Could not locate metadata for theme" << theme;
+        qCWarning(LOG_PLASMASVG) << "Could not locate metadata for theme" << theme;
         return {};
     }
 }
@@ -161,7 +161,7 @@ KConfigGroup &ThemePrivate::config()
 
             if (!app.isEmpty()) {
 #ifndef NDEBUG
-                // qCDebug(LOG_PLASMA) << "using theme for app" << app;
+                // qCDebug(LOG_PLASMASVG) << "using theme for app" << app;
 #endif
                 groupName.append(QLatin1Char('-')).append(app);
             }
@@ -331,7 +331,7 @@ void ThemePrivate::compositingChanged(bool active)
 #if HAVE_X11
     if (compositingActive != active) {
         compositingActive = active;
-        // qCDebug(LOG_PLASMA) << QTime::currentTime();
+        // qCDebug(LOG_PLASMASVG) << QTime::currentTime();
         scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
     }
 #endif
@@ -403,7 +403,7 @@ void ThemePrivate::scheduleThemeChangeNotification(CacheTypes caches)
 
 void ThemePrivate::notifyOfChanged()
 {
-    // qCDebug(LOG_PLASMA) << cachesToDiscard;
+    // qCDebug(LOG_PLASMASVG) << cachesToDiscard;
     discardCache(cachesToDiscard);
     cachesToDiscard = NoCache;
     Q_EMIT themeChanged();
@@ -656,7 +656,7 @@ const QString ThemePrivate::svgStyleSheet(Plasma::Theme::ColorGroup group, Plasm
 
 void ThemePrivate::settingsFileChanged(const QString &file)
 {
-    qCDebug(LOG_PLASMA) << "settingsFile: " << file;
+    qCDebug(LOG_PLASMASVG) << "settingsFile: " << file;
     if (file == themeMetadataPath) {
         const KPluginMetaData data = metaDataForTheme(themeName);
         if (!data.isValid() || themeVersion != data.version()) {
@@ -673,7 +673,7 @@ void ThemePrivate::settingsChanged(bool emitChanges)
     if (fixedName) {
         return;
     }
-    // qCDebug(LOG_PLASMA) << "Settings Changed!";
+    // qCDebug(LOG_PLASMASVG) << "Settings Changed!";
     KConfigGroup cg = config();
     setThemeName(cg.readEntry("name", ThemePrivate::defaultTheme), false, emitChanges);
 }
@@ -861,7 +861,7 @@ void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings
                                  QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % QLatin1String("/colors"))
         : QString();
 
-    // qCDebug(LOG_PLASMA) << "we're going for..." << colorsFile << "*******************";
+    // qCDebug(LOG_PLASMASVG) << "we're going for..." << colorsFile << "*******************";
 
     if (colorsFile.isEmpty()) {
         colors = nullptr;
