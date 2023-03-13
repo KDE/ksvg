@@ -46,32 +46,18 @@ find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Quick Gui 
 
 find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
-        Activities
         Archive
         Config
         ConfigWidgets
         CoreAddons
-        Declarative
         GlobalAccel
         GuiAddons
         I18n
         IconThemes
-        KIO
         WindowSystem
-        XmlGui
-        Notifications
         Package
         Kirigami2
-    OPTIONAL_COMPONENTS
-        Wayland
 )
-
-set_package_properties(KF6Wayland PROPERTIES DESCRIPTION "Integration with the Wayland compositor"
-                       TYPE OPTIONAL
-                      )
-if(KF6Wayland_FOUND)
-  set(HAVE_KWAYLAND 1)
-endif()
 
 option(WITHOUT_X11 "Build without X11 support (skips finding X11)." OFF)
 if(NOT WITHOUT_X11)

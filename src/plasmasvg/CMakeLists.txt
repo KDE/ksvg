@@ -64,11 +64,9 @@ PRIVATE
     Qt6::Svg
     KF6::Archive
     KF6::GuiAddons #kimagecache
+    KF6::ConfigWidgets
     KF6::I18n
     KF6::WindowSystem #compositingActive
-    KF6::XmlGui   #KActionCollection
-    KF6::GlobalAccel #Applet::setGlobalShortcut
-    KF6::Notifications
     KF6::IconThemes
     ${PLASMASVG_EXTRA_LIBS}
 )
