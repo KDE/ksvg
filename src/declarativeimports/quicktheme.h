@@ -8,14 +8,14 @@
 #ifndef PLASMA_QUICKTHEME_H
 #define PLASMA_QUICKTHEME_H
 
-#include <plasma/theme.h>
+#include <plasmasvg/theme.h>
 
 #include <QColor>
 
 namespace Plasma
 {
 /**
- * @class QuickTheme plasma/theme.h <Plasma/Theme>
+ * @class QuickTheme plasmasvg/theme.h <Plasma/Theme>
  *
  * @short Interface to the Plasma theme
  *

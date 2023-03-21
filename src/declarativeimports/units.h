@@ -11,7 +11,7 @@
 #include <QObject>
 #include <QQmlPropertyMap>
 
-#include <Plasma/Theme>
+#include <PlasmaSvg/Theme>
 
 #include <KConfigWatcher>
 

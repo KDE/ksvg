@@ -13,8 +13,8 @@
 
 #include <KLocalizedContext>
 
-#include <plasma/framesvg.h>
-#include <plasma/svg.h>
+#include <plasmasvg/framesvg.h>
+#include <plasmasvg/svg.h>
 
 #include "framesvgitem.h"
 #include "quicktheme.h"
