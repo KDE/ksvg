@@ -18,7 +18,7 @@
 
 #include <cmath> //floor()
 
-namespace Plasma
+namespace PlasmaSvg
 {
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
@@ -68,7 +68,7 @@ QSizeF SvgItem::naturalSize() const
     return m_svg.data()->size();
 }
 
-void SvgItem::setSvg(Plasma::Svg *svg)
+void SvgItem::setSvg(PlasmaSvg::Svg *svg)
 {
     if (m_svg) {
         disconnect(m_svg.data(), nullptr, this, nullptr);
@@ -95,7 +95,7 @@ void SvgItem::setSvg(Plasma::Svg *svg)
     Q_EMIT naturalSizeChanged();
 }
 
-Plasma::Svg *SvgItem::svg() const
+PlasmaSvg::Svg *SvgItem::svg() const
 {
     return m_svg.data();
 }
@@ -125,7 +125,7 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
     // updating the material
 
     if (m_textureChanged || textureNode->texture()->textureSize() != QSize(width(), height())) {
-        // despite having a valid size sometimes we still get a null QImage from Plasma::Svg
+        // despite having a valid size sometimes we still get a null QImage from PlasmaSvg::Svg
         // loading a null texture to an atlas fatals
         // Dave E fixed this in Qt in 5.3.something onwards but we need this for now
         if (m_image.isNull()) {

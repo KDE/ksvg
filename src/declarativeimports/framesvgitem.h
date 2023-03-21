@@ -14,7 +14,7 @@
 
 #include "units.h"
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class FrameSvg;
 
@@ -58,7 +58,7 @@ class FrameSvgItemMargins : public QObject
     Q_PROPERTY(qreal vertical READ vertical NOTIFY marginsChanged)
 
 public:
-    FrameSvgItemMargins(Plasma::FrameSvg *frameSvg, QObject *parent = nullptr);
+    FrameSvgItemMargins(PlasmaSvg::FrameSvg *frameSvg, QObject *parent = nullptr);
 
     qreal left() const;
     qreal top() const;
@@ -151,7 +151,7 @@ class FrameSvgItem : public QQuickItem
      *  LeftBorder
      *  RightBorder
      */
-    Q_PROPERTY(Plasma::FrameSvg::EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders NOTIFY enabledBordersChanged)
+    Q_PROPERTY(PlasmaSvg::FrameSvg::EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders NOTIFY enabledBordersChanged)
 
     /**
      * Holds whether the current svg is present in the current theme and NO fallback is involved
@@ -165,7 +165,7 @@ class FrameSvgItem : public QQuickItem
      * make them use ButtonTextColor/ButtonBackgroundColor
      * or ViewTextColor/ViewBackgroundColor, ComplementaryTextColor etc.
      */
-    Q_PROPERTY(Plasma::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
+    Q_PROPERTY(PlasmaSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
 
     /**
      * Sets the image in a selected status.
@@ -173,10 +173,10 @@ class FrameSvgItem : public QQuickItem
      * the TextColor will become HighlightedText color and BackgroundColor
      * will become HighlightColor, making the svg graphics (for instance an icon)
      * will look correct together selected text
-     * @see Plasma::Svg::status
+     * @see PlasmaSvg::Svg::status
      * @since 5.23
      */
-    Q_PROPERTY(Plasma::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(PlasmaSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
     /**
      * The mask that tightly contains the painted areas
@@ -227,20 +227,20 @@ public:
 
     QString usedPrefix() const;
 
-    void setEnabledBorders(const Plasma::FrameSvg::EnabledBorders borders);
-    Plasma::FrameSvg::EnabledBorders enabledBorders() const;
+    void setEnabledBorders(const PlasmaSvg::FrameSvg::EnabledBorders borders);
+    PlasmaSvg::FrameSvg::EnabledBorders enabledBorders() const;
 
     FrameSvgItemMargins *margins();
     FrameSvgItemMargins *fixedMargins();
     FrameSvgItemMargins *inset();
 
-    void setColorGroup(Plasma::Theme::ColorGroup group);
-    Plasma::Theme::ColorGroup colorGroup() const;
+    void setColorGroup(PlasmaSvg::Theme::ColorGroup group);
+    PlasmaSvg::Theme::ColorGroup colorGroup() const;
 
     bool fromCurrentTheme() const;
 
-    void setStatus(Plasma::Svg::Status status);
-    Plasma::Svg::Status status() const;
+    void setStatus(PlasmaSvg::Svg::Status status);
+    PlasmaSvg::Svg::Status status() const;
     int minimumDrawingHeight() const;
     int minimumDrawingWidth() const;
 
@@ -251,7 +251,7 @@ public:
     /**
      * Only to be used from inside this library, is not intended to be invokable
      */
-    Plasma::FrameSvg *frameSvg() const;
+    PlasmaSvg::FrameSvg *frameSvg() const;
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
 
@@ -281,7 +281,7 @@ private Q_SLOTS:
 private:
     void applyPrefixes();
 
-    Plasma::FrameSvg *m_frameSvg;
+    PlasmaSvg::FrameSvg *m_frameSvg;
     FrameSvgItemMargins *m_margins;
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;

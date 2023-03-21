@@ -25,7 +25,7 @@
 #include <KX11Extras>
 #include <kpluginmetadata.h>
 
-namespace Plasma
+namespace PlasmaSvg
 {
 const char ThemePrivate::defaultTheme[] = "default";
 const char ThemePrivate::themeRcFile[] = "plasmarc";
@@ -409,7 +409,7 @@ void ThemePrivate::notifyOfChanged()
     Q_EMIT themeChanged();
 }
 
-const QString ThemePrivate::processStyleSheet(const QString &css, Plasma::Svg::Status status)
+const QString ThemePrivate::processStyleSheet(const QString &css, PlasmaSvg::Svg::Status status)
 {
     QString stylesheet;
     if (css.isEmpty()) {
@@ -526,7 +526,7 @@ const QString ThemePrivate::processStyleSheet(const QString &css, Plasma::Svg::S
     return stylesheet;
 }
 
-const QString ThemePrivate::svgStyleSheet(Plasma::Theme::ColorGroup group, Plasma::Svg::Status status)
+const QString ThemePrivate::svgStyleSheet(PlasmaSvg::Theme::ColorGroup group, PlasmaSvg::Svg::Status status)
 {
     QString stylesheet = (status == Svg::Status::Selected)
         ? cachedSelectedSvgStyleSheets.value(group)

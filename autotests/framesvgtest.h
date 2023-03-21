@@ -25,7 +25,7 @@ private Q_SLOTS:
     void repaintBlocked();
 
 private:
-    Plasma::FrameSvg *m_frameSvg;
+    PlasmaSvg::FrameSvg *m_frameSvg;
     QDir m_cacheDir;
 };
 

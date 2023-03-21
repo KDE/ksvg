@@ -71,22 +71,20 @@ PRIVATE
     ${PLASMASVG_EXTRA_LIBS}
 )
 
-target_link_libraries(KF6PlasmaSvg PRIVATE KF6::Package)
-
-set(Plasma_BUILD_INCLUDE_DIRS
+set(PlasmaSvg_BUILD_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/PlasmaSvg
 )
 target_include_directories(KF6PlasmaSvg
     PUBLIC
-        "$<BUILD_INTERFACE:${Plasma_BUILD_INCLUDE_DIRS}>"
+        "$<BUILD_INTERFACE:${PlasmaSvg_BUILD_INCLUDE_DIRS}>"
     INTERFACE
-        "$<INSTALL_INTERFACE:${PLASMA_INSTALL_INCLUDEDIR}>"
+        "$<INSTALL_INTERFACE:${PLASMASVG_INSTALL_INCLUDEDIR}>"
 )
 
 ########### install files ###############
-ecm_generate_headers(Plasma_CamelCase_HEADERS
+ecm_generate_headers(PlasmaSvg_CamelCase_HEADERS
     HEADER_NAMES
         FrameSvg
         Svg
@@ -96,15 +94,15 @@ ecm_generate_headers(Plasma_CamelCase_HEADERS
 )
 
 install(FILES
-        ${Plasma_HEADERS}
+        ${PlasmaSvg_HEADERS}
         ${CMAKE_CURRENT_BINARY_DIR}/plasmasvg/plasmasvg_export.h
-    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/plasmasvg # C++ namespace
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/plasmasvg # C++ namespace
     COMPONENT Devel
 )
 
 install(
-    FILES ${Plasma_CamelCase_HEADERS}
-    DESTINATION ${PLASMA_INSTALL_INCLUDEDIR}/PlasmaSvg # C++ namespace
+    FILES ${PlasmaSvg_CamelCase_HEADERS}
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/PlasmaSvg # C++ namespace
     COMPONENT Devel
 )
 
@@ -113,18 +111,18 @@ install(TARGETS KF6PlasmaSvg EXPORT KF6PlasmaSvgTargets ${KF_INSTALL_TARGETS_DEF
 if(BUILD_QCH)
     ecm_add_qch(
         KF6PlasmaSvg_QCH
-        NAME Plasma
+        NAME PlasmaSvg
         BASE_NAME KF6PlasmaSvg
         VERSION ${KF_VERSION}
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
-            ${Plasma_HEADERS}
+            ${PlasmaSvg_HEADERS}
             Mainpage.dox
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS
             Qt6Gui_QCH
         INCLUDE_DIRS
-            ${Plasma_BUILD_INCLUDE_DIRS}
+            ${PlasmaSvg_BUILD_INCLUDE_DIRS}
         BLANK_MACROS
             PLASMA_EXPORT
             PLASMA_DEPRECATED

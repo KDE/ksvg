@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_FRAMESVG_H
-#define PLASMA_FRAMESVG_H
+#ifndef PLASMASVG_FRAMESVG_H
+#define PLASMASVG_FRAMESVG_H
 
 #include <QObject>
 #include <QPixmap>
@@ -24,7 +24,7 @@ class QSize;
 class QSizeF;
 class QMatrix;
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class FrameSvgPrivate;
 
@@ -56,7 +56,7 @@ class FrameSvgPrivate;
  * @c topright will be ignored if @c top does not exist, and similarly for
  * @c bottomleft and @c bottomright.
  *
- * @see Plasma::Svg
+ * @see PlasmaSvg::Svg
  **/
 class PLASMASVG_EXPORT FrameSvg : public Svg
 {
@@ -99,12 +99,12 @@ public:
 
     /**
      * Constructs a new FrameSvg that paints the proper named subelements
-     * as borders. It may also be used as a regular Plasma::Svg object
+     * as borders. It may also be used as a regular PlasmaSvg::Svg object
      * for direct access to elements in the Svg.
      *
      * @param parent options QObject to parent this to
      *
-     * @related Plasma::Theme
+     * @related PlasmaSvg::Theme
      */
     explicit FrameSvg(QObject *parent = nullptr);
     ~FrameSvg() override;
@@ -211,7 +211,7 @@ public:
      * called successfully after setImagePath is called.
      * @param location location in the UI this frame will be drawn
      */
-    Q_INVOKABLE void setElementPrefix(Plasma::FrameSvg::LocationPrefix location);
+    Q_INVOKABLE void setElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location);
 
     /**
      * Sets the prefix for the SVG elements to be used for painting. For example,
@@ -246,7 +246,7 @@ public:
      * to draw a frame.
      * @param location the given prefix we want to check if drawable
      */
-    Q_INVOKABLE bool hasElementPrefix(Plasma::FrameSvg::LocationPrefix location) const;
+    Q_INVOKABLE bool hasElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location) const;
 
     /**
      * Returns the prefix for SVG elements of the FrameSvg (including a '-' at the end if not empty)

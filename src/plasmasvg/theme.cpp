@@ -30,7 +30,7 @@
 
 #include "debug_p.h"
 
-namespace Plasma
+namespace PlasmaSvg
 {
 Theme::Theme(QObject *parent)
     : QObject(parent)
@@ -227,7 +227,7 @@ QString Theme::wallpaperPath(const QSize &size) const
 
 QString Theme::wallpaperPathForSize(int width, int height) const
 {
-    return Plasma::Theme::wallpaperPath(QSize(width, height));
+    return PlasmaSvg::Theme::wallpaperPath(QSize(width, height));
 }
 
 bool Theme::currentThemeHasImage(const QString &name) const
@@ -364,7 +364,7 @@ qreal Theme::backgroundContrast() const
     if (qIsNaN(d->backgroundContrast)) {
         // Make up sensible default values, based on the background color
         // If we're using a dark background color, darken the background
-        if (qGray(color(Plasma::Theme::BackgroundColor).rgb()) < 127) {
+        if (qGray(color(PlasmaSvg::Theme::BackgroundColor).rgb()) < 127) {
             return 0.45;
             // for a light theme lighten up the background
         } else {
@@ -377,7 +377,7 @@ qreal Theme::backgroundContrast() const
 qreal Theme::backgroundIntensity() const
 {
     if (qIsNaN(d->backgroundIntensity)) {
-        if (qGray(color(Plasma::Theme::BackgroundColor).rgb()) < 127) {
+        if (qGray(color(PlasmaSvg::Theme::BackgroundColor).rgb()) < 127) {
             return 0.45;
         } else {
             return 1.9;

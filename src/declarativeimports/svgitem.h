@@ -12,7 +12,7 @@
 
 #include "units.h"
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class Svg;
 
@@ -39,7 +39,7 @@ class SvgItem : public QQuickItem
      * @endcode
      * Instead of a Svg declaration it can also be the id of a Svg declared elsewhere, useful to share Svg instances.
      */
-    Q_PROPERTY(Plasma::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
+    Q_PROPERTY(PlasmaSvg::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
 
     /**
      * The natural, unscaled size of the svg document or the element. useful if a pixel perfect rendering of outlines is needed.
@@ -55,8 +55,8 @@ public:
     void setElementId(const QString &elementID);
     QString elementId() const;
 
-    void setSvg(Plasma::Svg *svg);
-    Plasma::Svg *svg() const;
+    void setSvg(PlasmaSvg::Svg *svg);
+    PlasmaSvg::Svg *svg() const;
 
     QSizeF naturalSize() const;
 
@@ -79,7 +79,7 @@ private:
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
-    QPointer<Plasma::Svg> m_svg;
+    QPointer<PlasmaSvg::Svg> m_svg;
     QString m_elementID;
     bool m_textureChanged;
     QImage m_image;

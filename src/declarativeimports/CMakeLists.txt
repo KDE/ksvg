@@ -22,7 +22,6 @@ target_link_libraries(corebindingsplugin
         Qt6::Quick
         Qt6::Qml
         KF6::IconThemes
-        KF6::I18n
         Qt6::Svg
         KF6::WindowSystem
         KF6::PlasmaSvg

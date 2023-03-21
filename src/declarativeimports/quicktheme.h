@@ -12,7 +12,7 @@
 
 #include <QColor>
 
-namespace Plasma
+namespace PlasmaSvg
 {
 /**
  * @class QuickTheme plasmasvg/theme.h <Plasma/Theme>
@@ -20,15 +20,15 @@ namespace Plasma
  * @short Interface to the Plasma theme
  *
  *
- * Plasma::Theme provides access to a common and standardized set of graphic
+ * PlasmaSvg::Theme provides access to a common and standardized set of graphic
  * elements stored in SVG format. This allows artists to create single packages
  * of SVGs that will affect the look and feel of all workspace components.
  *
- * Plasma::Svg uses Plasma::Theme internally to locate and load the appropriate
- * SVG data. Alternatively, Plasma::Theme can be used directly to retrieve
+ * PlasmaSvg::Svg uses PlasmaSvg::Theme internally to locate and load the appropriate
+ * SVG data. Alternatively, PlasmaSvg::Theme can be used directly to retrieve
  * file system paths to SVGs by name.
  */
-class QuickTheme : public Plasma::Theme
+class QuickTheme : public PlasmaSvg::Theme
 {
     Q_OBJECT
 

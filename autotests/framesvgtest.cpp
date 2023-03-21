@@ -13,7 +13,7 @@ void FrameSvgTest::initTestCase()
     m_cacheDir = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     m_cacheDir.removeRecursively();
 
-    m_frameSvg = new Plasma::FrameSvg;
+    m_frameSvg = new PlasmaSvg::FrameSvg;
     m_frameSvg->setImagePath(QFINDTESTDATA("data/background.svgz"));
     QVERIFY(m_frameSvg->isValid());
 }
@@ -27,10 +27,10 @@ void FrameSvgTest::cleanupTestCase()
 
 void FrameSvgTest::margins()
 {
-    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::LeftMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::TopMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::RightMargin), (qreal)26);
-    QCOMPARE(m_frameSvg->marginSize(Plasma::FrameSvg::BottomMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::LeftMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::TopMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::RightMargin), (qreal)26);
+    QCOMPARE(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::BottomMargin), (qreal)26);
 }
 
 void FrameSvgTest::contentsRect()
@@ -46,13 +46,13 @@ void FrameSvgTest::repaintBlocked()
     QVERIFY(m_frameSvg->isRepaintBlocked());
 
     m_frameSvg->setElementPrefix("prefix");
-    m_frameSvg->setEnabledBorders(Plasma::FrameSvg::TopBorder | Plasma::FrameSvg::LeftBorder);
+    m_frameSvg->setEnabledBorders(PlasmaSvg::FrameSvg::TopBorder | PlasmaSvg::FrameSvg::LeftBorder);
     m_frameSvg->resizeFrame(QSizeF(100, 100));
 
     m_frameSvg->setRepaintBlocked(false);
 
     QCOMPARE(m_frameSvg->prefix(), QString("prefix"));
-    QCOMPARE(m_frameSvg->enabledBorders(), Plasma::FrameSvg::TopBorder | Plasma::FrameSvg::LeftBorder);
+    QCOMPARE(m_frameSvg->enabledBorders(), PlasmaSvg::FrameSvg::TopBorder | PlasmaSvg::FrameSvg::LeftBorder);
     QCOMPARE(m_frameSvg->frameSize(), QSizeF(100, 100));
 }
 
@@ -60,19 +60,19 @@ void FrameSvgTest::setTheme()
 {
     // Should not crash
 
-    Plasma::FrameSvg *frameSvg = new Plasma::FrameSvg;
+    PlasmaSvg::FrameSvg *frameSvg = new PlasmaSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setTheme(new Plasma::Theme("breeze-light", this));
+    frameSvg->setTheme(new PlasmaSvg::Theme("breeze-light", this));
     frameSvg->framePixmap();
-    frameSvg->setTheme(new Plasma::Theme("breeze-dark", this));
+    frameSvg->setTheme(new PlasmaSvg::Theme("breeze-dark", this));
     frameSvg->framePixmap();
     delete frameSvg;
 
-    frameSvg = new Plasma::FrameSvg;
+    frameSvg = new PlasmaSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setTheme(new Plasma::Theme("breeze-light", this));
+    frameSvg->setTheme(new PlasmaSvg::Theme("breeze-light", this));
     frameSvg->framePixmap();
-    frameSvg->setTheme(new Plasma::Theme("breeze-dark", this));
+    frameSvg->setTheme(new PlasmaSvg::Theme("breeze-dark", this));
     frameSvg->framePixmap();
     delete frameSvg;
 }

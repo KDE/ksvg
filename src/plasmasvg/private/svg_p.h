@@ -16,7 +16,7 @@
 #include <QSharedData>
 #include <QSvgRenderer>
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class SharedSvgRenderer : public QSvgRenderer, public QSharedData
 {
@@ -169,6 +169,6 @@ private:
 };
 }
 
-uint qHash(const Plasma::SvgPrivate::CacheId &id, uint seed = 0);
+uint qHash(const PlasmaSvg::SvgPrivate::CacheId &id, uint seed = 0);
 
 #endif

@@ -26,7 +26,7 @@
 #include "private/svg_p.h"
 #include "theme.h"
 
-namespace Plasma
+namespace PlasmaSvg
 {
 QHash<ThemePrivate *, QHash<uint, QWeakPointer<FrameData>>> FrameSvgPrivate::s_sharedFrames;
 
@@ -84,7 +84,7 @@ FrameSvg::EnabledBorders FrameSvg::enabledBorders() const
     return d->enabledBorders;
 }
 
-void FrameSvg::setElementPrefix(Plasma::FrameSvg::LocationPrefix location)
+void FrameSvg::setElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location)
 {
     switch (location) {
     case TopEdge:
@@ -140,7 +140,7 @@ bool FrameSvg::hasElementPrefix(const QString &prefix) const
     return hasElement(prefix % QLatin1String("-center"));
 }
 
-bool FrameSvg::hasElementPrefix(Plasma::FrameSvg::LocationPrefix location) const
+bool FrameSvg::hasElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location) const
 {
     switch (location) {
     case TopEdge:
@@ -213,7 +213,7 @@ qreal FrameSvg::marginSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->rightMargin;
 
-    // Plasma::BottomMargin
+    // PlasmaSvg::BottomMargin
     default:
         return d->frame->bottomMargin;
     }
@@ -239,7 +239,7 @@ qreal FrameSvg::insetSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->insetRightMargin;
 
-    // Plasma::BottomMargin
+    // PlasmaSvg::BottomMargin
     default:
         return d->frame->insetBottomMargin;
     }
@@ -265,7 +265,7 @@ qreal FrameSvg::fixedMarginSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->fixedRightMargin;
 
-    // Plasma::BottomMargin
+    // PlasmaSvg::BottomMargin
     default:
         return d->frame->fixedBottomMargin;
     }
@@ -773,7 +773,10 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
     }
 }
 
-void FrameSvgPrivate::paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, Plasma::FrameSvg::EnabledBorders border, const QRect &contentRect) const
+void FrameSvgPrivate::paintCorner(QPainter &p,
+                                  const QSharedPointer<FrameData> &frame,
+                                  PlasmaSvg::FrameSvg::EnabledBorders border,
+                                  const QRect &contentRect) const
 {
     // Draw the corner only if both borders in both directions are enabled.
     if ((frame->enabledBorders & border) != border) {

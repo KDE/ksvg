@@ -18,7 +18,7 @@
 
 #include "svg_p.h"
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class FrameData
 {
@@ -120,7 +120,7 @@ public:
     bool tileCenter : 1;
     bool composeOverBorder : 1;
 
-    Plasma::ThemePrivate *theme;
+    PlasmaSvg::ThemePrivate *theme;
 };
 
 class FrameSvgPrivate
@@ -162,10 +162,10 @@ public:
     QSizeF frameSize(FrameData *frame) const;
     void paintBorder(QPainter &p,
                      const QSharedPointer<FrameData> &frame,
-                     Plasma::FrameSvg::EnabledBorders border,
+                     PlasmaSvg::FrameSvg::EnabledBorders border,
                      const QSize &originalSize,
                      const QRect &output) const;
-    void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, Plasma::FrameSvg::EnabledBorders border, const QRect &output) const;
+    void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, PlasmaSvg::FrameSvg::EnabledBorders border, const QRect &output) const;
     void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRect &contentRect, const QSize &fullSize);
     QRect contentGeometry(const QSharedPointer<FrameData> &frame, const QSize &size) const;
     void updateFrameData(uint lastModified, UpdateType updateType = UpdateFrameAndMargins);

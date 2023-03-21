@@ -11,8 +11,6 @@
 
 #include <QQmlContext>
 
-#include <KLocalizedContext>
-
 #include <plasmasvg/framesvg.h>
 #include <plasmasvg/svg.h>
 
@@ -30,17 +28,13 @@ void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 
     QQmlContext *context = engine->rootContext();
 
-    Plasma::QuickTheme *theme = new Plasma::QuickTheme(engine);
+    PlasmaSvg::QuickTheme *theme = new PlasmaSvg::QuickTheme(engine);
 
     if (!qEnvironmentVariableIntValue("PLASMA_NO_CONTEXTPROPERTIES")) {
         context->setContextProperty(QStringLiteral("theme"), theme);
         context->setContextProperty(QStringLiteral("units"), &Units::instance());
     }
 
-    if (!context->contextObject()) {
-        KLocalizedContext *localizedContextObject = new KLocalizedContext(engine);
-        context->setContextObject(localizedContextObject);
-    }
 }
 
 void CoreBindingsPlugin::registerTypes(const char *uri)
@@ -52,13 +46,13 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
         return &Units::instance();
     });
 
-    qmlRegisterType<Plasma::Svg>(uri, 2, 0, "Svg");
-    qmlRegisterType<Plasma::FrameSvg>(uri, 2, 0, "FrameSvg");
-    qmlRegisterType<Plasma::SvgItem>(uri, 2, 0, "SvgItem");
-    qmlRegisterType<Plasma::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
+    qmlRegisterType<PlasmaSvg::Svg>(uri, 2, 0, "Svg");
+    qmlRegisterType<PlasmaSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
+    qmlRegisterType<PlasmaSvg::SvgItem>(uri, 2, 0, "SvgItem");
+    qmlRegisterType<PlasmaSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
 
     // qmlRegisterType<ThemeProxy>(uri, 2, 0, "Theme");
-    qmlRegisterSingletonType<Plasma::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
-        return new Plasma::QuickTheme(engine);
+    qmlRegisterSingletonType<PlasmaSvg::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
+        return new PlasmaSvg::QuickTheme(engine);
     });
 }

@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_THEME_H
-#define PLASMA_THEME_H
+#ifndef PLASMASVG_THEME_H
+#define PLASMASVG_THEME_H
 
 #include <QFont>
 #include <QGuiApplication>
@@ -17,23 +17,23 @@
 
 class KPluginMetaData;
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class ThemePrivate;
 class SvgPrivate;
 
 /**
- * @class Theme plasma/theme.h <Plasma/Theme>
+ * @class Theme plasmasvg/theme.h <PlasmaSvg/Theme>
  *
  * @short Interface to the Plasma theme
  *
  *
- * Plasma::Theme provides access to a common and standardized set of graphic
+ * PlasmaSvg::Theme provides access to a common and standardized set of graphic
  * elements stored in SVG format. This allows artists to create single packages
  * of SVGs that will affect the look and feel of all workspace components.
  *
- * Plasma::Svg uses Plasma::Theme internally to locate and load the appropriate
- * SVG data. Alternatively, Plasma::Theme can be used directly to retrieve
+ * PlasmaSvg::Svg uses PlasmaSvg::Theme internally to locate and load the appropriate
+ * SVG data. Alternatively, PlasmaSvg::Theme can be used directly to retrieve
  * file system paths to SVGs by name.
  */
 class PLASMASVG_EXPORT Theme : public QObject
@@ -165,10 +165,10 @@ public:
     bool useGlobalSettings() const;
 
     /**
-     * Provides a Plasma::Theme-themed stylesheet for hybrid (web / native Plasma) widgets.
+     * Provides a PlasmaSvg::Theme-themed stylesheet for hybrid (web / native Plasma) widgets.
      *
      * You can use this method to retrieve a basic default stylesheet, or to theme your
-     * custom stylesheet you use for example in Plasma::WebView. The QString you can pass
+     * custom stylesheet you use for example in PlasmaSvg::WebView. The QString you can pass
      * into this method does not have to be a valid stylesheet, in fact you can use this
      * method to replace color placeholders with the theme's color in any QString.
      *
@@ -178,7 +178,7 @@ public:
      * Just like in many other methods for retrieving theme information, do not forget to
      * update your stylesheet upon the themeChanged() signal.
      *
-     * The following tags will be replaced by corresponding colors from Plasma::Theme:
+     * The following tags will be replaced by corresponding colors from PlasmaSvg::Theme:
      *
      * %textcolor
      * %backgroundcolor
@@ -197,7 +197,7 @@ public:
      * theming for some commonly used elements, body text and links, for example.
      *
      * @return a piece of CSS that sets the most commonly used style elements to a theme
-     * matching Plasma::Theme.
+     * matching PlasmaSvg::Theme.
      *
      * @since 4.5
      */

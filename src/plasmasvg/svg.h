@@ -4,8 +4,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_SVG_H
-#define PLASMA_SVG_H
+#ifndef PLASMASVG_SVG_H
+#define PLASMASVG_SVG_H
 
 #include <QObject>
 #include <QPixmap>
@@ -22,7 +22,7 @@ class QSize;
 class QSizeF;
 class QMatrix;
 
-namespace Plasma
+namespace PlasmaSvg
 {
 class FrameSvgPrivate;
 class SvgPrivate;
@@ -32,12 +32,12 @@ class SvgPrivate;
  *
  * @short A theme aware image-centric SVG class
  *
- * Plasma::Svg provides a class for rendering SVG images to a QPainter in a
+ * PlasmaSvg::Svg provides a class for rendering SVG images to a QPainter in a
  * convenient manner. Unless an absolute path to a file is provided, it loads
- * the SVG document using Plasma::Theme. It also provides a number of internal
+ * the SVG document using PlasmaSvg::Theme. It also provides a number of internal
  * optimizations to help lower the cost of painting SVGs, such as caching.
  *
- * @see Plasma::FrameSvg
+ * @see PlasmaSvg::FrameSvg
  **/
 class PLASMASVG_EXPORT Svg : public QObject
 {
@@ -47,8 +47,8 @@ class PLASMASVG_EXPORT Svg : public QObject
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
     Q_PROPERTY(bool fromCurrentTheme READ fromCurrentTheme NOTIFY fromCurrentThemeChanged)
-    Q_PROPERTY(Plasma::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
-    Q_PROPERTY(Plasma::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(PlasmaSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
+    Q_PROPERTY(PlasmaSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
 public:
     enum Status {
@@ -62,7 +62,7 @@ public:
      * Constructs an SVG object that implicitly shares and caches rendering.
      *
      * Unlike QSvgRenderer, which this class uses internally,
-     * Plasma::Svg represents an image generated from an SVG. As such, it
+     * PlasmaSvg::Svg represents an image generated from an SVG. As such, it
      * has a related size and transform matrix (the latter being provided
      * by the painter used to paint the image).
      *
@@ -70,7 +70,7 @@ public:
      *
      * @param parent options QObject to parent this to
      *
-     * @related Plasma::Theme
+     * @related PlasmaSvg::Theme
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
@@ -112,12 +112,12 @@ public:
      * make them use ButtonTextColor/ButtonBackgroundColor
      * or ViewTextColor/ViewBackgroundColor
      */
-    void setColorGroup(Plasma::Theme::ColorGroup group);
+    void setColorGroup(PlasmaSvg::Theme::ColorGroup group);
 
     /**
      * @return the color group for this Svg
      */
-    Plasma::Theme::ColorGroup colorGroup() const;
+    PlasmaSvg::Theme::ColorGroup colorGroup() const;
 
     /**
      * Returns a pixmap of the SVG represented by this object.
@@ -335,7 +335,7 @@ public:
      * and should not include the file extension (.svg and .svgz
      * files will be searched for).  See Theme::imagePath().
      *
-     * If the parent object of this Svg is a Plasma::Applet,
+     * If the parent object of this Svg is a PlasmaSvg::Applet,
      * relative paths will be searched for in the applet's package
      * first.
      *
@@ -406,19 +406,19 @@ public:
     bool useSystemColors() const;
 
     /**
-     * Sets the Plasma::Theme to use with this Svg object.
+     * Sets the PlasmaSvg::Theme to use with this Svg object.
      *
-     * By default, Svg objects use Plasma::Theme::default().
+     * By default, Svg objects use PlasmaSvg::Theme::default().
      *
      * This determines how relative image paths are interpreted.
      *
      * @param theme  the theme object to use
      * @since 4.3
      */
-    void setTheme(Plasma::Theme *theme);
+    void setTheme(PlasmaSvg::Theme *theme);
 
     /**
-     * The Plasma::Theme used by this Svg object.
+     * The PlasmaSvg::Theme used by this Svg object.
      *
      * This determines how relative image paths are interpreted.
      *
@@ -486,7 +486,7 @@ Q_SIGNALS:
      * Emitted when the status changes
      * @since 5.23
      */
-    void statusChanged(Plasma::Svg::Status status);
+    void statusChanged(PlasmaSvg::Svg::Status status);
 
 private:
     SvgPrivate *const d;

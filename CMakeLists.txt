@@ -35,7 +35,7 @@ add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt 
 ecm_setup_version(PROJECT
                   VARIABLE_PREFIX PLASMA
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/plasma_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaConfigVersion.cmake"
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfigVersion.cmake"
                   SOVERSION 6)
 
 ################# now find all used packages #################
@@ -55,7 +55,6 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
         I18n
         IconThemes
         WindowSystem
-        Package
         Kirigami2
 )
 
@@ -123,7 +122,7 @@ ecm_set_disabled_deprecation_versions(
 
 #add_definitions(-Wno-deprecated)
 
-include(KF6PlasmaMacros.cmake)
+include(KF6PlasmaSvgMacros.cmake)
 
 #########################################################################
 
@@ -151,7 +150,7 @@ endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 
-set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6Plasma")
+set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6PlasmaSvg")
 
 if (BUILD_QCH)
     ecm_install_qch_export(
@@ -164,16 +163,16 @@ if (BUILD_QCH)
 endif()
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaSvgConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   PATH_VARS  CMAKE_INSTALL_PREFIX
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaConfigVersion.cmake"
-  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaMacros.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfigVersion.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaSvgMacros.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )

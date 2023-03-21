@@ -31,7 +31,7 @@ Module {
         prototype: "QQuickItem"
         exports: ["org.kde.plasma.core/ColorScope 2.0"]
         exportMetaObjectRevisions: [0]
-        Property { name: "colorGroup"; type: "Plasma::Theme::ColorGroup" }
+        Property { name: "colorGroup"; type: "PlasmaSvg::Theme::ColorGroup" }
         Property { name: "textColor"; type: "QColor"; isReadonly: true }
         Property { name: "highlightColor"; type: "QColor"; isReadonly: true }
         Property { name: "highlightedTextColor"; type: "QColor"; isReadonly: true }
@@ -50,10 +50,10 @@ Module {
         exports: ["org.kde.plasma.core/IconItem 2.0"]
         exportMetaObjectRevisions: [0]
         Property { name: "source"; type: "QVariant" }
-        Property { name: "colorGroup"; type: "Plasma::Theme::ColorGroup" }
+        Property { name: "colorGroup"; type: "PlasmaSvg::Theme::ColorGroup" }
         Property { name: "overlays"; type: "QStringList" }
         Property { name: "active"; type: "bool" }
-        Property { name: "status"; type: "Plasma::Svg::Status" }
+        Property { name: "status"; type: "PlasmaSvg::Svg::Status" }
         Property { name: "animated"; type: "bool" }
         Property { name: "usesPlasmaTheme"; type: "bool" }
         Property { name: "roundToIconSize"; type: "bool" }
@@ -67,7 +67,7 @@ Module {
         Signal { name: "implicitWidthChanged2" }
     }
     Component {
-        name: "Plasma::DataModel"
+        name: "PlasmaSvg::DataModel"
         prototype: "QAbstractItemModel"
         exports: ["org.kde.plasma.core/DataModel 2.0"]
         exportMetaObjectRevisions: [0]
@@ -90,8 +90,8 @@ Module {
         }
     }
     Component {
-        name: "Plasma::FrameSvg"
-        prototype: "Plasma::Svg"
+        name: "PlasmaSvg::FrameSvg"
+        prototype: "PlasmaSvg::Svg"
         exports: ["org.kde.plasma.core/FrameSvg 2.0"]
         exportMetaObjectRevisions: [0]
         Enum {
@@ -118,7 +118,7 @@ Module {
         Method {
             name: "marginSize"
             type: "double"
-            Parameter { name: "edge"; type: "Plasma::Types::MarginEdge" }
+            Parameter { name: "edge"; type: "PlasmaSvg::Types::MarginEdge" }
         }
         Method {
             name: "getMargins"
@@ -130,7 +130,7 @@ Module {
         Method {
             name: "fixedMarginSize"
             type: "double"
-            Parameter { name: "edge"; type: "Plasma::Types::MarginEdge" }
+            Parameter { name: "edge"; type: "PlasmaSvg::Types::MarginEdge" }
         }
         Method {
             name: "getFixedMargins"
@@ -142,7 +142,7 @@ Module {
         Method {
             name: "insetSize"
             type: "double"
-            Parameter { name: "edge"; type: "Plasma::Types::MarginEdge" }
+            Parameter { name: "edge"; type: "PlasmaSvg::Types::MarginEdge" }
         }
         Method {
             name: "getInset"
@@ -154,7 +154,7 @@ Module {
         Method { name: "contentsRect"; type: "QRectF" }
         Method {
             name: "setElementPrefix"
-            Parameter { name: "location"; type: "Plasma::Types::Location" }
+            Parameter { name: "location"; type: "PlasmaSvg::Types::Location" }
         }
         Method {
             name: "setElementPrefix"
@@ -168,7 +168,7 @@ Module {
         Method {
             name: "hasElementPrefix"
             type: "bool"
-            Parameter { name: "location"; type: "Plasma::Types::Location" }
+            Parameter { name: "location"; type: "PlasmaSvg::Types::Location" }
         }
         Method { name: "prefix"; type: "string" }
         Method { name: "mask"; type: "QRegion" }
@@ -201,7 +201,7 @@ Module {
         }
     }
     Component {
-        name: "Plasma::FrameSvgItem"
+        name: "PlasmaSvg::FrameSvgItem"
         defaultProperty: "data"
         prototype: "QQuickItem"
         exports: ["org.kde.plasma.core/FrameSvgItem 2.0"]
@@ -212,10 +212,10 @@ Module {
         Property { name: "margins"; type: "QObject"; isReadonly: true; isPointer: true }
         Property { name: "fixedMargins"; type: "QObject"; isReadonly: true; isPointer: true }
         Property { name: "inset"; type: "QObject"; isReadonly: true; isPointer: true }
-        Property { name: "enabledBorders"; type: "Plasma::FrameSvg::EnabledBorders" }
+        Property { name: "enabledBorders"; type: "PlasmaSvg::FrameSvg::EnabledBorders" }
         Property { name: "fromCurrentTheme"; type: "bool"; isReadonly: true }
-        Property { name: "colorGroup"; type: "Plasma::Theme::ColorGroup" }
-        Property { name: "status"; type: "Plasma::Svg::Status" }
+        Property { name: "colorGroup"; type: "PlasmaSvg::Theme::ColorGroup" }
+        Property { name: "status"; type: "PlasmaSvg::Svg::Status" }
         Property { name: "mask"; type: "QRegion"; isReadonly: true }
         Signal { name: "repaintNeeded" }
         Method {
@@ -225,7 +225,7 @@ Module {
         }
     }
     Component {
-        name: "Plasma::FrameSvgItemMargins"
+        name: "PlasmaSvg::FrameSvgItemMargins"
         prototype: "QObject"
         Property { name: "left"; type: "double"; isReadonly: true }
         Property { name: "top"; type: "double"; isReadonly: true }
@@ -237,8 +237,8 @@ Module {
         Method { name: "update" }
     }
     Component {
-        name: "Plasma::QuickTheme"
-        prototype: "Plasma::Theme"
+        name: "PlasmaSvg::QuickTheme"
+        prototype: "PlasmaSvg::Theme"
         exports: ["org.kde.plasma.core/Theme 2.0"]
         isCreatable: false
         isSingleton: true
@@ -288,7 +288,7 @@ Module {
         Signal { name: "themeChangedProxy" }
     }
     Component {
-        name: "Plasma::SortFilterModel"
+        name: "PlasmaSvg::SortFilterModel"
         prototype: "QSortFilterProxyModel"
         exports: [
             "org.kde.plasma.core/SortFilterModel 2.0",
@@ -339,7 +339,7 @@ Module {
         }
     }
     Component {
-        name: "Plasma::Svg"
+        name: "PlasmaSvg::Svg"
         prototype: "QObject"
         exports: ["org.kde.plasma.core/Svg 2.0"]
         exportMetaObjectRevisions: [0]
@@ -356,8 +356,8 @@ Module {
         Property { name: "imagePath"; type: "string" }
         Property { name: "usingRenderingCache"; type: "bool" }
         Property { name: "fromCurrentTheme"; type: "bool"; isReadonly: true }
-        Property { name: "colorGroup"; type: "Plasma::Theme::ColorGroup" }
-        Property { name: "status"; type: "Plasma::Svg::Status" }
+        Property { name: "colorGroup"; type: "PlasmaSvg::Theme::ColorGroup" }
+        Property { name: "status"; type: "PlasmaSvg::Svg::Status" }
         Signal { name: "repaintNeeded" }
         Signal { name: "colorHintChanged" }
         Signal {
@@ -366,7 +366,7 @@ Module {
         }
         Signal {
             name: "statusChanged"
-            Parameter { name: "status"; type: "Plasma::Svg::Status" }
+            Parameter { name: "status"; type: "PlasmaSvg::Svg::Status" }
         }
         Method {
             name: "pixmap"
@@ -465,17 +465,17 @@ Module {
         Method { name: "isValid"; type: "bool" }
     }
     Component {
-        name: "Plasma::SvgItem"
+        name: "PlasmaSvg::SvgItem"
         defaultProperty: "data"
         prototype: "QQuickItem"
         exports: ["org.kde.plasma.core/SvgItem 2.0"]
         exportMetaObjectRevisions: [0]
         Property { name: "elementId"; type: "string" }
-        Property { name: "svg"; type: "Plasma::Svg"; isPointer: true }
+        Property { name: "svg"; type: "PlasmaSvg::Svg"; isPointer: true }
         Property { name: "naturalSize"; type: "QSizeF"; isReadonly: true }
     }
     Component {
-        name: "Plasma::Theme"
+        name: "PlasmaSvg::Theme"
         prototype: "QObject"
         Enum {
             name: "ColorGroup"
@@ -516,7 +516,7 @@ Module {
         Method { name: "mSize"; type: "QSizeF" }
     }
     Component {
-        name: "Plasma::Types"
+        name: "PlasmaSvg::Types"
         prototype: "QObject"
         exports: ["org.kde.plasma.core/Types 2.0"]
         isCreatable: false
@@ -717,7 +717,7 @@ Module {
         }
     }
     Component {
-        name: "Plasma::WindowThumbnail"
+        name: "PlasmaSvg::WindowThumbnail"
         defaultProperty: "data"
         prototype: "QQuickItem"
         exports: ["org.kde.plasma.core/WindowThumbnail 2.0"]
@@ -760,7 +760,7 @@ Module {
         Property { name: "visualParent"; type: "QQuickItem"; isPointer: true }
         Property { name: "margins"; type: "QObject"; isReadonly: true; isPointer: true }
         Property { name: "inset"; type: "QObject"; isReadonly: true; isPointer: true }
-        Property { name: "location"; type: "Plasma::Types::Location" }
+        Property { name: "location"; type: "PlasmaSvg::Types::Location" }
         Property { name: "type"; type: "WindowType" }
         Property { name: "hideOnWindowDeactivate"; type: "bool" }
         Property { name: "outputOnly"; type: "bool" }
@@ -1517,7 +1517,7 @@ Module {
         prototype: "QObject"
         exports: ["org.kde.plasma.core/ServiceOperationStatus 2.0"]
         exportMetaObjectRevisions: [0]
-        Property { name: "service"; type: "Plasma::Service"; isPointer: true }
+        Property { name: "service"; type: "PlasmaSvg::Service"; isPointer: true }
         Property { name: "operation"; type: "string" }
         Property { name: "enabled"; type: "bool" }
     }
@@ -1533,7 +1533,7 @@ Module {
         Property { name: "textFormat"; type: "int" }
         Property { name: "icon"; type: "QVariant" }
         Property { name: "containsMouse"; type: "bool"; isReadonly: true }
-        Property { name: "location"; type: "Plasma::Types::Location" }
+        Property { name: "location"; type: "PlasmaSvg::Types::Location" }
         Property { name: "image"; type: "QVariant" }
         Property { name: "active"; type: "bool" }
         Property { name: "interactive"; type: "bool" }
