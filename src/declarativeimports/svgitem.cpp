@@ -12,13 +12,13 @@
 #include <QRectF>
 #include <QSGTexture>
 
-#include "plasmasvg/svg.h"
+#include "ksvg/svg.h"
 
 #include "managedtexturenode.h"
 
 #include <cmath> //floor()
 
-namespace PlasmaSvg
+namespace KSvg
 {
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
@@ -67,7 +67,7 @@ QSizeF SvgItem::naturalSize() const
     return m_svg.data()->size();
 }
 
-void SvgItem::setSvg(PlasmaSvg::Svg *svg)
+void SvgItem::setSvg(KSvg::Svg *svg)
 {
     if (m_svg) {
         disconnect(m_svg.data(), nullptr, this, nullptr);
@@ -94,7 +94,7 @@ void SvgItem::setSvg(PlasmaSvg::Svg *svg)
     Q_EMIT naturalSizeChanged();
 }
 
-PlasmaSvg::Svg *SvgItem::svg() const
+KSvg::Svg *SvgItem::svg() const
 {
     return m_svg.data();
 }
@@ -124,7 +124,7 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
     // updating the material
 
     if (m_textureChanged || textureNode->texture()->textureSize() != QSize(width(), height())) {
-        // despite having a valid size sometimes we still get a null QImage from PlasmaSvg::Svg
+        // despite having a valid size sometimes we still get a null QImage from KSvg::Svg
         // loading a null texture to an atlas fatals
         // Dave E fixed this in Qt in 5.3.something onwards but we need this for now
         if (m_image.isNull()) {

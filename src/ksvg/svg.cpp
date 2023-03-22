@@ -33,7 +33,7 @@
 #include "debug_p.h"
 #include "theme.h"
 
-uint qHash(const PlasmaSvg::SvgPrivate::CacheId &id, uint seed)
+uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
 {
     std::array<size_t, 10> parts = {
         ::qHash(id.width),
@@ -50,7 +50,7 @@ uint qHash(const PlasmaSvg::SvgPrivate::CacheId &id, uint seed)
     return qHashRange(parts.begin(), parts.end(), seed);
 }
 
-namespace PlasmaSvg
+namespace KSvg
 {
 class SvgRectsCacheSingleton
 {
@@ -168,7 +168,7 @@ SvgRectsCache *SvgRectsCache::instance()
     return &privateSvgRectsCacheSelf()->self;
 }
 
-void SvgRectsCache::insert(PlasmaSvg::SvgPrivate::CacheId cacheId, const QRectF &rect, unsigned int lastModified)
+void SvgRectsCache::insert(KSvg::SvgPrivate::CacheId cacheId, const QRectF &rect, unsigned int lastModified)
 {
     insert(qHash(cacheId, SvgRectsCache::s_seed), cacheId.filePath, rect, lastModified);
 }
@@ -201,7 +201,7 @@ void SvgRectsCache::insert(uint id, const QString &filePath, const QRectF &rect,
     }
 }
 
-bool SvgRectsCache::findElementRect(PlasmaSvg::SvgPrivate::CacheId cacheId, QRectF &rect)
+bool SvgRectsCache::findElementRect(KSvg::SvgPrivate::CacheId cacheId, QRectF &rect)
 {
     return findElementRect(qHash(cacheId, SvgRectsCache::s_seed), cacheId.filePath, rect);
 }
@@ -388,7 +388,7 @@ SvgPrivate::SvgPrivate(Svg *svg)
     : q(svg)
     , renderer(nullptr)
     , styleCrc(0)
-    , colorGroup(PlasmaSvg::Theme::NormalColorGroup)
+    , colorGroup(KSvg::Theme::NormalColorGroup)
     , lastModified(0)
     , devicePixelRatio(1.0)
     , scaleFactor(s_lastScaleFactor)
@@ -482,7 +482,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         path = actualPath;
     } else {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMASVG) << "file '" << path << "' does not exist!";
+        // qCDebug(LOG_KSVG) << "file '" << path << "' does not exist!";
 #endif
     }
 
@@ -529,7 +529,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
 Theme *SvgPrivate::actualTheme()
 {
     if (!theme) {
-        theme = new PlasmaSvg::Theme(q);
+        theme = new KSvg::Theme(q);
     }
 
     return theme.data();
@@ -543,7 +543,7 @@ Theme *SvgPrivate::cacheAndColorsTheme()
         // use a separate cache source for unthemed svg's
         if (!s_systemColorsCache) {
             // FIXME: reference count this, so that it is deleted when no longer in use
-            s_systemColorsCache = new PlasmaSvg::Theme(QStringLiteral("internal-system-colors"));
+            s_systemColorsCache = new KSvg::Theme(QStringLiteral("internal-system-colors"));
         }
 
         return s_systemColorsCache.data();
@@ -596,7 +596,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     if (cacheRendering && lastModified == SvgRectsCache::instance()->lastModifiedTimeFromCache(path)
         && cacheAndColorsTheme()->findInCache(id, p, lastModified)) {
         p.setDevicePixelRatio(ratio);
-        // qCDebug(LOG_PLASMASVG) << "found cached version of " << id << p.size();
+        // qCDebug(LOG_KSVG) << "found cached version of " << id << p.size();
         return p;
     }
 
@@ -661,7 +661,7 @@ void SvgPrivate::createRenderer()
             path = actualTheme()->imagePath(themePath);
             themeFailed = path.isEmpty();
             if (themeFailed) {
-                qCWarning(LOG_PLASMASVG) << "No image path found for" << themePath;
+                qCWarning(LOG_KSVG) << "No image path found for" << themePath;
             }
         }
     }
@@ -868,7 +868,7 @@ void SvgPrivate::themeChanged()
     setImagePath(currentPath);
     q->resize();
 
-    // qCDebug(LOG_PLASMASVG) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
+    // qCDebug(LOG_KSVG) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
     Q_EMIT q->repaintNeeded();
 }
 
@@ -879,7 +879,7 @@ void SvgPrivate::colorsChanged()
     }
 
     eraseRenderer();
-    qCDebug(LOG_PLASMASVG) << "repaint needed from colorsChanged";
+    qCDebug(LOG_KSVG) << "repaint needed from colorsChanged";
 
     Q_EMIT q->repaintNeeded();
 }
@@ -958,7 +958,7 @@ qreal Svg::scaleFactor() const
     return d->scaleFactor;
 }
 
-void Svg::setColorGroup(PlasmaSvg::Theme::ColorGroup group)
+void Svg::setColorGroup(KSvg::Theme::ColorGroup group)
 {
     if (d->colorGroup == group) {
         return;
@@ -970,7 +970,7 @@ void Svg::setColorGroup(PlasmaSvg::Theme::ColorGroup group)
     Q_EMIT repaintNeeded();
 }
 
-PlasmaSvg::Theme::ColorGroup Svg::colorGroup() const
+KSvg::Theme::ColorGroup Svg::colorGroup() const
 {
     return d->colorGroup;
 }
@@ -1164,7 +1164,7 @@ bool Svg::useSystemColors() const
     return d->useSystemColors;
 }
 
-void Svg::setTheme(PlasmaSvg::Theme *theme)
+void Svg::setTheme(KSvg::Theme *theme)
 {
     if (!theme || theme == d->theme.data()) {
         return;
@@ -1184,7 +1184,7 @@ Theme *Svg::theme() const
     return d->actualTheme();
 }
 
-void Svg::setStatus(PlasmaSvg::Svg::Status status)
+void Svg::setStatus(KSvg::Svg::Status status)
 {
     if (status == d->status) {
         return;

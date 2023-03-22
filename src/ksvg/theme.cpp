@@ -30,7 +30,7 @@
 
 #include "debug_p.h"
 
-namespace PlasmaSvg
+namespace KSvg
 {
 Theme::Theme(QObject *parent)
     : QObject(parent)
@@ -126,7 +126,7 @@ QString Theme::imagePath(const QString &name) const
     // look for a compressed svg file in the theme
     if (name.contains(QLatin1String("../")) || name.isEmpty()) {
         // we don't support relative paths
-        // qCDebug(LOG_PLASMASVG) << "Theme says: bad image path " << name;
+        // qCDebug(LOG_KSVG) << "Theme says: bad image path " << name;
         return QString();
     }
 
@@ -211,14 +211,14 @@ QString Theme::wallpaperPath(const QSize &size) const
 
     if (fullPath.isEmpty()) {
         // we failed to find it in the theme, so look in the standard directories
-        // qCDebug(LOG_PLASMASVG) << "looking for" << image;
+        // qCDebug(LOG_KSVG) << "looking for" << image;
         fullPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("wallpapers/") + image);
     }
 
     if (fullPath.isEmpty()) {
         // we still failed to find it in the theme, so look for the default in
         // the standard directories
-        // qCDebug(LOG_PLASMASVG) << "looking for" << defaultImage;
+        // qCDebug(LOG_KSVG) << "looking for" << defaultImage;
         fullPath = QStandardPaths::locate(QStandardPaths::GenericDataLocation, QLatin1String("wallpapers/") + defaultImage);
     }
 
@@ -227,7 +227,7 @@ QString Theme::wallpaperPath(const QSize &size) const
 
 QString Theme::wallpaperPathForSize(int width, int height) const
 {
-    return PlasmaSvg::Theme::wallpaperPath(QSize(width, height));
+    return KSvg::Theme::wallpaperPath(QSize(width, height));
 }
 
 bool Theme::currentThemeHasImage(const QString &name) const
@@ -275,7 +275,7 @@ bool Theme::findInCache(const QString &key, QPixmap &pix, unsigned int lastModif
 {
     // TODO KF6: Make lastModified non-optional.
     if (lastModified == 0) {
-        qCWarning(LOG_PLASMASVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
+        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
         return false;
     }
 
@@ -364,7 +364,7 @@ qreal Theme::backgroundContrast() const
     if (qIsNaN(d->backgroundContrast)) {
         // Make up sensible default values, based on the background color
         // If we're using a dark background color, darken the background
-        if (qGray(color(PlasmaSvg::Theme::BackgroundColor).rgb()) < 127) {
+        if (qGray(color(KSvg::Theme::BackgroundColor).rgb()) < 127) {
             return 0.45;
             // for a light theme lighten up the background
         } else {
@@ -377,7 +377,7 @@ qreal Theme::backgroundContrast() const
 qreal Theme::backgroundIntensity() const
 {
     if (qIsNaN(d->backgroundIntensity)) {
-        if (qGray(color(PlasmaSvg::Theme::BackgroundColor).rgb()) < 127) {
+        if (qGray(color(KSvg::Theme::BackgroundColor).rgb()) < 127) {
             return 0.45;
         } else {
             return 1.9;

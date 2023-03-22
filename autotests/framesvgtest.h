@@ -8,7 +8,7 @@
 
 #include <QTest>
 
-#include "plasmasvg/framesvg.h"
+#include "ksvg/framesvg.h"
 
 class FrameSvgTest : public QObject
 {
@@ -25,7 +25,7 @@ private Q_SLOTS:
     void repaintBlocked();
 
 private:
-    PlasmaSvg::FrameSvg *m_frameSvg;
+    KSvg::FrameSvg *m_frameSvg;
     QDir m_cacheDir;
 };
 

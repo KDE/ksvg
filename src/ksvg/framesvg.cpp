@@ -26,7 +26,7 @@
 #include "private/svg_p.h"
 #include "theme.h"
 
-namespace PlasmaSvg
+namespace KSvg
 {
 QHash<ThemePrivate *, QHash<uint, QWeakPointer<FrameData>>> FrameSvgPrivate::s_sharedFrames;
 
@@ -84,7 +84,7 @@ FrameSvg::EnabledBorders FrameSvg::enabledBorders() const
     return d->enabledBorders;
 }
 
-void FrameSvg::setElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location)
+void FrameSvg::setElementPrefix(KSvg::FrameSvg::LocationPrefix location)
 {
     switch (location) {
     case TopEdge:
@@ -140,7 +140,7 @@ bool FrameSvg::hasElementPrefix(const QString &prefix) const
     return hasElement(prefix % QLatin1String("-center"));
 }
 
-bool FrameSvg::hasElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location) const
+bool FrameSvg::hasElementPrefix(KSvg::FrameSvg::LocationPrefix location) const
 {
     switch (location) {
     case TopEdge:
@@ -169,7 +169,7 @@ void FrameSvg::resizeFrame(const QSizeF &size)
 
     if (size.isEmpty()) {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMASVG) << "Invalid size" << size;
+        // qCDebug(LOG_KSVG) << "Invalid size" << size;
 #endif
         return;
     }
@@ -213,7 +213,7 @@ qreal FrameSvg::marginSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->rightMargin;
 
-    // PlasmaSvg::BottomMargin
+    // KSvg::BottomMargin
     default:
         return d->frame->bottomMargin;
     }
@@ -239,7 +239,7 @@ qreal FrameSvg::insetSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->insetRightMargin;
 
-    // PlasmaSvg::BottomMargin
+    // KSvg::BottomMargin
     default:
         return d->frame->insetBottomMargin;
     }
@@ -265,7 +265,7 @@ qreal FrameSvg::fixedMarginSize(const FrameSvg::MarginEdge edge) const
     case FrameSvg::RightMargin:
         return d->frame->fixedRightMargin;
 
-    // PlasmaSvg::BottomMargin
+    // KSvg::BottomMargin
     default:
         return d->frame->fixedBottomMargin;
     }
@@ -590,17 +590,17 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
 
 void FrameSvgPrivate::generateFrameBackground(const QSharedPointer<FrameData> &frame)
 {
-    // qCDebug(LOG_PLASMASVG) << "generating background";
+    // qCDebug(LOG_KSVG) << "generating background";
     const QSize size = frameSize(frame).toSize() * q->devicePixelRatio();
 
     if (!size.isValid()) {
 #ifndef NDEBUG
-        // qCDebug(LOG_PLASMASVG) << "Invalid frame size" << size;
+        // qCDebug(LOG_KSVG) << "Invalid frame size" << size;
 #endif
         return;
     }
     if (size.width() >= MAX_FRAME_SIZE || size.height() >= MAX_FRAME_SIZE) {
-        qCWarning(LOG_PLASMASVG) << "Not generating frame background for a size whose width or height is more than" << MAX_FRAME_SIZE << size;
+        qCWarning(LOG_KSVG) << "Not generating frame background for a size whose width or height is more than" << MAX_FRAME_SIZE << size;
         return;
     }
 
@@ -677,10 +677,10 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
             return;
         }
 
-        // qCDebug(LOG_PLASMASVG) << "looking for" << newKey;
+        // qCDebug(LOG_KSVG) << "looking for" << newKey;
         auto newFd = FrameSvgPrivate::s_sharedFrames[q->theme()->d].value(newKey);
         if (newFd) {
-            // qCDebug(LOG_PLASMASVG) << "FOUND IT!" << newFd->refcount;
+            // qCDebug(LOG_KSVG) << "FOUND IT!" << newFd->refcount;
             // we've found a match, use that one
             Q_ASSERT(newKey == newFd.lock()->cacheId);
             frame = newFd;
@@ -773,10 +773,7 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
     }
 }
 
-void FrameSvgPrivate::paintCorner(QPainter &p,
-                                  const QSharedPointer<FrameData> &frame,
-                                  PlasmaSvg::FrameSvg::EnabledBorders border,
-                                  const QRect &contentRect) const
+void FrameSvgPrivate::paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border, const QRect &contentRect) const
 {
     // Draw the corner only if both borders in both directions are enabled.
     if ((frame->enabledBorders & border) != border) {
@@ -816,7 +813,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
     const uint id = qHash(cacheId(frame.data(), prefixToSave));
 
-    // qCDebug(LOG_PLASMASVG)<<"Saving to cache frame"<<id;
+    // qCDebug(LOG_KSVG)<<"Saving to cache frame"<<id;
 
     q->theme()->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
 
@@ -829,7 +826,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
 void FrameSvgPrivate::updateSizes(FrameData *frame) const
 {
-    // qCDebug(LOG_PLASMASVG) << "!!!!!!!!!!!!!!!!!!!!!! updating sizes" << prefix;
+    // qCDebug(LOG_KSVG) << "!!!!!!!!!!!!!!!!!!!!!! updating sizes" << prefix;
     Q_ASSERT(frame);
 
     QSize s = q->size();

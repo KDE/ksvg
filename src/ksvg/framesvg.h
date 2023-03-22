@@ -11,9 +11,9 @@
 #include <QObject>
 #include <QPixmap>
 
-#include <plasmasvg/plasmasvg_export.h>
+#include <ksvg/ksvg_export.h>
 
-#include <plasmasvg/svg.h>
+#include <ksvg/svg.h>
 
 class QPainter;
 class QPoint;
@@ -24,7 +24,7 @@ class QSize;
 class QSizeF;
 class QMatrix;
 
-namespace PlasmaSvg
+namespace KSvg
 {
 class FrameSvgPrivate;
 
@@ -56,9 +56,9 @@ class FrameSvgPrivate;
  * @c topright will be ignored if @c top does not exist, and similarly for
  * @c bottomleft and @c bottomright.
  *
- * @see PlasmaSvg::Svg
+ * @see KSvg::Svg
  **/
-class PLASMASVG_EXPORT FrameSvg : public Svg
+class KSVG_EXPORT FrameSvg : public Svg
 {
     Q_OBJECT
 
@@ -99,12 +99,12 @@ public:
 
     /**
      * Constructs a new FrameSvg that paints the proper named subelements
-     * as borders. It may also be used as a regular PlasmaSvg::Svg object
+     * as borders. It may also be used as a regular KSvg::Svg object
      * for direct access to elements in the Svg.
      *
      * @param parent options QObject to parent this to
      *
-     * @related PlasmaSvg::Theme
+     * @related KSvg::Theme
      */
     explicit FrameSvg(QObject *parent = nullptr);
     ~FrameSvg() override;
@@ -211,7 +211,7 @@ public:
      * called successfully after setImagePath is called.
      * @param location location in the UI this frame will be drawn
      */
-    Q_INVOKABLE void setElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location);
+    Q_INVOKABLE void setElementPrefix(KSvg::FrameSvg::LocationPrefix location);
 
     /**
      * Sets the prefix for the SVG elements to be used for painting. For example,
@@ -246,7 +246,7 @@ public:
      * to draw a frame.
      * @param location the given prefix we want to check if drawable
      */
-    Q_INVOKABLE bool hasElementPrefix(PlasmaSvg::FrameSvg::LocationPrefix location) const;
+    Q_INVOKABLE bool hasElementPrefix(KSvg::FrameSvg::LocationPrefix location) const;
 
     /**
      * Returns the prefix for SVG elements of the FrameSvg (including a '-' at the end if not empty)

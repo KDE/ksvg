@@ -9,7 +9,7 @@
 
 #include "framesvg.h"
 
-namespace PlasmaSvg
+namespace KSvg
 {
 namespace FrameSvgHelpers
 {
@@ -45,7 +45,7 @@ QString borderToElementId(FrameSvg::EnabledBorders borders)
 /**
  * @returns the suggested geometry for the @p borders given a @p fullSize frame size and a @p contentRect
  */
-QRect sectionRect(PlasmaSvg::FrameSvg::EnabledBorders borders, const QRect &contentRect, const QSize &fullSize)
+QRect sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRect &contentRect, const QSize &fullSize)
 {
     // don't use QRect corner methods here, they have semantics that might come as unexpected.
     // prefer constructing the points explicitly. e.g. from QRect::topRight docs:

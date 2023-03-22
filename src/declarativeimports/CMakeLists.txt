@@ -23,7 +23,7 @@ target_link_libraries(corebindingsplugin
         KF6::IconThemes
         Qt6::Svg
         KF6::WindowSystem
-        KF6::PlasmaSvg
+        KF6::Svg
 )
 
 if(HAVE_X11)

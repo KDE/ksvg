@@ -14,12 +14,12 @@ find_package(Qt6Widgets REQUIRED)
 # add_definitions( -DKDESRCDIR=${CMAKE_CURRENT_SOURCE_DIR} )
 
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-    set(PLASMASVG_NO_PACKAGE_EXTRADATA TRUE)
+    set(KSVG_NO_PACKAGE_EXTRADATA TRUE)
 endif()
 
-MACRO(PLASMASVG_UNIT_TESTS)
+MACRO(KSVG_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               set(libs Qt6::Qml Qt6::Test KF6::PlasmaSvg
+               set(libs Qt6::Qml Qt6::Test KF6::Svg
                         KF6::Archive KF6::CoreAddons KF6::ConfigGui KF6::IconThemes)
                if(QT_QTOPENGL_FOUND)
                    list(APPEND libs Qt6::OpenGL)
@@ -29,9 +29,9 @@ MACRO(PLASMASVG_UNIT_TESTS)
                             NAME_PREFIX "plasmasvg-")
                target_include_directories(${_testname} PRIVATE )
        ENDFOREACH(_testname)
-ENDMACRO(PLASMASVG_UNIT_TESTS)
+ENDMACRO(KSVG_UNIT_TESTS)
 
-PLASMASVG_UNIT_TESTS(
+KSVG_UNIT_TESTS(
     framesvgtest
 )
 

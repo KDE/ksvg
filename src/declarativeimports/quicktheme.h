@@ -8,27 +8,27 @@
 #ifndef PLASMA_QUICKTHEME_H
 #define PLASMA_QUICKTHEME_H
 
-#include <plasmasvg/theme.h>
+#include <ksvg/theme.h>
 
 #include <QColor>
 
-namespace PlasmaSvg
+namespace KSvg
 {
 /**
- * @class QuickTheme plasmasvg/theme.h <Plasma/Theme>
+ * @class QuickTheme ksvg/theme.h <Plasma/Theme>
  *
  * @short Interface to the Plasma theme
  *
  *
- * PlasmaSvg::Theme provides access to a common and standardized set of graphic
+ * KSvg::Theme provides access to a common and standardized set of graphic
  * elements stored in SVG format. This allows artists to create single packages
  * of SVGs that will affect the look and feel of all workspace components.
  *
- * PlasmaSvg::Svg uses PlasmaSvg::Theme internally to locate and load the appropriate
- * SVG data. Alternatively, PlasmaSvg::Theme can be used directly to retrieve
+ * KSvg::Svg uses KSvg::Theme internally to locate and load the appropriate
+ * SVG data. Alternatively, KSvg::Theme can be used directly to retrieve
  * file system paths to SVGs by name.
  */
-class QuickTheme : public PlasmaSvg::Theme
+class QuickTheme : public KSvg::Theme
 {
     Q_OBJECT
 

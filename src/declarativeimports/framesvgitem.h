@@ -10,9 +10,9 @@
 #include <QQmlParserStatus>
 #include <QQuickItem>
 
-#include <PlasmaSvg/FrameSvg>
+#include <KSvg/FrameSvg>
 
-namespace PlasmaSvg
+namespace KSvg
 {
 class FrameSvg;
 
@@ -56,7 +56,7 @@ class FrameSvgItemMargins : public QObject
     Q_PROPERTY(qreal vertical READ vertical NOTIFY marginsChanged)
 
 public:
-    FrameSvgItemMargins(PlasmaSvg::FrameSvg *frameSvg, QObject *parent = nullptr);
+    FrameSvgItemMargins(KSvg::FrameSvg *frameSvg, QObject *parent = nullptr);
 
     qreal left() const;
     qreal top() const;
@@ -149,7 +149,7 @@ class FrameSvgItem : public QQuickItem
      *  LeftBorder
      *  RightBorder
      */
-    Q_PROPERTY(PlasmaSvg::FrameSvg::EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders NOTIFY enabledBordersChanged)
+    Q_PROPERTY(KSvg::FrameSvg::EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders NOTIFY enabledBordersChanged)
 
     /**
      * Holds whether the current svg is present in the current theme and NO fallback is involved
@@ -163,7 +163,7 @@ class FrameSvgItem : public QQuickItem
      * make them use ButtonTextColor/ButtonBackgroundColor
      * or ViewTextColor/ViewBackgroundColor, ComplementaryTextColor etc.
      */
-    Q_PROPERTY(PlasmaSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
+    Q_PROPERTY(KSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
 
     /**
      * Sets the image in a selected status.
@@ -171,10 +171,10 @@ class FrameSvgItem : public QQuickItem
      * the TextColor will become HighlightedText color and BackgroundColor
      * will become HighlightColor, making the svg graphics (for instance an icon)
      * will look correct together selected text
-     * @see PlasmaSvg::Svg::status
+     * @see KSvg::Svg::status
      * @since 5.23
      */
-    Q_PROPERTY(PlasmaSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
     /**
      * The mask that tightly contains the painted areas
@@ -225,20 +225,20 @@ public:
 
     QString usedPrefix() const;
 
-    void setEnabledBorders(const PlasmaSvg::FrameSvg::EnabledBorders borders);
-    PlasmaSvg::FrameSvg::EnabledBorders enabledBorders() const;
+    void setEnabledBorders(const KSvg::FrameSvg::EnabledBorders borders);
+    KSvg::FrameSvg::EnabledBorders enabledBorders() const;
 
     FrameSvgItemMargins *margins();
     FrameSvgItemMargins *fixedMargins();
     FrameSvgItemMargins *inset();
 
-    void setColorGroup(PlasmaSvg::Theme::ColorGroup group);
-    PlasmaSvg::Theme::ColorGroup colorGroup() const;
+    void setColorGroup(KSvg::Theme::ColorGroup group);
+    KSvg::Theme::ColorGroup colorGroup() const;
 
     bool fromCurrentTheme() const;
 
-    void setStatus(PlasmaSvg::Svg::Status status);
-    PlasmaSvg::Svg::Status status() const;
+    void setStatus(KSvg::Svg::Status status);
+    KSvg::Svg::Status status() const;
     int minimumDrawingHeight() const;
     int minimumDrawingWidth() const;
 
@@ -249,7 +249,7 @@ public:
     /**
      * Only to be used from inside this library, is not intended to be invokable
      */
-    PlasmaSvg::FrameSvg *frameSvg() const;
+    KSvg::FrameSvg *frameSvg() const;
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
 
@@ -279,7 +279,7 @@ private Q_SLOTS:
 private:
     void applyPrefixes();
 
-    PlasmaSvg::FrameSvg *m_frameSvg;
+    KSvg::FrameSvg *m_frameSvg;
     FrameSvgItemMargins *m_margins;
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;

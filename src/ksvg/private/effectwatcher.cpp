@@ -10,7 +10,7 @@
 
 #include <private/qtx11extras_p.h>
 
-namespace PlasmaSvg
+namespace KSvg
 {
 EffectWatcher::EffectWatcher(const QString &property, QObject *parent)
     : QObject(parent)

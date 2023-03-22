@@ -1,9 +1,9 @@
 /** @page libplasma Plasma framework
 
 Plasma framework is the core of the Plasma desktop.  It provides a framework of graphical
-widgets (PlasmaSvg::Applet) that can be organised into managed groupings
-(PlasmaSvg::Containment), such as a desktop or panel.) and a corresponding service interaction
-layer (PlasmaSvg::Service) to make implementing widgets easier.
+widgets (KSvg::Applet) that can be organised into managed groupings
+(KSvg::Containment), such as a desktop or panel.) and a corresponding service interaction
+layer (KSvg::Service) to make implementing widgets easier.
 
 The <a href="https://doc.qt.io/qt-5/qtquick-index.html">Qt Quick
 framework</a> and set of <a href="https://api.kde.org/frameworks">KDE Frameworks</a>
@@ -23,12 +23,12 @@ as possible, including providing scripting support.
 
 Other important classes are:
 
- - PlasmaSvg::Corona: the canvas that containments are placed on
- - PlasmaSvg::View: a QWidget for displaying a containment
- - PlasmaSvg::Theme: provides theming support
- - PlasmaSvg::Package: provides descriptions of packages containing plugins
+ - KSvg::Corona: the canvas that containments are placed on
+ - KSvg::View: a QWidget for displaying a containment
+ - KSvg::Theme: provides theming support
+ - KSvg::Package: provides descriptions of packages containing plugins
    for libplasma
- - PlasmaSvg::Svg and PlasmaSvg::FrameSvg: provides themable, cached SVGs
+ - KSvg::Svg and KSvg::FrameSvg: provides themable, cached SVGs
 
 
 The

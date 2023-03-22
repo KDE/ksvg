@@ -3,33 +3,33 @@
 <h2>import org.kde.plasma.core 2.0</h2>
 
 Uncreatable Types:
-- \link PlasmaSvg::Types Types \endlink
+- \link KSvg::Types Types \endlink
 - \link Units Units \endlink
-- \link PlasmaSvg::QuickTheme Theme \endlink
+- \link KSvg::QuickTheme Theme \endlink
 
 Types:
-- \link PlasmaSvg::Svg Svg \endlink
-- \link PlasmaSvg::FrameSvg FrameSvg \endlink
-- \link PlasmaSvg::SvgItem SvgItem \endlink
-- \link PlasmaSvg::FrameSvgItem FrameSvgItem \endlink
+- \link KSvg::Svg Svg \endlink
+- \link KSvg::FrameSvg FrameSvg \endlink
+- \link KSvg::SvgItem SvgItem \endlink
+- \link KSvg::FrameSvgItem FrameSvgItem \endlink
 
 - \link ColorScope ColorScope \endlink
 
-- \link PlasmaSvg::DataSource DataSource \endlink
-- \link PlasmaSvg::DataModel DataModel \endlink
-- \link PlasmaSvg::SortFilterModel SortFilterModel \endlink
+- \link KSvg::DataSource DataSource \endlink
+- \link KSvg::DataModel DataModel \endlink
+- \link KSvg::SortFilterModel SortFilterModel \endlink
 
 - \link PlasmaQuick::Dialog Dialog \endlink
 - \link ToolTip ToolTipArea \endlink
 
-- \link PlasmaSvg::Service Service \endlink
-- \link PlasmaSvg::ServiceJob ServiceJob \endlink
+- \link KSvg::Service Service \endlink
+- \link KSvg::ServiceJob ServiceJob \endlink
 
-- \link PlasmaSvg::ServiceOperationStatus ServiceOperationStatus \endlink
+- \link KSvg::ServiceOperationStatus ServiceOperationStatus \endlink
 
 - \link IconItem IconItem \endlink
 
-- \link PlasmaSvg::WindowThumbnail WindowThumbnail \endlink
+- \link KSvg::WindowThumbnail WindowThumbnail \endlink
 
 */
 

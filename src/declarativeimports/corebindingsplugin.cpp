@@ -11,8 +11,8 @@
 
 #include <QQmlContext>
 
-#include <plasmasvg/framesvg.h>
-#include <plasmasvg/svg.h>
+#include <ksvg/framesvg.h>
+#include <ksvg/svg.h>
 
 #include "framesvgitem.h"
 #include "quicktheme.h"
@@ -33,13 +33,13 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QByteArray("org.kde.plasmasvg"));
 
-    qmlRegisterType<PlasmaSvg::Svg>(uri, 2, 0, "Svg");
-    qmlRegisterType<PlasmaSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
-    qmlRegisterType<PlasmaSvg::SvgItem>(uri, 2, 0, "SvgItem");
-    qmlRegisterType<PlasmaSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
+    qmlRegisterType<KSvg::Svg>(uri, 2, 0, "Svg");
+    qmlRegisterType<KSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
+    qmlRegisterType<KSvg::SvgItem>(uri, 2, 0, "SvgItem");
+    qmlRegisterType<KSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
 
     // qmlRegisterType<ThemeProxy>(uri, 2, 0, "Theme");
-    qmlRegisterSingletonType<PlasmaSvg::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
-        return new PlasmaSvg::QuickTheme(engine);
+    qmlRegisterSingletonType<KSvg::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
+        return new KSvg::QuickTheme(engine);
     });
 }

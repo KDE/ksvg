@@ -26,7 +26,7 @@
 
 #include "libplasma-theme-global.h"
 
-namespace PlasmaSvg
+namespace KSvg
 {
 class Theme;
 
@@ -65,8 +65,8 @@ public:
     void processAdaptiveTransparencySettings(const KSharedConfigPtr &metadata);
     void processBlurBehindSettings(const KSharedConfigPtr &metadata);
 
-    const QString processStyleSheet(const QString &css, PlasmaSvg::Svg::Status status);
-    const QString svgStyleSheet(PlasmaSvg::Theme::ColorGroup group, PlasmaSvg::Svg::Status status);
+    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
+    const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
     QColor color(Theme::ColorRole role, Theme::ColorGroup group = Theme::NormalColorGroup) const;
 
 public Q_SLOTS:

@@ -13,7 +13,7 @@
 
 #include <xcb/xcb.h>
 
-namespace PlasmaSvg
+namespace KSvg
 {
 class EffectWatcher : public QObject, public QAbstractNativeEventFilter
 {

@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 
 set(KF_VERSION "5.240.0") # handled by release scripts
 set(KF_DEP_VERSION "5.240.0") # handled by release scripts
-project(PlasmaSvg VERSION ${KF_VERSION})
+project(KSvg VERSION ${KF_VERSION})
 
 # ECM setup
 include(FeatureSummary)
@@ -35,7 +35,7 @@ add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt 
 ecm_setup_version(PROJECT
                   VARIABLE_PREFIX PLASMA
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/plasma_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfigVersion.cmake"
+                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfigVersion.cmake"
                   SOVERSION 6)
 
 ################# now find all used packages #################
@@ -142,7 +142,7 @@ endif()
 
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 
-set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6PlasmaSvg")
+set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6Svg")
 
 if (BUILD_QCH)
     ecm_install_qch_export(
@@ -155,22 +155,22 @@ if (BUILD_QCH)
 endif()
 
 configure_package_config_file(
-  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaSvgConfig.cmake.in"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfig.cmake"
+  "${CMAKE_CURRENT_SOURCE_DIR}/KF6SvgConfig.cmake.in"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfig.cmake"
   INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
   PATH_VARS  CMAKE_INSTALL_PREFIX
 )
 
 install(FILES
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfig.cmake"
-  "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfigVersion.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfig.cmake"
+  "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfigVersion.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
 
-install(EXPORT KF6PlasmaSvgTargets
+install(EXPORT KF6SvgTargets
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KF6PlasmaSvgTargets.cmake
+        FILE KF6SvgTargets.cmake
         NAMESPACE KF6::
         COMPONENT Devel)
 

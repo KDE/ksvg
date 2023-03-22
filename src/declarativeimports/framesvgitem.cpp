@@ -17,12 +17,12 @@
 #include <QDebug>
 #include <QPainter>
 
-#include <plasmasvg/private/framesvg_helpers.h>
-#include <plasmasvg/private/framesvg_p.h>
+#include <ksvg/private/framesvg_helpers.h>
+#include <ksvg/private/framesvg_p.h>
 
 #include <cmath> //floor()
 
-namespace PlasmaSvg
+namespace KSvg
 {
 Q_GLOBAL_STATIC(ImageTexturesCache, s_cache)
 
@@ -166,7 +166,7 @@ private:
     FitMode m_fitMode;
 };
 
-FrameSvgItemMargins::FrameSvgItemMargins(PlasmaSvg::FrameSvg *frameSvg, QObject *parent)
+FrameSvgItemMargins::FrameSvgItemMargins(KSvg::FrameSvg *frameSvg, QObject *parent)
     : QObject(parent)
     , m_frameSvg(frameSvg)
     , m_fixed(false)
@@ -283,7 +283,7 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     , m_sizeChanged(false)
     , m_fastPath(true)
 {
-    m_frameSvg = new PlasmaSvg::FrameSvg(this);
+    m_frameSvg = new KSvg::FrameSvg(this);
     setFlag(ItemHasContents, true);
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
     connect(m_frameSvg, &Svg::fromCurrentThemeChanged, this, &FrameSvgItem::fromCurrentThemeChanged);
@@ -332,11 +332,11 @@ void FrameSvgItem::setImagePath(const QString &path)
     m_frameSvg->setImagePath(path);
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
     }
 
     Q_EMIT imagePathChanged();
@@ -377,11 +377,11 @@ void FrameSvgItem::setPrefix(const QVariant &prefixes)
     applyPrefixes();
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
     }
 
     Q_EMIT prefixChanged();
@@ -429,7 +429,7 @@ FrameSvgItemMargins *FrameSvgItem::inset()
     return m_insetMargins;
 }
 
-void FrameSvgItem::setColorGroup(PlasmaSvg::Theme::ColorGroup group)
+void FrameSvgItem::setColorGroup(KSvg::Theme::ColorGroup group)
 {
     if (m_frameSvg->colorGroup() == group) {
         return;
@@ -440,7 +440,7 @@ void FrameSvgItem::setColorGroup(PlasmaSvg::Theme::ColorGroup group)
     Q_EMIT colorGroupChanged();
 }
 
-PlasmaSvg::Theme::ColorGroup FrameSvgItem::colorGroup() const
+KSvg::Theme::ColorGroup FrameSvgItem::colorGroup() const
 {
     return m_frameSvg->colorGroup();
 }
@@ -450,17 +450,17 @@ bool FrameSvgItem::fromCurrentTheme() const
     return m_frameSvg->fromCurrentTheme();
 }
 
-void FrameSvgItem::setStatus(PlasmaSvg::Svg::Status status)
+void FrameSvgItem::setStatus(KSvg::Svg::Status status)
 {
     m_frameSvg->setStatus(status);
 }
 
-PlasmaSvg::Svg::Status FrameSvgItem::status() const
+KSvg::Svg::Status FrameSvgItem::status() const
 {
     return m_frameSvg->status();
 }
 
-void FrameSvgItem::setEnabledBorders(const PlasmaSvg::FrameSvg::EnabledBorders borders)
+void FrameSvgItem::setEnabledBorders(const KSvg::FrameSvg::EnabledBorders borders)
 {
     if (m_frameSvg->enabledBorders() == borders) {
         return;
@@ -474,7 +474,7 @@ void FrameSvgItem::setEnabledBorders(const PlasmaSvg::FrameSvg::EnabledBorders b
     update();
 }
 
-PlasmaSvg::FrameSvg::EnabledBorders FrameSvgItem::enabledBorders() const
+KSvg::FrameSvg::EnabledBorders FrameSvgItem::enabledBorders() const
 {
     return m_frameSvg->enabledBorders();
 }
@@ -535,11 +535,11 @@ void FrameSvgItem::doUpdate()
     applyPrefixes();
 
     if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::RightMargin));
+        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
     }
 
     if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(PlasmaSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(PlasmaSvg::FrameSvg::BottomMargin));
+        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
     }
 
     QString prefix = m_frameSvg->actualPrefix();
@@ -564,7 +564,7 @@ void FrameSvgItem::doUpdate()
     Q_EMIT repaintNeeded();
 }
 
-PlasmaSvg::FrameSvg *FrameSvgItem::frameSvg() const
+KSvg::FrameSvg *FrameSvgItem::frameSvg() const
 {
     return m_frameSvg;
 }
