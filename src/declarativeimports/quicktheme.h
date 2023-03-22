@@ -15,9 +15,9 @@
 namespace KSvg
 {
 /**
- * @class QuickTheme ksvg/theme.h <Plasma/Theme>
+ * @class QuickTheme ksvg/theme.h <KSvg/Theme>
  *
- * @short Interface to the Plasma theme
+ * @short Interface to the theme
  *
  *
  * KSvg::Theme provides access to a common and standardized set of graphic
