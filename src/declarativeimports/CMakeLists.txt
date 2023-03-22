@@ -15,7 +15,6 @@ target_sources(corebindingsplugin PRIVATE
     managedtexturenode.cpp
     imagetexturescache.cpp
     quicktheme.cpp
-    units.cpp
 )
 
 target_link_libraries(corebindingsplugin

@@ -286,7 +286,6 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     m_frameSvg = new PlasmaSvg::FrameSvg(this);
     setFlag(ItemHasContents, true);
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
-    connect(&Units::instance(), &Units::devicePixelRatioChanged, this, &FrameSvgItem::updateDevicePixelRatio);
     connect(m_frameSvg, &Svg::fromCurrentThemeChanged, this, &FrameSvgItem::fromCurrentThemeChanged);
     connect(m_frameSvg, &Svg::statusChanged, this, &FrameSvgItem::statusChanged);
 }
@@ -689,7 +688,8 @@ void FrameSvgItem::componentComplete()
 
 void FrameSvgItem::updateDevicePixelRatio()
 {
-    m_frameSvg->setScaleFactor(std::max<qreal>(1.0, floor(Units::instance().devicePixelRatio())));
+    // TODO: remove setScaleFactor
+    m_frameSvg->setScaleFactor(1.0);
 
     // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
     //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)

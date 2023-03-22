@@ -12,8 +12,6 @@
 
 #include <PlasmaSvg/FrameSvg>
 
-#include "units.h"
-
 namespace PlasmaSvg
 {
 class FrameSvg;

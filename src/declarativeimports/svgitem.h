@@ -10,8 +10,6 @@
 #include <QImage>
 #include <QQuickItem>
 
-#include "units.h"
-
 namespace PlasmaSvg
 {
 class Svg;

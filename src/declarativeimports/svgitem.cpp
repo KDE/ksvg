@@ -25,7 +25,6 @@ SvgItem::SvgItem(QQuickItem *parent)
     , m_textureChanged(false)
 {
     setFlag(QQuickItem::ItemHasContents, true);
-    connect(&Units::instance(), &Units::devicePixelRatioChanged, this, &SvgItem::updateDevicePixelRatio);
 }
 
 SvgItem::~SvgItem()
@@ -166,7 +165,8 @@ void SvgItem::updateDevicePixelRatio()
         } else {
             m_svg.data()->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(qApp->devicePixelRatio())));
         }
-        m_svg.data()->setScaleFactor(qMax<qreal>(1.0, Units::instance().devicePixelRatio()));
+        // TODO: remove scalefactor
+        m_svg.data()->setScaleFactor(1.0);
     }
 }
 

@@ -26,25 +26,12 @@ void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
 
-    QQmlContext *context = engine->rootContext();
-
-    PlasmaSvg::QuickTheme *theme = new PlasmaSvg::QuickTheme(engine);
-
-    if (!qEnvironmentVariableIntValue("PLASMA_NO_CONTEXTPROPERTIES")) {
-        context->setContextProperty(QStringLiteral("theme"), theme);
-        context->setContextProperty(QStringLiteral("units"), &Units::instance());
-    }
 
 }
 
 void CoreBindingsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QByteArray("org.kde.plasmasvg"));
-
-    qmlRegisterSingletonType<Units>(uri, 2, 0, "Units", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
-        engine->setObjectOwnership(&Units::instance(), QQmlEngine::CppOwnership);
-        return &Units::instance();
-    });
 
     qmlRegisterType<PlasmaSvg::Svg>(uri, 2, 0, "Svg");
     qmlRegisterType<PlasmaSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
