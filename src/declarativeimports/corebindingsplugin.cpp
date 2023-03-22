@@ -39,7 +39,7 @@ void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 
 void CoreBindingsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QByteArray("org.kde.plasma.core"));
+    Q_ASSERT(uri == QByteArray("org.kde.plasmasvg"));
 
     qmlRegisterSingletonType<Units>(uri, 2, 0, "Units", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
         engine->setObjectOwnership(&Units::instance(), QQmlEngine::CppOwnership);
