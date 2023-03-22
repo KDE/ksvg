@@ -151,8 +151,7 @@ bool SharedSvgRenderer::load(const QByteArray &contents, const QString &styleShe
 SvgRectsCache::SvgRectsCache(QObject *parent)
     : QObject(parent)
 {
-    const QString svgElementsFile =
-        QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + QStringLiteral("plasma-svgelements");
+    const QString svgElementsFile = QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + QStringLiteral("ksvg-elements");
     m_svgElementsCache = KSharedConfig::openConfig(svgElementsFile, KConfig::SimpleConfig);
 
     m_configSyncTimer = new QTimer(this);
@@ -1201,7 +1200,7 @@ Svg::Status Svg::status() const
     return d->status;
 }
 
-} // Plasma namespace
+} // KSvg namespace
 
 #include "moc_svg.cpp"
 #include "private/moc_svg_p.cpp"

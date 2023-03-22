@@ -91,7 +91,7 @@ private:
  *
  * @short Provides an SVG with borders.
  *
- * It is exposed as org.kde.plasma.core.FrameSvgItem
+ * It is exposed as org.kde.ksvg.FrameSvgItem
  */
 class FrameSvgItem : public QQuickItem
 {

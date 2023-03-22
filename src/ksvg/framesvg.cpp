@@ -1009,4 +1009,4 @@ void FrameSvg::setRepaintBlocked(bool blocked)
     }
 }
 
-} // Plasma namespace
+} // KSvg namespace

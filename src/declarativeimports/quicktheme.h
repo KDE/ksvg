@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_QUICKTHEME_H
-#define PLASMA_QUICKTHEME_H
+#ifndef KSVG_QUICKTHEME_H
+#define KSVG_QUICKTHEME_H
 
 #include <ksvg/theme.h>
 
@@ -340,6 +340,6 @@ Q_SIGNALS:
     void themeChangedProxy();
 };
 
-} // Plasma namespace
+} // KSvg namespace
 
 #endif // multiple inclusion guard

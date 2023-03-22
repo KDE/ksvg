@@ -1,40 +1,16 @@
-/** @page libplasma Plasma framework
+/** @page KSvg framework
 
-Plasma framework is the core of the Plasma desktop.  It provides a framework of graphical
-widgets (KSvg::Applet) that can be organised into managed groupings
-(KSvg::Containment), such as a desktop or panel.) and a corresponding service interaction
-layer (KSvg::Service) to make implementing widgets easier.
+The KSvg framework introduces a series of apis to render SVG based graphics both with a QPainter-based api and and accelerated QtQuick component set.
 
 The <a href="https://doc.qt.io/qt-5/qtquick-index.html">Qt Quick
 framework</a> and set of <a href="https://api.kde.org/frameworks">KDE Frameworks</a>
-provide the underpinning for Plasma framework.  As a result, it should
+provide the underpinning for KSvg framework.  As a result, it should
 work anywhere that Qt does.
 
-Although Plasma framework is developed for the use of the Plasma desktop shell,
-currently known as Plasma 5, it is general enough to be useful in other applications.
-<a href="https://amarok.kde.org">Amarok</a> is using it for its context
-view, allowing for pluggable widgets to display and interact with the music
-collection, such as "current track" and "tag cloud" widgets.
+Important classes are:
 
-Plasma framework itself only provides a framework, and the widgets, containments,
-data engines are all implemented as plugins (using C++, for widgets QML is prefferd).
-However, the framework is designed to make implementing these plugins as easy
-as possible, including providing scripting support.
-
-Other important classes are:
-
- - KSvg::Corona: the canvas that containments are placed on
- - KSvg::View: a QWidget for displaying a containment
- - KSvg::Theme: provides theming support
- - KSvg::Package: provides descriptions of packages containing plugins
-   for libplasma
  - KSvg::Svg and KSvg::FrameSvg: provides themable, cached SVGs
 
-
-The
-<a href="https://techbase.kde.org/Development/Tutorials/Plasma5">Plasma tutorials</a>
-on TechBase provide a good introduction to writing plugins, such as widgets and
-data engines, for libplasma-based applications.
 
 @authors
 Aaron Seigo \<aseigo@kde.org\><br>
@@ -75,7 +51,7 @@ Marco Martin \<notmart@gmail.com\>
 
 */
 
-// DOXYGEN_SET_PROJECT_NAME = Plasma
+// DOXYGEN_SET_PROJECT_NAME = KSvg
 // DOXYGEN_SET_RECURSIVE = YES
 // DOXYGEN_EXCLUDE_PATTERNS = *_p.h */private/* */tests/*
 // vim:ts=4:sw=4:expandtab:filetype=doxygen

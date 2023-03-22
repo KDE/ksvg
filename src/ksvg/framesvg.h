@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMASVG_FRAMESVG_H
-#define PLASMASVG_FRAMESVG_H
+#ifndef KSVG_FRAMESVG_H
+#define KSVG_FRAMESVG_H
 
 #include <QObject>
 #include <QPixmap>
@@ -29,7 +29,7 @@ namespace KSvg
 class FrameSvgPrivate;
 
 /**
- * @class FrameSvg plasma/framesvg.h <Plasma/FrameSvg>
+ * @class FrameSvg ksvg/framesvg.h <KSvg/FrameSvg>
  *
  * @short Provides an SVG with borders.
  *
@@ -353,6 +353,6 @@ private:
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FrameSvg::EnabledBorders)
 
-} // Plasma namespace
+} // KSvg namespace
 
 #endif // multiple inclusion guard

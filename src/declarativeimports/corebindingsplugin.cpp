@@ -31,7 +31,7 @@ void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 
 void CoreBindingsPlugin::registerTypes(const char *uri)
 {
-    Q_ASSERT(uri == QByteArray("org.kde.plasmasvg"));
+    Q_ASSERT(uri == QByteArray("org.kde.ksvg"));
 
     qmlRegisterType<KSvg::Svg>(uri, 2, 0, "Svg");
     qmlRegisterType<KSvg::FrameSvg>(uri, 2, 0, "FrameSvg");

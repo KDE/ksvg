@@ -42,7 +42,7 @@ using QSP = QStandardPaths;
 
 KSharedConfig::Ptr configForTheme(const QString &theme)
 {
-    const QString baseName = QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme;
+    const QString baseName = QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme;
     QString configPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/plasmarc"));
     if (!configPath.isEmpty()) {
         return KSharedConfig::openConfig(configPath, KConfig::SimpleConfig);
@@ -54,9 +54,9 @@ KSharedConfig::Ptr configForTheme(const QString &theme)
 KPluginMetaData metaDataForTheme(const QString &theme)
 {
     const QString packageBasePath =
-        QSP::locate(QSP::GenericDataLocation, QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme, QSP::LocateDirectory);
+        QSP::locate(QSP::GenericDataLocation, QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme, QSP::LocateDirectory);
     if (packageBasePath.isEmpty()) {
-        qWarning(LOG_KSVG) << "Could not locate plasma theme" << theme << "in" << PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/"
+        qWarning(LOG_KSVG) << "Could not locate plasma theme" << theme << "in" << KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/"
                            << "using search path" << QSP::standardLocations(QSP::GenericDataLocation);
         return {};
     }
@@ -292,7 +292,7 @@ void ThemePrivate::onAppExitCleanup()
 
 QString ThemePrivate::imagePath(const QString &theme, const QString &type, const QString &image)
 {
-    QString subdir = QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % type % image;
+    QString subdir = QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % type % image;
     return QStandardPaths::locate(QStandardPaths::GenericDataLocation, subdir);
 }
 
@@ -858,7 +858,7 @@ void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings
     // load the color scheme config
     const QString colorsFile = realTheme
         ? QStandardPaths::locate(QStandardPaths::GenericDataLocation,
-                                 QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % QLatin1String("/colors"))
+                                 QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % QLatin1String("/colors"))
         : QString();
 
     // qCDebug(LOG_KSVG) << "we're going for..." << colorsFile << "*******************";
@@ -877,7 +877,7 @@ void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
     palette = KColorScheme::createApplicationPalette(colors);
-    const QString wallpaperPath = QLatin1String(PLASMA_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % QLatin1String("/wallpapers/");
+    const QString wallpaperPath = QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % QLatin1String("/wallpapers/");
     hasWallpapers = !QStandardPaths::locate(QStandardPaths::GenericDataLocation, wallpaperPath, QStandardPaths::LocateDirectory).isEmpty();
 
     // load the wallpaper settings, if any

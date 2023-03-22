@@ -1,4 +1,3 @@
-add_subdirectory(desktoptheme)
 add_subdirectory(ksvg)
 add_subdirectory(declarativeimports)
 

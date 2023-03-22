@@ -5,7 +5,7 @@
 # <visibility-layer>/<C++ namespace>/class header files
 set(KSVG_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/Svg")
 
-configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-plasma.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-plasma.h)
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/config-ksvg.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-ksvg.h)
 
 add_library(KF6Svg)
 add_library(KF6::Svg ALIAS KF6Svg)

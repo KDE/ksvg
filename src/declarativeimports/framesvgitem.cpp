@@ -743,4 +743,4 @@ void FrameSvgItem::itemChange(QQuickItem::ItemChange change, const QQuickItem::I
     QQuickItem::itemChange(change, value);
 }
 
-} // Plasma namespace
+} // KSvg namespace

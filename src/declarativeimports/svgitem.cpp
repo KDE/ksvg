@@ -197,4 +197,4 @@ void SvgItem::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometr
     QQuickItem::geometryChange(newGeometry, oldGeometry);
 }
 
-} // Plasma namespace
+} // KSvg namespace

@@ -28,7 +28,7 @@ class FrameSvgPrivate;
 class SvgPrivate;
 
 /**
- * @class Svg plasma/svg.h <Plasma/Svg>
+ * @class Svg ksvg/svg.h <KSvg/Svg>
  *
  * @short A theme aware image-centric SVG class
  *
@@ -331,7 +331,7 @@ public:
     /**
      * Set the SVG file to render.
      *
-     * Relative paths are looked for in the current Plasma theme,
+     * Relative paths are looked for in the current Svg theme,
      * and should not include the file extension (.svg and .svgz
      * files will be searched for).  See Theme::imagePath().
      *
@@ -392,7 +392,7 @@ public:
 
     /**
      * Sets whether the Svg uses the global system theme for its colors or
-     * the Plasma theme. Default is False.
+     * the Svg theme. Default is False.
      *
      * @since 5.16
      */
@@ -500,6 +500,6 @@ private:
     friend class FrameSvg;
 };
 
-} // Plasma namespace
+} // KSvg namespace
 
 #endif // multiple inclusion guard

@@ -19,7 +19,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include <config-plasma.h>
+#include <config-ksvg.h>
 #if HAVE_X11
 #include "private/effectwatcher_p.h"
 #endif

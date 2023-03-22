@@ -6,7 +6,7 @@ endif()
 
 configure_file(config-x11.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/config-x11.h)
 
-ecm_add_qml_module(corebindingsplugin URI "org.kde.plasmasvg")
+ecm_add_qml_module(corebindingsplugin URI "org.kde.ksvg")
 
 target_sources(corebindingsplugin PRIVATE
     corebindingsplugin.cpp
