@@ -59,13 +59,11 @@ target_link_libraries(KF6PlasmaSvg
 PUBLIC
     Qt6::Gui
     KF6::ConfigCore
-    KF6::CoreAddons
 PRIVATE
     Qt6::Svg
     KF6::Archive
     KF6::GuiAddons #kimagecache
     KF6::ConfigWidgets
-    KF6::I18n
     KF6::WindowSystem #compositingActive
     KF6::IconThemes
     ${PLASMASVG_EXTRA_LIBS}

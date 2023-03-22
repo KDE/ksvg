@@ -20,7 +20,7 @@ endif()
 MACRO(PLASMASVG_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                set(libs Qt6::Qml Qt6::Test KF6::PlasmaSvg
-                        KF6::Archive KF6::CoreAddons KF6::ConfigGui KF6::I18n KF6::IconThemes)
+                        KF6::Archive KF6::CoreAddons KF6::ConfigGui KF6::IconThemes)
                if(QT_QTOPENGL_FOUND)
                    list(APPEND libs Qt6::OpenGL)
                endif()

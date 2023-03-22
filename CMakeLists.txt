@@ -42,19 +42,15 @@ ecm_setup_version(PROJECT
 
 set (REQUIRED_QT_VERSION 6.4.0)
 
-find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Quick Gui Qml Svg QuickControls2 DBus)
+find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Quick Gui Qml Svg QuickControls2)
 
 find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
-        Archive
-        Config
-        ConfigWidgets
-        CoreAddons
-        GlobalAccel
-        GuiAddons
-        I18n
-        IconThemes
-        WindowSystem
+        Archive        # svgz
+        ConfigWidgets  # KColorScheme
+        GuiAddons      # KImageCache
+        IconThemes     # KIconEffect
+        WindowSystem   # loading files from "translucent" when composite and blur effect in there
         Kirigami2
 )
 
@@ -122,8 +118,6 @@ ecm_set_disabled_deprecation_versions(
 
 #add_definitions(-Wno-deprecated)
 
-include(KF6PlasmaSvgMacros.cmake)
-
 #########################################################################
 
 
@@ -138,8 +132,6 @@ endif()
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ################# list the subdirectories #################
-add_definitions(-DTRANSLATION_DOMAIN=\"libplasma5\")
-ki18n_install(po)
 add_subdirectory(src)
 
 if (BUILD_TESTING)
@@ -172,7 +164,6 @@ configure_package_config_file(
 install(FILES
   "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfig.cmake"
   "${CMAKE_CURRENT_BINARY_DIR}/KF6PlasmaSvgConfigVersion.cmake"
-  "${CMAKE_CURRENT_SOURCE_DIR}/KF6PlasmaSvgMacros.cmake"
   DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
   COMPONENT Devel
 )
