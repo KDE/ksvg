@@ -90,7 +90,7 @@ void Theme::setBasePath(const QString &basePath)
 
     d->basePath = basePath;
 
-    Q_EMIT themeChanged();
+    d->scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
 }
 
 QString Theme::basePath() const
@@ -101,6 +101,7 @@ QString Theme::basePath() const
 void Theme::setSelectors(const QStringList &selectors)
 {
     d->selectors = selectors;
+    d->scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
 }
 
 QStringList Theme::selectors() const
