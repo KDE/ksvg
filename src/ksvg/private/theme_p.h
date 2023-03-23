@@ -64,8 +64,6 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void themeChanged();
-    void defaultFontChanged();
-    void smallestFontChanged();
     void applicationPaletteChange();
 
 public:

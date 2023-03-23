@@ -43,10 +43,6 @@ class KSVG_EXPORT Theme : public QObject
     Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY themeChanged)
 
-    // fonts
-    Q_PROPERTY(QFont defaultFont READ defaultFont NOTIFY defaultFontChanged)
-    Q_PROPERTY(QFont smallestFont READ smallestFont NOTIFY smallestFontChanged)
-
     // stylesheet
     Q_PROPERTY(QString styleSheet READ styleSheet NOTIFY themeChanged)
 
@@ -278,38 +274,6 @@ public:
      */
     KPluginMetaData metadata() const;
 
-    /**
-     * @return The default application font
-     * @since 5.0
-     */
-    QFont defaultFont() const;
-
-    /**
-     * @return The smallest readable font
-     * @since 5.0
-     */
-    QFont smallestFont() const;
-
-    /**
-     * Returns the size of the letter "M" as rendered on the screen with the given font.
-     * This values gives you a base size that:
-     * * scales dependent on the DPI of the screen
-     * * Scales with the default font as set by the user
-     * You can use it like this in QML Items:
-     * \code
-     * Item {
-     *     width: PlasmaCore.Theme.mSize(PlasmaCore.Theme.defaultFont).height
-     *     height: width
-     * }
-     * \endcode
-     * This allows you to dynamically scale elements of your user interface with different font settings and
-     * different physical outputs (with different DPI).
-     * @param font The font to use for the metrics.
-     * @return The size of the letter "M" as rendered on the screen with the given font.
-     * @since 5.0
-     */
-    Q_INVOKABLE QSizeF mSize(const QFont &font = QGuiApplication::font()) const;
-
     QString backgroundPath(const QString &image) const;
 
     static QPalette globalPalette();
@@ -324,11 +288,6 @@ Q_SIGNALS:
      * Svg::repaintNeeded() at an appropriate time.
      */
     void themeChanged();
-
-    /** Notifier for change of defaultFont property */
-    void defaultFontChanged();
-    /** Notifier for change of smallestFont property */
-    void smallestFontChanged();
 
 private:
     friend class SvgPrivate;
