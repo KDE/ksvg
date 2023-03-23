@@ -320,7 +320,6 @@ void ThemePrivate::discardCache(CacheTypes caches)
         pixmapCache = nullptr;
     }
 
-    cachedDefaultStyleSheet = QString();
     cachedSvgStyleSheets.clear();
     cachedSelectedSvgStyleSheets.clear();
     cachedInactiveSvgStyleSheets.clear();
@@ -376,123 +375,6 @@ void ThemePrivate::notifyOfChanged()
     discardCache(cachesToDiscard);
     cachesToDiscard = NoCache;
     Q_EMIT themeChanged();
-}
-
-const QString ThemePrivate::processStyleSheet(const QString &css, KSvg::Svg::Status status)
-{
-    QString stylesheet;
-    if (css.isEmpty()) {
-        stylesheet = cachedDefaultStyleSheet;
-        if (stylesheet.isEmpty()) {
-            /* clang-format off */
-            stylesheet = QStringLiteral(
-                        "\n\
-                        body {\n\
-                            color: %textcolor;\n\
-                            generalfont-size: %fontsize;\n\
-                            font-family: %fontfamily;\n\
-                        }\n\
-                        a:active  { color: %activatedlink; }\n\
-                        a:link    { color: %link; }\n\
-                        a:visited { color: %visitedlink; }\n\
-                        a:hover   { color: %hoveredlink; text-decoration: none; }\n\
-                        ");
-            /* clang-format on */
-            stylesheet = cachedDefaultStyleSheet = processStyleSheet(stylesheet, status);
-        }
-
-        return stylesheet;
-    } else {
-        stylesheet = css;
-    }
-
-    QHash<QString, QString> elements;
-    // If you add elements here, make sure their names are sufficiently unique to not cause
-    // clashes between element keys
-    elements[QStringLiteral("%textcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : (status == Svg::Status::Inactive ? Theme::DisabledTextColor : Theme::TextColor),
-              Theme::NormalColorGroup)
-            .name();
-    elements[QStringLiteral("%backgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%highlightcolor")] = color(Theme::HighlightColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%highlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%visitedlink")] = color(Theme::VisitedLinkColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%activatedlink")] = color(Theme::HighlightColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%hoveredlink")] = color(Theme::HighlightColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%link")] = color(Theme::LinkColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%positivetextcolor")] = color(Theme::PositiveTextColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%neutraltextcolor")] = color(Theme::NeutralTextColor, Theme::NormalColorGroup).name();
-    elements[QStringLiteral("%negativetextcolor")] = color(Theme::NegativeTextColor, Theme::NormalColorGroup).name();
-
-    elements[QStringLiteral("%buttontextcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : Theme::TextColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonbackgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonhovercolor")] = color(Theme::HoverColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonfocuscolor")] = color(Theme::FocusColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonhighlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonpositivetextcolor")] = color(Theme::PositiveTextColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonneutraltextcolor")] = color(Theme::NeutralTextColor, Theme::ButtonColorGroup).name();
-    elements[QStringLiteral("%buttonnegativetextcolor")] = color(Theme::NegativeTextColor, Theme::ButtonColorGroup).name();
-
-    elements[QStringLiteral("%viewtextcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : Theme::TextColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewbackgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewhovercolor")] = color(Theme::HoverColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewfocuscolor")] = color(Theme::FocusColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewhighlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewpositivetextcolor")] = color(Theme::PositiveTextColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewneutraltextcolor")] = color(Theme::NeutralTextColor, Theme::ViewColorGroup).name();
-    elements[QStringLiteral("%viewnegativetextcolor")] = color(Theme::NegativeTextColor, Theme::ViewColorGroup).name();
-
-    elements[QStringLiteral("%tooltiptextcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : Theme::TextColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltipbackgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltiphovercolor")] = color(Theme::HoverColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltipfocuscolor")] = color(Theme::FocusColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltiphighlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltippositivetextcolor")] = color(Theme::PositiveTextColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltipneutraltextcolor")] = color(Theme::NeutralTextColor, Theme::ToolTipColorGroup).name();
-    elements[QStringLiteral("%tooltipnegativetextcolor")] = color(Theme::NegativeTextColor, Theme::ToolTipColorGroup).name();
-
-    elements[QStringLiteral("%complementarytextcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : Theme::TextColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementarybackgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementaryhovercolor")] = color(Theme::HoverColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementaryfocuscolor")] = color(Theme::FocusColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementaryhighlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementarypositivetextcolor")] = color(Theme::PositiveTextColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementaryneutraltextcolor")] = color(Theme::NeutralTextColor, Theme::ComplementaryColorGroup).name();
-    elements[QStringLiteral("%complementarynegativetextcolor")] = color(Theme::NegativeTextColor, Theme::ComplementaryColorGroup).name();
-
-    elements[QStringLiteral("%headertextcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightedTextColor : Theme::TextColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerbackgroundcolor")] =
-        color(status == Svg::Status::Selected ? Theme::HighlightColor : Theme::BackgroundColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerhovercolor")] = color(Theme::HoverColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerfocuscolor")] = color(Theme::FocusColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerhighlightedtextcolor")] = color(Theme::HighlightedTextColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerpositivetextcolor")] = color(Theme::PositiveTextColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headerneutraltextcolor")] = color(Theme::NeutralTextColor, Theme::HeaderColorGroup).name();
-    elements[QStringLiteral("%headernegativetextcolor")] = color(Theme::NegativeTextColor, Theme::HeaderColorGroup).name();
-
-    QFont font = QGuiApplication::font();
-    elements[QStringLiteral("%fontsize")] = QStringLiteral("%1pt").arg(font.pointSize());
-    QString family{font.family()};
-    family.truncate(family.indexOf(QLatin1Char('[')));
-    elements[QStringLiteral("%fontfamily")] = family;
-    elements[QStringLiteral("%smallfontsize")] = QStringLiteral("%1pt").arg(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pointSize());
-
-    QHash<QString, QString>::const_iterator it = elements.constBegin();
-    QHash<QString, QString>::const_iterator itEnd = elements.constEnd();
-    for (; it != itEnd; ++it) {
-        stylesheet.replace(it.key(), it.value());
-    }
-    return stylesheet;
 }
 
 const QString ThemePrivate::svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status)
@@ -610,7 +492,6 @@ const QString ThemePrivate::svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::S
         stylesheet += skel.arg(QStringLiteral("TootipNeutralText"), QStringLiteral("%tooltipneutraltextcolor"));
         stylesheet += skel.arg(QStringLiteral("TootipNegativeText"), QStringLiteral("%tooltipnegativetextcolor"));
 
-        stylesheet = processStyleSheet(stylesheet, status);
         if (status == Svg::Status::Selected) {
             cachedSelectedSvgStyleSheets.insert(group, stylesheet);
         } else if (status == Svg::Status::Inactive) {

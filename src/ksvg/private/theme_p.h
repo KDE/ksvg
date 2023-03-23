@@ -50,7 +50,6 @@ public:
     bool useCache();
     void setThemeName(const QString &themeName, bool writeSettings, bool emitChanged);
 
-    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
     const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
     QColor color(Theme::ColorRole role, Theme::ColorGroup group = Theme::NormalColorGroup) const;
 
@@ -92,7 +91,6 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
     KConfigGroup cfg;
     KImageCache *pixmapCache;
-    QString cachedDefaultStyleSheet;
     QHash<QString, QPixmap> pixmapsToCache;
     QHash<QString, QString> keysToCache;
     QHash<QString, QString> idsToCache;

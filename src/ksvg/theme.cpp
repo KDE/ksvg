@@ -10,9 +10,6 @@
 
 #include <QFile>
 #include <QFileInfo>
-#include <QFileSelector>
-#include <QFontDatabase>
-#include <QFontMetrics>
 #include <QMutableListIterator>
 #include <QPair>
 #include <QStringBuilder>
@@ -191,11 +188,6 @@ QString Theme::filePath(const QString &name) const
 QString Theme::backgroundPath(const QString &image) const
 {
     return d->imagePath(themeName(), QStringLiteral("/appbackgrounds/"), image);
-}
-
-QString Theme::styleSheet(const QString &css) const
-{
-    return d->processStyleSheet(css, Svg::Status::Normal);
 }
 
 QPalette Theme::palette() const

@@ -8,7 +8,6 @@
 #ifndef KSVG_THEME_H
 #define KSVG_THEME_H
 
-#include <QFont>
 #include <QGuiApplication>
 #include <QObject>
 
@@ -42,9 +41,6 @@ class KSVG_EXPORT Theme : public QObject
 
     Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY themeChanged)
-
-    // stylesheet
-    Q_PROPERTY(QString styleSheet READ styleSheet NOTIFY themeChanged)
 
     Q_PROPERTY(QPalette palette READ palette NOTIFY themeChanged)
 
@@ -164,46 +160,6 @@ public:
     bool useGlobalSettings() const;
 
     /**
-     * TODO: remove
-     * Provides a KSvg::Theme-themed stylesheet for hybrid (web / native Plasma) widgets.
-     *
-     * You can use this method to retrieve a basic default stylesheet, or to theme your
-     * custom stylesheet you use for example in KSvg::WebView. The QString you can pass
-     * into this method does not have to be a valid stylesheet, in fact you can use this
-     * method to replace color placeholders with the theme's color in any QString.
-     *
-     * In order to use this method with a custom stylesheet, just put for example %textcolor
-     * in your QString and it will be replaced with the theme's text (or foreground) color.
-     *
-     * Just like in many other methods for retrieving theme information, do not forget to
-     * update your stylesheet upon the themeChanged() signal.
-     *
-     * The following tags will be replaced by corresponding colors from KSvg::Theme:
-     *
-     * %textcolor
-     * %backgroundcolor
-     * %buttonbackgroundcolor
-     *
-     * %link
-     * %activatedlink
-     * %hoveredlink
-     * %visitedlink
-     *
-     * %fontfamily
-     * %fontsize
-     * %smallfontsize
-     *
-     * @param css a stylesheet to theme, leave empty for a default stylesheet containing
-     * theming for some commonly used elements, body text and links, for example.
-     *
-     * @return a piece of CSS that sets the most commonly used style elements to a theme
-     * matching KSvg::Theme.
-     *
-     * @since 4.5
-     */
-    QString styleSheet(const QString &css = QString()) const;
-
-    /**
      * Returns a QPalette with the colors set as defined by the theme.
      * @since 5.68
      */
@@ -280,7 +236,7 @@ public:
 
 Q_SIGNALS:
     /**
-     * Emitted when the user changes the theme. Stylesheet usage, colors, etc. should
+     * Emitted when the user changes the theme. REndered images, colors, etc. should
      * be updated at this point. However, SVGs should *not* be repainted in response
      * to this signal; connect to Svg::repaintNeeded() instead for that, as Svg objects
      * need repainting not only when themeChanged() is emitted; moreover Svg objects
