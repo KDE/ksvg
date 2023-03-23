@@ -156,7 +156,7 @@ QString Theme::imagePath(const QString &name) const
             }
         }
     }
-    qWarning() << "AAAAA" << QCoreApplication::organizationName() << QCoreApplication::applicationName();
+
     return path;
 }
 

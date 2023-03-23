@@ -85,7 +85,7 @@ install(FILES
 
 install(
     FILES ${KSvg_CamelCase_HEADERS}
-    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/Svg # C++ namespace
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg # C++ namespace
     COMPONENT Devel
 )
 
