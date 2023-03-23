@@ -122,6 +122,15 @@ public:
     QString imagePath(const QString &name) const;
 
     /**
+     * Retrieve the path for a generic file in the current theme.
+     * The theme can also ship any generic file, such as configuration files
+     *
+     * @param name the name of the file in the theme directory (without a leading slash)
+     * @return the full path to the requested file for the current theme
+     */
+    QString filePath(const QString &name) const;
+
+    /**
      * Retrieves the default wallpaper associated with this theme.
      *
      * @param size the target height and width of the wallpaper; if an invalid size

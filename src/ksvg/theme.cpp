@@ -167,6 +167,31 @@ QString Theme::imagePath(const QString &name) const
     return path;
 }
 
+QString Theme::filePath(const QString &name) const
+{
+    // look for a compressed svg file in the theme
+    if (name.contains(QLatin1String("../")) || name.isEmpty()) {
+        // we don't support relative paths
+        // qCDebug(LOG_KSVG) << "Theme says: bad image path " << name;
+        return QString();
+    }
+
+    QString path = d->findInTheme(name, d->themeName);
+
+    if (path.isEmpty()) {
+        // search in fallback themes if necessary
+        for (int i = 0; path.isEmpty() && i < d->fallbackThemes.count(); ++i) {
+            if (d->themeName == d->fallbackThemes[i]) {
+                continue;
+            }
+
+            path = d->findInTheme(name, d->fallbackThemes[i]);
+        }
+    }
+
+    return path;
+}
+
 QString Theme::backgroundPath(const QString &image) const
 {
     return d->imagePath(themeName(), QStringLiteral("/appbackgrounds/"), image);
