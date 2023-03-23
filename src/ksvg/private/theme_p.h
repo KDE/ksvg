@@ -20,9 +20,6 @@
 #include <QTimer>
 
 #include <config-ksvg.h>
-#if HAVE_X11
-#include "private/effectwatcher_p.h"
-#endif
 
 #include "libplasma-theme-global.h"
 
@@ -61,16 +58,12 @@ public:
     bool useCache();
     void setThemeName(const QString &themeName, bool writeSettings, bool emitChanged);
     void processWallpaperSettings(const KSharedConfigPtr &metadata);
-    void processContrastSettings(const KSharedConfigPtr &metadata);
-    void processAdaptiveTransparencySettings(const KSharedConfigPtr &metadata);
-    void processBlurBehindSettings(const KSharedConfigPtr &metadata);
 
     const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
     const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
     QColor color(Theme::ColorRole role, Theme::ColorGroup group = Theme::NormalColorGroup) const;
 
 public Q_SLOTS:
-    void compositingChanged(bool active);
     void colorsChanged();
     void settingsFileChanged(const QString &settings);
     void scheduledCacheUpdate();
@@ -88,9 +81,7 @@ public:
     static const char defaultTheme[];
     static const char systemColorsTheme[];
     static const char themeRcFile[];
-#if HAVE_X11
-    static EffectWatcher *s_backgroundContrastEffectWatcher;
-#endif
+
     // Ref counting of ThemePrivate instances
     static ThemePrivate *globalTheme;
     static QHash<QString, ThemePrivate *> themes;
@@ -98,6 +89,7 @@ public:
     QString themeName;
     KPluginMetaData pluginMetaData;
     QList<QString> fallbackThemes;
+    QStringList selectors;
     KSharedConfigPtr colors;
     KColorScheme colorScheme;
     KColorScheme selectionColorScheme;
@@ -130,20 +122,11 @@ public:
     QString themeMetadataPath;
     QString iconThemeMetadataPath;
 
-    bool compositingActive : 1;
-    bool backgroundContrastActive : 1;
     bool isDefault : 1;
     bool useGlobal : 1;
     bool hasWallpapers : 1;
     bool cacheTheme : 1;
     bool fixedName : 1;
-
-    qreal backgroundContrast;
-    qreal backgroundIntensity;
-    qreal backgroundSaturation;
-    bool backgroundContrastEnabled;
-    bool adaptiveTransparencyEnabled;
-    bool blurBehindEnabled;
 
     // Version number of Plasma the Theme has been designed for
     int apiMajor;

@@ -10,6 +10,7 @@
 
 #include <QFile>
 #include <QFileInfo>
+#include <QFileSelector>
 #include <QFontDatabase>
 #include <QFontMetrics>
 #include <QMutableListIterator>
@@ -24,7 +25,6 @@
 #include <KConfigGroup>
 #include <KDirWatch>
 #include <KImageCache>
-#include <KWindowEffects>
 #include <QDebug>
 #include <QStandardPaths>
 
@@ -87,6 +87,16 @@ Theme::~Theme()
             delete ThemePrivate::themes.take(d->themeName);
         }
     }
+}
+
+void Theme::setSelectors(const QStringList &selectors)
+{
+    d->selectors = selectors;
+}
+
+QStringList Theme::selectors() const
+{
+    return d->selectors;
 }
 
 void Theme::setThemeName(const QString &themeName)
@@ -347,56 +357,6 @@ QFont Theme::smallestFont() const
 QSizeF Theme::mSize(const QFont &font) const
 {
     return QFontMetrics(font).boundingRect(QStringLiteral("M")).size();
-}
-
-bool Theme::backgroundContrastEnabled() const
-{
-    return d->backgroundContrastEnabled;
-}
-
-bool Theme::adaptiveTransparencyEnabled() const
-{
-    return d->adaptiveTransparencyEnabled;
-}
-
-qreal Theme::backgroundContrast() const
-{
-    if (qIsNaN(d->backgroundContrast)) {
-        // Make up sensible default values, based on the background color
-        // If we're using a dark background color, darken the background
-        if (qGray(color(KSvg::Theme::BackgroundColor).rgb()) < 127) {
-            return 0.45;
-            // for a light theme lighten up the background
-        } else {
-            return 0.3;
-        }
-    }
-    return d->backgroundContrast;
-}
-
-qreal Theme::backgroundIntensity() const
-{
-    if (qIsNaN(d->backgroundIntensity)) {
-        if (qGray(color(KSvg::Theme::BackgroundColor).rgb()) < 127) {
-            return 0.45;
-        } else {
-            return 1.9;
-        }
-    }
-    return d->backgroundIntensity;
-}
-
-qreal Theme::backgroundSaturation() const
-{
-    if (qIsNaN(d->backgroundSaturation)) {
-        return 1.7;
-    }
-    return d->backgroundSaturation;
-}
-
-bool Theme::blurBehindEnabled() const
-{
-    return d->blurBehindEnabled;
 }
 
 }

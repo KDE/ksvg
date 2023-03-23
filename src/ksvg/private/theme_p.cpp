@@ -21,8 +21,6 @@
 #include <KIconLoader>
 #include <KIconTheme>
 #include <KSharedConfig>
-#include <KWindowEffects>
-#include <KX11Extras>
 #include <kpluginmetadata.h>
 
 namespace KSvg
@@ -32,9 +30,6 @@ const char ThemePrivate::themeRcFile[] = "plasmarc";
 // the system colors theme is used to cache unthemed svgs with colorization needs
 // these svgs do not follow the theme's colors, but rather the system colors
 const char ThemePrivate::systemColorsTheme[] = "internal-system-colors";
-#if HAVE_X11
-EffectWatcher *ThemePrivate::s_backgroundContrastEffectWatcher = nullptr;
-#endif
 
 ThemePrivate *ThemePrivate::globalTheme = nullptr;
 QHash<QString, ThemePrivate *> ThemePrivate::themes = QHash<QString, ThemePrivate *>();
@@ -84,18 +79,10 @@ ThemePrivate::ThemePrivate(QObject *parent)
     , pixmapCache(nullptr)
     , cacheSize(0)
     , cachesToDiscard(NoCache)
-    , compositingActive(KX11Extras::self()->compositingActive())
-    , backgroundContrastActive(KWindowEffects::isEffectAvailable(KWindowEffects::BackgroundContrast))
     , isDefault(true)
     , useGlobal(true)
     , hasWallpapers(false)
     , fixedName(false)
-    , backgroundContrast(qQNaN())
-    , backgroundIntensity(qQNaN())
-    , backgroundSaturation(qQNaN())
-    , backgroundContrastEnabled(true)
-    , adaptiveTransparencyEnabled(false)
-    , blurBehindEnabled(true)
     , apiMajor(1)
     , apiMinor(0)
     , apiRevision(0)
@@ -113,21 +100,6 @@ ThemePrivate::ThemePrivate(QObject *parent)
     updateNotificationTimer->setInterval(100);
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ThemePrivate::notifyOfChanged);
 
-    if (QPixmap::defaultDepth() > 8) {
-#if HAVE_X11
-        // watch for background contrast effect property changes as well
-        if (!s_backgroundContrastEffectWatcher) {
-            s_backgroundContrastEffectWatcher = new EffectWatcher(QStringLiteral("_KDE_NET_WM_BACKGROUND_CONTRAST_REGION"));
-        }
-
-        QObject::connect(s_backgroundContrastEffectWatcher, &EffectWatcher::effectChanged, this, [this](bool active) {
-            if (backgroundContrastActive != active) {
-                backgroundContrastActive = active;
-                scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
-            }
-        });
-#endif
-    }
     QCoreApplication::instance()->installEventFilter(this);
 
     const QString configFile = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + QLatin1String(themeRcFile);
@@ -142,7 +114,6 @@ ThemePrivate::ThemePrivate(QObject *parent)
         scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
     });
 
-    connect(KX11Extras::self(), &KX11Extras::compositingChanged, this, &ThemePrivate::compositingChanged);
 }
 
 ThemePrivate::~ThemePrivate()
@@ -292,6 +263,7 @@ void ThemePrivate::onAppExitCleanup()
 
 QString ThemePrivate::imagePath(const QString &theme, const QString &type, const QString &image)
 {
+    // TODO: get rid of KSVG_RELATIVE_DATA_INSTALL_DIR
     QString subdir = QLatin1String(KSVG_RELATIVE_DATA_INSTALL_DIR "/desktoptheme/") % theme % type % image;
     return QStandardPaths::locate(QStandardPaths::GenericDataLocation, subdir);
 }
@@ -305,16 +277,18 @@ QString ThemePrivate::findInTheme(const QString &image, const QString &theme, bo
         }
     }
 
-    QString type = QStringLiteral("/");
-    if (!compositingActive) {
-        type = QStringLiteral("/opaque/");
-    } else if (backgroundContrastActive) {
-        type = QStringLiteral("/translucent/");
+    QString search;
+
+    // TODO: use also QFileSelector::allSelectors?
+    // TODO: check if the theme supports selectors starting with +
+    for (const QString &type : std::as_const(selectors)) {
+        search = imagePath(theme, QLatin1Char('/') % type % QLatin1Char('/'), image);
+        if (!search.isEmpty()) {
+            break;
+        }
     }
 
-    QString search = imagePath(theme, type, image);
-
-    // not found or compositing enabled
+    // not found in selectors
     if (search.isEmpty()) {
         search = imagePath(theme, QStringLiteral("/"), image);
     }
@@ -324,17 +298,6 @@ QString ThemePrivate::findInTheme(const QString &image, const QString &theme, bo
     }
 
     return search;
-}
-
-void ThemePrivate::compositingChanged(bool active)
-{
-#if HAVE_X11
-    if (compositingActive != active) {
-        compositingActive = active;
-        // qCDebug(LOG_KSVG) << QTime::currentTime();
-        scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
-    }
-#endif
 }
 
 void ThemePrivate::discardCache(CacheTypes caches)
@@ -784,43 +747,6 @@ void ThemePrivate::processWallpaperSettings(const KSharedConfigPtr &metadata)
     defaultWallpaperHeight = cg.readEntry("defaultHeight", DEFAULT_WALLPAPER_HEIGHT);
 }
 
-void ThemePrivate::processContrastSettings(const KSharedConfigPtr &metadata)
-{
-    KConfigGroup cg;
-    if (metadata->hasGroup("ContrastEffect")) {
-        cg = KConfigGroup(metadata, "ContrastEffect");
-        backgroundContrastEnabled = cg.readEntry("enabled", false);
-
-        backgroundContrast = cg.readEntry("contrast", qQNaN());
-        backgroundIntensity = cg.readEntry("intensity", qQNaN());
-        backgroundSaturation = cg.readEntry("saturation", qQNaN());
-    } else {
-        backgroundContrastEnabled = false;
-    }
-}
-
-void ThemePrivate::processAdaptiveTransparencySettings(const KSharedConfigPtr &metadata)
-{
-    KConfigGroup cg;
-    if (metadata->hasGroup("AdaptiveTransparency")) {
-        cg = KConfigGroup(metadata, "AdaptiveTransparency");
-        adaptiveTransparencyEnabled = cg.readEntry("enabled", false);
-    } else {
-        adaptiveTransparencyEnabled = false;
-    }
-}
-
-void ThemePrivate::processBlurBehindSettings(const KSharedConfigPtr &metadata)
-{
-    KConfigGroup cg;
-    if (metadata->hasGroup("BlurBehindEffect")) {
-        cg = KConfigGroup(metadata, "BlurBehindEffect");
-        blurBehindEnabled = cg.readEntry("enabled", true);
-    } else {
-        blurBehindEnabled = true;
-    }
-}
-
 void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings, bool emitChanged)
 {
     QString theme = tempThemeName;
@@ -884,10 +810,6 @@ void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings
     if (realTheme) {
         pluginMetaData = metaDataForTheme(theme);
         KSharedConfigPtr metadata = configForTheme(theme);
-
-        processContrastSettings(metadata);
-        processBlurBehindSettings(metadata);
-        processAdaptiveTransparencySettings(metadata);
 
         processWallpaperSettings(metadata);
 

@@ -22,27 +22,7 @@ target_link_libraries(corebindingsplugin
         Qt6::Qml
         KF6::IconThemes
         Qt6::Svg
-        KF6::WindowSystem
         KF6::Svg
 )
-
-if(HAVE_X11)
-  target_link_libraries(corebindingsplugin ${X11_LIBRARIES} XCB::XCB Qt6::GuiPrivate)
-
-  if(XCB_COMPOSITE_FOUND AND XCB_DAMAGE_FOUND)
-    target_link_libraries(corebindingsplugin
-        XCB::DAMAGE
-        XCB::COMPOSITE
-        )
-  endif()
-
-  if(HAVE_GLX)
-    target_link_libraries(corebindingsplugin OpenGL::GLX)
-  endif()
-endif()
-
-if(HAVE_EGL)
-    target_link_libraries(corebindingsplugin OpenGL::EGL)
-endif()
 
 ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})

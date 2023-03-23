@@ -54,6 +54,8 @@ class KSVG_EXPORT Theme : public QObject
     Q_PROPERTY(QPalette palette READ palette NOTIFY themeChanged)
 
 public:
+    enum DisplayHint { Normal = 0, Opaque, Translucent };
+
     enum ColorRole {
         TextColor = 0, /**<  the text color to be used by items resting on the background */
         BackgroundColor = 1, /**< the default background color */
@@ -95,6 +97,10 @@ public:
     explicit Theme(const QString &themeName, QObject *parent = nullptr);
 
     ~Theme() override;
+
+    void setSelectors(const QStringList &selectors);
+
+    QStringList selectors() const;
 
     /**
      * Sets the current theme being used.
@@ -286,85 +292,6 @@ public:
      * @since 5.0
      */
     QFont smallestFont() const;
-
-    /** This method allows Plasma to enable and disable the background
-     * contrast effect for a given theme, improving readability. The
-     * value is read from the "enabled" key in the "ContrastEffect"
-     * group in the Theme's metadata file.
-     * The configuration in the metadata.desktop file of the theme
-     * could look like this (for a lighter background):
-     * \code
-     * [ContrastEffect]
-     * enabled=true
-     * contrast=0.45
-     * intensity=0.45
-     * saturation=1.7
-     * \endcode
-     * @return Whether or not to enable the contrasteffect
-     * @since 5.0
-     */
-    bool backgroundContrastEnabled() const;
-
-    /** This method allows Plasma to enable and disable the adaptive
-     * transparency option of the panel, which allows user to decide
-     * whether the panel should be always transparent, always opaque
-     * or only opaque when a window is maximized.
-     * The configuration in the metadata.desktop file of the theme
-     * could look like this (for a lighter background):
-     * \code
-     * [AdaptiveTransparency]
-     * enabled=true
-     * \endcode
-     * @return Whether or not to enable the adaptive transparency
-     * @since 5.20
-     */
-    bool adaptiveTransparencyEnabled() const;
-
-    /** This method allows Plasma to set a background contrast effect
-     * for a given theme, improving readability. The value is read
-     * from the "contrast" key in the "ContrastEffect" group in the
-     * Theme's metadata file.
-     * @return The contrast provided to the contrasteffect
-     * @since 5.0
-     * @see backgroundContrastEnabled
-     */
-    qreal backgroundContrast() const;
-
-    /** This method allows Plasma to set a background contrast effect
-     * for a given theme, improving readability. The value is read
-     * from the "intensity" key in the "ContrastEffect" group in the
-     * Theme's metadata file.
-     * @return The intensity provided to the contrasteffect
-     * @since 5.0
-     * @see backgroundContrastEnabled
-     */
-    qreal backgroundIntensity() const;
-
-    /** This method allows Plasma to set a background contrast effect
-     * for a given theme, improving readability. The value is read
-     * from the "saturation" key in the "ContrastEffect" group in the
-     * Theme's metadata file.
-     * @return The saturation provided to the contrasteffect
-     * @since 5.0
-     * @see backgroundContrastEnabled
-     */
-    qreal backgroundSaturation() const;
-
-    /** This method allows Plasma to enable and disable the blurring
-     * of what is behind the background for a given theme. The
-     * value is read from the "enabled" key in the "BlurBehindEffect"
-     * group in the Theme's metadata file. Default is @c true.
-     *
-     * The configuration in the metadata.desktop file of the theme
-     * could look like this:
-     * \code
-     * [BlurBehindEffect]
-     * enabled=false
-     * \endcode
-     * @return Whether or not to enable blurring of what is behind
-     * @since 5.57
-     */
-    bool blurBehindEnabled() const;
 
     /**
      * Returns the size of the letter "M" as rendered on the screen with the given font.

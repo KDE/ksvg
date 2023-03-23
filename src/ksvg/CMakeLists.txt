@@ -23,10 +23,6 @@ target_sources(KF6Svg PRIVATE
     private/theme_p.cpp
 )
 
-if(HAVE_X11)
-    target_sources(KF6Svg PRIVATE private/effectwatcher.cpp)
-endif()
-
 kconfig_add_kcfg_files(KF6Svg data/kconfigxt/libplasma-theme-global.kcfgc)
 
 ecm_qt_declare_logging_category(KF6Svg
@@ -47,10 +43,6 @@ ecm_generate_export_header(KF6Svg
     DEPRECATION_VERSIONS
 )
 
-if(HAVE_X11)
-    set(KSVG_EXTRA_LIBS ${KSVG_EXTRA_LIBS} XCB::XCB Qt6::GuiPrivate)
-endif()
-
 target_link_libraries(KF6Svg
 PUBLIC
     Qt6::Gui
@@ -60,7 +52,6 @@ PRIVATE
     KF6::Archive
     KF6::GuiAddons #kimagecache
     KF6::ConfigWidgets
-    KF6::WindowSystem #compositingActive
     KF6::IconThemes
     ${KSVG_EXTRA_LIBS}
 )
