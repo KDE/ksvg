@@ -19,19 +19,11 @@
 #include <QDebug>
 #include <QTimer>
 
-#include <config-ksvg.h>
-
 #include "libplasma-theme-global.h"
 
 namespace KSvg
 {
 class Theme;
-
-// NOTE: Default wallpaper can be set from the theme configuration
-#define DEFAULT_WALLPAPER_THEME "default"
-#define DEFAULT_WALLPAPER_SUFFIX ".png"
-static const int DEFAULT_WALLPAPER_WIDTH = 1920;
-static const int DEFAULT_WALLPAPER_HEIGHT = 1200;
 
 enum CacheType {
     NoCache = 0,
@@ -57,7 +49,6 @@ public:
     void scheduleThemeChangeNotification(CacheTypes caches);
     bool useCache();
     void setThemeName(const QString &themeName, bool writeSettings, bool emitChanged);
-    void processWallpaperSettings(const KSharedConfigPtr &metadata);
 
     const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
     const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
@@ -87,6 +78,7 @@ public:
     static QHash<QString, ThemePrivate *> themes;
 
     QString themeName;
+    QString basePath;
     KPluginMetaData pluginMetaData;
     QList<QString> fallbackThemes;
     QStringList selectors;
@@ -101,10 +93,6 @@ public:
     QPalette palette;
     bool eventFilter(QObject *watched, QEvent *event) override;
     KConfigGroup cfg;
-    QString defaultWallpaperTheme;
-    QString defaultWallpaperSuffix;
-    int defaultWallpaperWidth;
-    int defaultWallpaperHeight;
     KImageCache *pixmapCache;
     QString cachedDefaultStyleSheet;
     QHash<QString, QPixmap> pixmapsToCache;
@@ -124,7 +112,6 @@ public:
 
     bool isDefault : 1;
     bool useGlobal : 1;
-    bool hasWallpapers : 1;
     bool cacheTheme : 1;
     bool fixedName : 1;
 

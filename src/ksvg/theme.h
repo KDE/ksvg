@@ -42,7 +42,6 @@ class KSVG_EXPORT Theme : public QObject
 
     Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY themeChanged)
-    Q_PROPERTY(QString wallpaperPath READ wallpaperPath NOTIFY themeChanged)
 
     // fonts
     Q_PROPERTY(QFont defaultFont READ defaultFont NOTIFY defaultFontChanged)
@@ -129,17 +128,6 @@ public:
      * @return the full path to the requested file for the current theme
      */
     QString filePath(const QString &name) const;
-
-    /**
-     * Retrieves the default wallpaper associated with this theme.
-     *
-     * @param size the target height and width of the wallpaper; if an invalid size
-     *           is passed in, then a default size will be provided instead.
-     * @return the full path to the wallpaper image
-     */
-    QString wallpaperPath(const QSize &size = QSize()) const;
-
-    Q_INVOKABLE QString wallpaperPathForSize(int width = -1, int height = -1) const;
 
     /**
      * Checks if this theme has an image named in a certain way
