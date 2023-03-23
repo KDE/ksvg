@@ -50,6 +50,7 @@ public:
     bool useCache();
     void setThemeName(const QString &themeName, bool writeSettings, bool emitChanged);
 
+    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
     const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
     QColor color(Theme::ColorRole role, Theme::ColorGroup group = Theme::NormalColorGroup) const;
 

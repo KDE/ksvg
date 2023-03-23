@@ -89,6 +89,9 @@ public:
 
     ~Theme() override;
 
+    void setBasePath(const QString &basePath);
+    QString basePath() const;
+
     void setSelectors(const QStringList &selectors);
 
     QStringList selectors() const;

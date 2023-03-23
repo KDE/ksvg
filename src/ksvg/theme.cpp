@@ -82,6 +82,22 @@ Theme::~Theme()
     }
 }
 
+void Theme::setBasePath(const QString &basePath)
+{
+    if (d->basePath == basePath) {
+        return;
+    }
+
+    d->basePath = basePath;
+
+    Q_EMIT themeChanged();
+}
+
+QString Theme::basePath() const
+{
+    return d->basePath;
+}
+
 void Theme::setSelectors(const QStringList &selectors)
 {
     d->selectors = selectors;
