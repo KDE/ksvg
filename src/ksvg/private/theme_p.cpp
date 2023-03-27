@@ -705,6 +705,57 @@ QColor ThemePrivate::color(Theme::ColorRole role, Theme::ColorGroup group) const
     return QColor();
 }
 
+bool ThemePrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
+{
+    // TODO KF6: Make lastModified non-optional.
+    if (lastModified == 0) {
+        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
+        return false;
+    }
+
+    if (!useCache()) {
+        return false;
+    }
+
+    if (lastModified > uint(pixmapCache->lastModifiedTime().toSecsSinceEpoch())) {
+        return false;
+    }
+
+    const QString id = keysToCache.value(key);
+    const auto it = pixmapsToCache.constFind(id);
+    if (it != pixmapsToCache.constEnd()) {
+        pix = *it;
+        return !pix.isNull();
+    }
+
+    QPixmap temp;
+    if (pixmapCache->findPixmap(key, &temp) && !temp.isNull()) {
+        pix = temp;
+        return true;
+    }
+
+    return false;
+}
+
+void ThemePrivate::insertIntoCache(const QString &key, const QPixmap &pix)
+{
+    if (useCache()) {
+        pixmapCache->insertPixmap(key, pix);
+    }
+}
+
+void ThemePrivate::insertIntoCache(const QString &key, const QPixmap &pix, const QString &id)
+{
+    if (useCache()) {
+        pixmapsToCache[id] = pix;
+        keysToCache[key] = id;
+        idsToCache[id] = key;
+
+        // always start timer in pixmapSaveTimer's thread
+        QMetaObject::invokeMethod(pixmapSaveTimer, "start", Qt::QueuedConnection);
+    }
+}
+
 void ThemePrivate::setThemeName(const QString &tempThemeName, bool writeSettings, bool emitChanged)
 {
     QString theme = tempThemeName;

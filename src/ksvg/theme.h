@@ -169,54 +169,6 @@ public:
     QPalette palette() const;
 
     /**
-     * This is an overloaded member provided to check with file timestamp
-     * where cache is still valid.
-     *
-     * @param key the name to use in the cache for this image
-     * @param pix the pixmap object to populate with the resulting data if found
-     * @param lastModified if non-zero, the time stamp is also checked on the file,
-     *                     and must be newer than the timestamp to be loaded
-     *
-     * @note Since KF 5.75, a lastModified value of 0 is deprecated. If used, it
-     *       will now always return false. Use a proper file timestamp instead
-     *       so modification can be properly tracked.
-     *
-     * @return true when pixmap was found and loaded from cache, false otherwise
-     * @since 4.3
-     **/
-    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified = 0);
-
-    /**
-     * Insert specified pixmap into the cache.
-     * If the cache already contains pixmap with the specified key then it is
-     * overwritten.
-     *
-     * @param key the name to use in the cache for this pixmap
-     * @param pix the pixmap data to store in the cache
-     **/
-    void insertIntoCache(const QString &key, const QPixmap &pix);
-
-    /**
-     * Insert specified pixmap into the cache.
-     * If the cache already contains pixmap with the specified key then it is
-     * overwritten.
-     * The actual insert is delayed for optimization reasons and the id
-     * parameter is used to discard repeated inserts in the delay time, useful
-     * when for instance the graphics to insert comes from a quickly resizing
-     * object: the frames between the start and destination sizes aren't
-     * useful in the cache and just cause overhead.
-     *
-     * @param key the name to use in the cache for this pixmap
-     * @param pix the pixmap data to store in the cache
-     * @param id a name that identifies the caller class of this function in an unique fashion.
-     *           This is needed to limit disk writes of the cache.
-     *           If an image with the same id changes quickly,
-     *           only the last size where insertIntoCache was called is actually stored on disk
-     * @since 4.3
-     **/
-    void insertIntoCache(const QString &key, const QPixmap &pix, const QString &id);
-
-    /**
      * Sets the maximum size of the cache (in kilobytes). If cache gets bigger
      * the limit then some entries are removed
      * Setting cache limit to 0 disables automatic cache size limiting.

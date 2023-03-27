@@ -24,6 +24,7 @@
 #include "debug_p.h"
 #include "private/framesvg_helpers.h"
 #include "private/svg_p.h"
+#include "private/theme_p.h"
 #include "theme.h"
 
 namespace KSvg
@@ -525,11 +526,11 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
     const bool overlayAvailable = !frame->prefix.startsWith(QLatin1String("mask-")) && q->hasElement(frame->prefix % QLatin1String("overlay"));
     QPixmap overlay;
     if (q->isUsingRenderingCache()) {
-        frameCached = q->theme()->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
+        frameCached = q->theme()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
 
         if (overlayAvailable) {
             const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
-            overlayCached = q->theme()->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
+            overlayCached = q->theme()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
         }
     }
 
@@ -815,12 +816,12 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
     // qCDebug(LOG_KSVG)<<"Saving to cache frame"<<id;
 
-    q->theme()->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
+    q->theme()->d->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
 
     if (!overlay.isNull()) {
         // insert overlay
         const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
-        q->theme()->insertIntoCache(QString::number(overlayId), overlay, QString::number((qint64)q, 16) % prefixToSave % QLatin1String("overlay"));
+        q->theme()->d->insertIntoCache(QString::number(overlayId), overlay, QString::number((qint64)q, 16) % prefixToSave % QLatin1String("overlay"));
     }
 }
 

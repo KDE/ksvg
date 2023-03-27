@@ -257,57 +257,6 @@ bool Theme::useGlobalSettings() const
     return d->useGlobal;
 }
 
-bool Theme::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
-{
-    // TODO KF6: Make lastModified non-optional.
-    if (lastModified == 0) {
-        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
-        return false;
-    }
-
-    if (!d->useCache()) {
-        return false;
-    }
-
-    if (lastModified > uint(d->pixmapCache->lastModifiedTime().toSecsSinceEpoch())) {
-        return false;
-    }
-
-    const QString id = d->keysToCache.value(key);
-    const auto it = d->pixmapsToCache.constFind(id);
-    if (it != d->pixmapsToCache.constEnd()) {
-        pix = *it;
-        return !pix.isNull();
-    }
-
-    QPixmap temp;
-    if (d->pixmapCache->findPixmap(key, &temp) && !temp.isNull()) {
-        pix = temp;
-        return true;
-    }
-
-    return false;
-}
-
-void Theme::insertIntoCache(const QString &key, const QPixmap &pix)
-{
-    if (d->useCache()) {
-        d->pixmapCache->insertPixmap(key, pix);
-    }
-}
-
-void Theme::insertIntoCache(const QString &key, const QPixmap &pix, const QString &id)
-{
-    if (d->useCache()) {
-        d->pixmapsToCache[id] = pix;
-        d->keysToCache[key] = id;
-        d->idsToCache[id] = key;
-
-        // always start timer in d->pixmapSaveTimer's thread
-        QMetaObject::invokeMethod(d->pixmapSaveTimer, "start", Qt::QueuedConnection);
-    }
-}
-
 void Theme::setCacheLimit(int kbytes)
 {
     d->cacheSize = kbytes;

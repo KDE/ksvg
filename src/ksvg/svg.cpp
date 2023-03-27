@@ -593,7 +593,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
 
     QPixmap p;
     if (cacheRendering && lastModified == SvgRectsCache::instance()->lastModifiedTimeFromCache(path)
-        && cacheAndColorsTheme()->findInCache(id, p, lastModified)) {
+        && cacheAndColorsTheme()->d->findInCache(id, p, lastModified)) {
         p.setDevicePixelRatio(ratio);
         // qCDebug(LOG_KSVG) << "found cached version of " << id << p.size();
         return p;
@@ -627,7 +627,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     }
 
     if (cacheRendering) {
-        cacheAndColorsTheme()->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
+        cacheAndColorsTheme()->d->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
     }
 
     SvgRectsCache::instance()->updateLastModified(path, lastModified);
