@@ -89,11 +89,34 @@ public:
 
     ~Theme() override;
 
+    /**
+     * Sets a base path for the theme to look for svgs.
+     * It can be a path relative to QStandardPaths::GenericDataLocation
+     * or an absolute path
+     *
+     * @param basePath the base path
+     */
     void setBasePath(const QString &basePath);
+
+    /**
+     * @returns the base path of the theme where the svgs will be looked for
+     */
     QString basePath() const;
 
+    /**
+     * Sets file selectors. The theme can have different svgs with the same name for
+     * different situations and platforms.
+     * The Plasma desktop for instance uses "opaque" or "translucent"
+     * based on presence of compositing and KWin blur effects.
+     * Other uses may be platform, like android-specific graphics.
+     *
+     * @param selectors selectors in order of preference
+     */
     void setSelectors(const QStringList &selectors);
 
+    /**
+     * @returns the current selectors in order of preference.
+     */
     QStringList selectors() const;
 
     /**
