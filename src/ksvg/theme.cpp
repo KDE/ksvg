@@ -202,11 +202,6 @@ QString Theme::filePath(const QString &name) const
     return path;
 }
 
-QString Theme::backgroundPath(const QString &image) const
-{
-    return d->imagePath(themeName(), QStringLiteral("/appbackgrounds/"), image);
-}
-
 QPalette Theme::palette() const
 {
     return d->palette;

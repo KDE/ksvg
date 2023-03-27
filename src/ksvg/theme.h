@@ -233,8 +233,6 @@ public:
      */
     KPluginMetaData metadata() const;
 
-    QString backgroundPath(const QString &image) const;
-
     static QPalette globalPalette();
 
 Q_SIGNALS:
