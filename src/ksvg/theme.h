@@ -60,7 +60,7 @@ public:
         PositiveTextColor = 8, /**< color of foreground objects with a "positive message" connotation (usually green) */
         NeutralTextColor = 9, /**< color of foreground objects with a "neutral message" connotation (usually yellow) */
         NegativeTextColor = 10, /**< color of foreground objects with a "negative message" connotation (usually red) */
-        DisabledTextColor = 11, /**< color of disabled text @since 5.64 */
+        DisabledTextColor = 11, /**< color of disabled text */
     };
 
     enum ColorGroup {
@@ -83,7 +83,6 @@ public:
      * Construct a theme. It will be a custom theme instance of themeName.
      * @param themeName the name of the theme to create
      * @param parent the parent object
-     * @since 4.3
      */
     explicit Theme(const QString &themeName, QObject *parent = nullptr);
 
@@ -187,7 +186,6 @@ public:
 
     /**
      * Returns a QPalette with the colors set as defined by the theme.
-     * @since 5.68
      */
     QPalette palette() const;
 
@@ -204,7 +202,6 @@ public:
     /**
      * @return plugin metadata for this theme, with information such as
      * name, description, author, website etc
-     * @since 5.95
      */
     KPluginMetaData metadata() const;
 
