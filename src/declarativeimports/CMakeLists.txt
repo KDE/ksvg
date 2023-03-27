@@ -14,7 +14,7 @@ target_sources(corebindingsplugin PRIVATE
     framesvgitem.cpp
     managedtexturenode.cpp
     imagetexturescache.cpp
-    quicktheme.cpp
+    #quicktheme.cpp
 )
 
 target_link_libraries(corebindingsplugin

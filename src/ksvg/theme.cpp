@@ -8,6 +8,7 @@
 #include "private/svg_p.h"
 #include "private/theme_p.h"
 
+#include <QDebug>
 #include <QFile>
 #include <QFileInfo>
 #include <QMutableListIterator>
@@ -20,8 +21,6 @@
 #include <KConfigGroup>
 #include <KDirWatch>
 #include <KImageCache>
-#include <QDebug>
-#include <QStandardPaths>
 
 #include "debug_p.h"
 
@@ -233,11 +232,6 @@ bool Theme::currentThemeHasImage(const QString &name) const
 KSharedConfigPtr Theme::colorScheme() const
 {
     return d->colors;
-}
-
-QColor Theme::color(ColorRole role, ColorGroup group) const
-{
-    return d->color(role, group);
 }
 
 void Theme::setUseGlobalSettings(bool useGlobal)

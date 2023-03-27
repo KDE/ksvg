@@ -622,7 +622,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     // Apply current color scheme if the svg asks for it
     if (applyColors) {
         QImage itmp = p.toImage();
-        KIconEffect::colorize(itmp, cacheAndColorsTheme()->color(Theme::BackgroundColor), 1.0);
+        KIconEffect::colorize(itmp, cacheAndColorsTheme()->d->color(Theme::BackgroundColor), 1.0);
         p = p.fromImage(itmp);
     }
 

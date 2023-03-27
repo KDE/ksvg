@@ -15,7 +15,6 @@
 #include <ksvg/svg.h>
 
 #include "framesvgitem.h"
-#include "quicktheme.h"
 #include "svgitem.h"
 #include "theme.h"
 
@@ -37,9 +36,4 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
     qmlRegisterType<KSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
     qmlRegisterType<KSvg::SvgItem>(uri, 2, 0, "SvgItem");
     qmlRegisterType<KSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
-
-    // qmlRegisterType<ThemeProxy>(uri, 2, 0, "Theme");
-    qmlRegisterSingletonType<KSvg::QuickTheme>(uri, 2, 0, "Theme", [](QQmlEngine *engine, QJSEngine *) -> QObject * {
-        return new KSvg::QuickTheme(engine);
-    });
 }

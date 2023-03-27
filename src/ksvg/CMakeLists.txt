@@ -51,6 +51,7 @@ PRIVATE
     KF6::GuiAddons #kimagecache
     KF6::ConfigWidgets
     KF6::IconThemes
+    KF6::Kirigami2
     ${KSVG_EXTRA_LIBS}
 )
 

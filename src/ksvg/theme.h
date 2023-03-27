@@ -163,14 +163,6 @@ public:
     KSharedConfigPtr colorScheme() const;
 
     /**
-     * Returns the text color to be used by items resting on the background
-     *
-     * @param role which role (usage pattern) to get the color for
-     * @param group which group we want a color of
-     */
-    QColor color(ColorRole role, ColorGroup group = NormalColorGroup) const;
-
-    /**
      * Tells the theme whether to follow the global settings or use application
      * specific settings
      *

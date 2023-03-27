@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_THEME_P_H
-#define PLASMA_THEME_P_H
+#ifndef KSVG_THEME_P_H
+#define KSVG_THEME_P_H
 
 #include "svg.h"
 #include "theme.h"
