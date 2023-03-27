@@ -642,20 +642,6 @@ void SvgPrivate::createRenderer()
     }
 
     if (themed && path.isEmpty() && !themeFailed) {
-        /*
-         * FIXME: how to port?
-                Applet *applet = qobject_cast<Applet *>(q->parent());
-                // FIXME: this maybe could be more efficient if we knew if the package was empty, e.g. for
-                // C++; however, I'm not sure this has any real world runtime impact. something to measure
-                // for.
-                if (applet) {
-                    path = applet->filePath("images", themePath + QLatin1String(".svg"));
-
-                    if (path.isEmpty()) {
-                        path = applet->filePath("images", themePath + QLatin1String(".svgz"));
-                    }
-                }
-        */
         if (path.isEmpty()) {
             path = actualTheme()->imagePath(themePath);
             themeFailed = path.isEmpty();
