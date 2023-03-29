@@ -35,7 +35,7 @@
 
 uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
 {
-    std::array<size_t, 10> parts = {
+    std::array<size_t, 11> parts = {
         ::qHash(id.width),
         ::qHash(id.height),
         ::qHash(id.elementName),
@@ -44,6 +44,7 @@ uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
         ::qHash(id.devicePixelRatio),
         ::qHash(id.scaleFactor),
         ::qHash(id.colorGroup),
+        ::qHash(id.paletteKey),
         ::qHash(id.extraFlags),
         ::qHash(id.lastModified),
     };
@@ -412,13 +413,23 @@ SvgPrivate::~SvgPrivate()
 SvgPrivate::CacheId SvgPrivate::cacheId(QStringView elementId) const
 {
     auto idSize = size.isValid() && size != naturalSize ? size : QSizeF{-1.0, -1.0};
-    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, devicePixelRatio, scaleFactor, -1, 0, lastModified};
+    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, devicePixelRatio, scaleFactor, -1, -1, 0, lastModified};
 }
 
 // This function is meant for the pixmap cache
 QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
 {
-    auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, devicePixelRatio, scaleFactor, colorGroup, 0, lastModified};
+    auto cacheId = CacheId{double(size.width()),
+                           double(size.height()),
+                           path,
+                           id,
+                           status,
+                           devicePixelRatio,
+                           scaleFactor,
+                           colorGroup,
+                           q->kirigamiTheme()->cacheKey(),
+                           0,
+                           lastModified};
     return QString::number(qHash(cacheId, SvgRectsCache::s_seed));
 }
 
@@ -622,7 +633,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     // Apply current color scheme if the svg asks for it
     if (applyColors) {
         QImage itmp = p.toImage();
-        KIconEffect::colorize(itmp, cacheAndColorsTheme()->d->color(Theme::BackgroundColor), 1.0);
+        KIconEffect::colorize(itmp, q->kirigamiTheme()->backgroundColor(), 1.0);
         p = p.fromImage(itmp);
     }
 
@@ -651,7 +662,7 @@ void SvgPrivate::createRenderer()
         }
     }
 
-    QString styleSheet = cacheAndColorsTheme()->d->svgStyleSheet(colorGroup, status);
+    QString styleSheet = cacheAndColorsTheme()->d->svgStyleSheet(kirigamiTheme ? kirigamiTheme : cacheAndColorsTheme()->d->kirigamiTheme, status);
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
     QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
@@ -679,7 +690,7 @@ void SvgPrivate::createRenderer()
                 originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
                 SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
 
-                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, scaleFactor, -1, 0, lastModified});
+                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, scaleFactor, -1, -1, 0, lastModified});
                 SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
             }
         }
@@ -769,16 +780,6 @@ void SvgPrivate::checkColorHints()
     } else {
         applyColors = false;
         usesColors = false;
-    }
-
-    // check to see if we are using colors, but the theme isn't being used or isn't providing
-    // a colorscheme
-    if (qGuiApp) {
-        if (usesColors && (!themed || !actualTheme()->colorScheme())) {
-            QObject::connect(actualTheme()->d, SIGNAL(applicationPaletteChange()), q, SLOT(colorsChanged()));
-        } else {
-            QObject::disconnect(actualTheme()->d, SIGNAL(applicationPaletteChange()), q, SLOT(colorsChanged()));
-        }
     }
 }
 
@@ -888,6 +889,25 @@ Svg::Svg(QObject *parent)
 Svg::~Svg()
 {
     delete d;
+}
+
+Kirigami::PlatformTheme *Svg::kirigamiTheme() const
+{
+    return d->kirigamiTheme ? d->kirigamiTheme : d->theme->d->kirigamiTheme;
+}
+
+void Svg::setKirigamiTheme(Kirigami::PlatformTheme *kirigamiTheme)
+{
+    if (d->kirigamiTheme == kirigamiTheme) {
+        return;
+    }
+
+    if (d->kirigamiTheme) {
+        disconnect(d->kirigamiTheme.get(), &Kirigami::PlatformTheme::colorsChanged, this, &Svg::repaintNeeded);
+    }
+
+    d->kirigamiTheme = kirigamiTheme;
+    connect(d->kirigamiTheme.get(), &Kirigami::PlatformTheme::colorsChanged, this, &Svg::repaintNeeded);
 }
 
 void Svg::setDevicePixelRatio(qreal ratio)

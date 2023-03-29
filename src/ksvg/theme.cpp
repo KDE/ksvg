@@ -201,20 +201,6 @@ QString Theme::filePath(const QString &name) const
     return path;
 }
 
-QPalette Theme::palette() const
-{
-    return d->palette;
-}
-
-QPalette Theme::globalPalette()
-{
-    if (!ThemePrivate::globalTheme) {
-        ThemePrivate::globalTheme = new ThemePrivate;
-        ThemePrivate::globalTheme->settingsChanged(false);
-    }
-    return ThemePrivate::globalTheme->palette;
-}
-
 bool Theme::currentThemeHasImage(const QString &name) const
 {
     if (name.contains(QLatin1String("../"))) {
@@ -227,11 +213,6 @@ bool Theme::currentThemeHasImage(const QString &name) const
         path = d->findInTheme(name % QLatin1String(".svg"), d->themeName);
     }
     return path.contains(d->basePath % d->themeName);
-}
-
-KSharedConfigPtr Theme::colorScheme() const
-{
-    return d->colors;
 }
 
 void Theme::setUseGlobalSettings(bool useGlobal)

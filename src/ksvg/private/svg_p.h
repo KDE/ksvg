@@ -16,6 +16,8 @@
 #include <QSharedData>
 #include <QSvgRenderer>
 
+#include <Kirigami/PlatformTheme>
+
 namespace KSvg
 {
 class SharedSvgRenderer : public QSvgRenderer, public QSharedData
@@ -51,6 +53,7 @@ public:
         double devicePixelRatio;
         double scaleFactor;
         int colorGroup;
+        qint64 paletteKey;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
@@ -95,6 +98,7 @@ public:
 
     Svg *q;
     QPointer<Theme> theme;
+    QPointer<Kirigami::PlatformTheme> kirigamiTheme;
     SharedSvgRenderer::Ptr renderer;
     QString themePath;
     QString path;
@@ -110,7 +114,7 @@ public:
     bool themed : 1;
     bool useSystemColors : 1;
     bool fromCurrentTheme : 1;
-    bool applyColors : 1;
+    bool applyColors : 1; // TODO: remove? this colorizes the image, doesn't use the stylesheet (it's usesColors)
     bool usesColors : 1;
     bool cacheRendering : 1;
     bool themeFailed : 1;

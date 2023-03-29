@@ -13,6 +13,8 @@
 #include <ksvg/ksvg_export.h>
 #include <ksvg/theme.h>
 
+#include <Kirigami/PlatformTheme>
+
 class QPainter;
 class QPoint;
 class QPointF;
@@ -74,6 +76,9 @@ public:
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
+
+    Kirigami::PlatformTheme *kirigamiTheme() const;
+    void setKirigamiTheme(Kirigami::PlatformTheme *theme);
 
     /**
      * Set the device pixel ratio for the Svg. This is the ratio between
