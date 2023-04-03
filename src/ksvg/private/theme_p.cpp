@@ -21,6 +21,7 @@
 #include <KIconLoader>
 #include <KIconTheme>
 #include <KSharedConfig>
+#include <Kirigami/KirigamiPluginFactory>
 #include <kpluginmetadata.h>
 
 namespace KSvg
@@ -114,6 +115,10 @@ ThemePrivate::ThemePrivate(QObject *parent)
         scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
     });
 
+    auto plugin = Kirigami::KirigamiPluginFactory::findPlugin();
+    if (plugin) {
+        kirigamiTheme = plugin->createPlatformTheme(this);
+    }
 }
 
 ThemePrivate::~ThemePrivate()

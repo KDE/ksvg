@@ -17,7 +17,6 @@
 #include <QThread>
 #include <QTimer>
 
-#include <KColorScheme>
 #include <KConfigGroup>
 #include <KDirWatch>
 #include <KImageCache>

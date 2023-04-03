@@ -24,7 +24,6 @@ SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
 {
-    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SvgItem::~SvgItem()
@@ -73,6 +72,8 @@ void SvgItem::setSvg(KSvg::Svg *svg)
         disconnect(m_svg.data(), nullptr, this, nullptr);
     }
     m_svg = svg;
+    m_svg->setKirigamiTheme(qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true)));
+    setFlag(QQuickItem::ItemHasContents, true);
     updateDevicePixelRatio();
 
     if (svg) {

@@ -22,7 +22,6 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
-#include <KColorScheme>
 #include <KCompressionDevice>
 #include <KConfigGroup>
 #include <KIconEffect>
