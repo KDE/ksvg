@@ -48,6 +48,7 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
         Archive        # svgz
         ConfigWidgets  # KColorScheme
+        CoreAddons
         GuiAddons      # KImageCache
         IconThemes     # KIconEffect
         Kirigami2

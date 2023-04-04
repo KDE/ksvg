@@ -78,6 +78,11 @@ ThemePrivate::ThemePrivate(QObject *parent)
     ThemeConfig config;
     cacheTheme = config.cacheTheme();
 
+    auto plugin = Kirigami::KirigamiPluginFactory::findPlugin();
+    if (plugin) {
+        kirigamiTheme = plugin->createPlatformTheme(this);
+    }
+
     const QString org = QCoreApplication::organizationName();
     if (!org.isEmpty()) {
         basePath += u'/' + org;
@@ -114,11 +119,6 @@ ThemePrivate::ThemePrivate(QObject *parent)
     QObject::connect(KIconLoader::global(), &KIconLoader::iconChanged, this, [this]() {
         scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
     });
-
-    auto plugin = Kirigami::KirigamiPluginFactory::findPlugin();
-    if (plugin) {
-        kirigamiTheme = plugin->createPlatformTheme(this);
-    }
 }
 
 ThemePrivate::~ThemePrivate()
@@ -358,7 +358,7 @@ void ThemePrivate::notifyOfChanged()
 
 const QString ThemePrivate::processStyleSheet(const QString &css, KSvg::Svg::Status status, Kirigami::PlatformTheme *theme)
 {
-    QString stylesheet;
+    QString stylesheet(css);
 
     QHash<QString, QString> elements;
     // If you add elements here, make sure their names are sufficiently unique to not cause

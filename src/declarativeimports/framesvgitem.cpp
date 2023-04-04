@@ -284,7 +284,7 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     , m_fastPath(true)
 {
     m_frameSvg = new KSvg::FrameSvg(this);
-    m_frameSvg->setKirigamiTheme(qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true)));
+
     setFlag(QQuickItem::ItemHasContents, true);
     setFlag(ItemHasContents, true);
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
@@ -678,6 +678,8 @@ void FrameSvgItem::classBegin()
 
 void FrameSvgItem::componentComplete()
 {
+    m_frameSvg->setKirigamiTheme(qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true)));
+
     CheckMarginsChange checkMargins(m_oldMargins, m_margins);
     CheckMarginsChange checkFixedMargins(m_oldFixedMargins, m_fixedMargins);
     CheckMarginsChange checkInsetMargins(m_oldInsetMargins, m_insetMargins);

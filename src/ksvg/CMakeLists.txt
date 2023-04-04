@@ -50,6 +50,7 @@ PRIVATE
     Qt6::Svg
     Qt6::Quick
     KF6::Archive
+    KF6::CoreAddons
     KF6::GuiAddons #kimagecache
     KF6::ConfigWidgets
     KF6::IconThemes
