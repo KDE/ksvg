@@ -18,8 +18,7 @@
 #include <QDebug>
 #include <QTimer>
 
-#include "libplasma-theme-global.h"
-
+#include <KConfigGroup>
 #include <Kirigami/PlatformTheme>
 
 namespace KSvg

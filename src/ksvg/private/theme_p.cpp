@@ -24,6 +24,8 @@
 #include <Kirigami/KirigamiPluginFactory>
 #include <kpluginmetadata.h>
 
+#define DEFAULT_CACHE_SIZE 16384 // value is from the old kconfigxt default value
+
 namespace KSvg
 {
 const char ThemePrivate::defaultTheme[] = "default";
@@ -66,18 +68,16 @@ KPluginMetaData metaDataForTheme(const QString &basePath, const QString &theme)
 ThemePrivate::ThemePrivate(QObject *parent)
     : QObject(parent)
     , pixmapCache(nullptr)
-    , cacheSize(0)
+    , cacheSize(DEFAULT_CACHE_SIZE)
     , cachesToDiscard(NoCache)
     , isDefault(true)
     , useGlobal(true)
+    , cacheTheme(true)
     , fixedName(false)
     , apiMajor(1)
     , apiMinor(0)
     , apiRevision(0)
 {
-    ThemeConfig config;
-    cacheTheme = config.cacheTheme();
-
     auto plugin = Kirigami::KirigamiPluginFactory::findPlugin();
     if (plugin) {
         kirigamiTheme = plugin->createPlatformTheme(this);
@@ -154,8 +154,7 @@ bool ThemePrivate::useCache()
 
     if (cacheTheme && !pixmapCache) {
         if (cacheSize == 0) {
-            ThemeConfig config;
-            cacheSize = config.themeCacheKb();
+            cacheSize = DEFAULT_CACHE_SIZE;
         }
         const bool isRegularTheme = themeName != QLatin1String(systemColorsTheme);
         QString cacheFile = QLatin1String("plasma_theme_") + themeName;
@@ -232,8 +231,7 @@ bool ThemePrivate::useCache()
             }
         }
 
-        ThemeConfig config;
-        pixmapCache = new KImageCache(cacheFile, config.themeCacheKb() * 1024);
+        pixmapCache = new KImageCache(cacheFile, cacheSize * 1024);
         pixmapCache->setEvictionPolicy(KSharedDataCache::EvictLeastRecentlyUsed);
 
         if (cachesTooOld) {

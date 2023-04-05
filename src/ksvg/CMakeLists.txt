@@ -21,8 +21,6 @@ target_sources(KF6Svg PRIVATE
     private/theme_p.cpp
 )
 
-kconfig_add_kcfg_files(KF6Svg data/kconfigxt/libplasma-theme-global.kcfgc)
-
 ecm_qt_declare_logging_category(KF6Svg
     HEADER debug_p.h
     IDENTIFIER LOG_KSVG
@@ -52,7 +50,7 @@ PRIVATE
     KF6::Archive
     KF6::CoreAddons
     KF6::GuiAddons #kimagecache
-    KF6::ConfigWidgets
+    KF6::ConfigCore
     KF6::IconThemes
 
     ${KSVG_EXTRA_LIBS}
