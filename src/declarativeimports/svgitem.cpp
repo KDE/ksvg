@@ -26,10 +26,54 @@ SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
 {
+    m_svg = new KSvg::Svg(this);
+    setFlag(QQuickItem::ItemHasContents, true);
+
+    connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
+    connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::naturalSizeChanged);
+    connect(m_svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
 }
 
 SvgItem::~SvgItem()
 {
+}
+
+void SvgItem::componentComplete()
+{
+    m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+
+    auto applyTheme = [this]() {
+        qWarning() << "BLEARCGH" << m_kirigamiTheme->palette();
+        m_svg->setPalette(m_kirigamiTheme->palette());
+        m_svg->setExtraColor(Svg::Positive, m_kirigamiTheme->positiveTextColor());
+        m_svg->setExtraColor(Svg::Neutral, m_kirigamiTheme->neutralTextColor());
+        m_svg->setExtraColor(Svg::Negative, m_kirigamiTheme->negativeTextColor());
+    };
+    applyTheme();
+    connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
+
+    QQuickItem::componentComplete();
+}
+
+void SvgItem::setImagePath(const QString &path)
+{
+    if (m_svg->imagePath() == path) {
+        return;
+    }
+
+    updateDevicePixelRatio();
+    m_svg->setImagePath(path);
+
+    Q_EMIT imagePathChanged();
+
+    if (isComponentComplete()) {
+        update();
+    }
+}
+
+QString SvgItem::imagePath() const
+{
+    return m_svg->imagePath();
 }
 
 void SvgItem::setElementId(const QString &elementID)
@@ -62,50 +106,10 @@ QSizeF SvgItem::naturalSize() const
     if (!m_svg) {
         return QSizeF();
     } else if (!m_elementID.isEmpty()) {
-        return m_svg.data()->elementSize(m_elementID);
+        return m_svg->elementSize(m_elementID);
     }
 
-    return m_svg.data()->size();
-}
-
-void SvgItem::setSvg(KSvg::Svg *svg)
-{
-    if (m_svg) {
-        disconnect(m_svg.data(), nullptr, this, nullptr);
-    }
-    m_svg = svg;
-    // TODO: svg must only be internal
-    auto *kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
-    setFlag(QQuickItem::ItemHasContents, true);
-    m_svg->setPalette(kirigamiTheme->palette());
-    m_svg->setExtraColor(Svg::Positive, kirigamiTheme->positiveTextColor());
-    m_svg->setExtraColor(Svg::Neutral, kirigamiTheme->neutralTextColor());
-    m_svg->setExtraColor(Svg::Negative, kirigamiTheme->negativeTextColor());
-
-    updateDevicePixelRatio();
-
-    if (svg) {
-        connect(svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
-        connect(svg, &Svg::repaintNeeded, this, &SvgItem::naturalSizeChanged);
-        connect(svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
-    }
-
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(naturalSize().width());
-    }
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(naturalSize().height());
-    }
-
-    scheduleImageUpdate();
-
-    Q_EMIT svgChanged();
-    Q_EMIT naturalSizeChanged();
-}
-
-KSvg::Svg *SvgItem::svg() const
-{
-    return m_svg.data();
+    return m_svg->size();
 }
 
 QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData)
@@ -170,12 +174,12 @@ void SvgItem::updateDevicePixelRatio()
         // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
         //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
         if (window()) {
-            m_svg.data()->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(window()->devicePixelRatio())));
+            m_svg->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(window()->devicePixelRatio())));
         } else {
-            m_svg.data()->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(qApp->devicePixelRatio())));
+            m_svg->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(qApp->devicePixelRatio())));
         }
         // TODO: remove scalefactor
-        m_svg.data()->setScaleFactor(1.0);
+        m_svg->setScaleFactor(1.0);
     }
 }
 
@@ -190,10 +194,10 @@ void SvgItem::updatePolish()
     QQuickItem::updatePolish();
 
     if (m_svg) {
-        // setContainsMultipleImages has to be done there since m_frameSvg can be shared with somebody else
+        // setContainsMultipleImages has to be done there since m_svg can be shared with somebody else
         m_textureChanged = true;
-        m_svg.data()->setContainsMultipleImages(!m_elementID.isEmpty());
-        m_image = m_svg.data()->image(QSize(width(), height()), m_elementID);
+        m_svg->setContainsMultipleImages(!m_elementID.isEmpty());
+        m_image = m_svg->image(QSize(width(), height()), m_elementID);
     }
 }
 

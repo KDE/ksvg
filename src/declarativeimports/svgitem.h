@@ -10,6 +10,11 @@
 #include <QImage>
 #include <QQuickItem>
 
+namespace Kirigami
+{
+class PlatformTheme;
+};
+
 namespace KSvg
 {
 class Svg;
@@ -23,21 +28,14 @@ class SvgItem : public QQuickItem
     Q_OBJECT
 
     /**
+     * Theme relative path of the svg, like "widgets/background"
+     */
+    Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
+
+    /**
      * The sub element of the svg we want to render. If empty the whole svg document will be painted.
      */
     Q_PROPERTY(QString elementId READ elementId WRITE setElementId NOTIFY elementIdChanged)
-
-    /**
-     * Svg class that is the source of the image, use it like that:
-     * @code
-     * SvgItem {
-     *     svg: Svg {imagePath: "widgets/arrows"}
-     *     elementId: "arrow-left"
-     * }
-     * @endcode
-     * Instead of a Svg declaration it can also be the id of a Svg declared elsewhere, useful to share Svg instances.
-     */
-    Q_PROPERTY(KSvg::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
 
     /**
      * The natural, unscaled size of the svg document or the element. useful if a pixel perfect rendering of outlines is needed.
@@ -50,20 +48,23 @@ public:
     explicit SvgItem(QQuickItem *parent = nullptr);
     ~SvgItem() override;
 
+    void setImagePath(const QString &path);
+    QString imagePath() const;
+
     void setElementId(const QString &elementID);
     QString elementId() const;
-
-    void setSvg(KSvg::Svg *svg);
-    KSvg::Svg *svg() const;
 
     QSizeF naturalSize() const;
 
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData) override;
     /// @endcond
 
+protected:
+    void componentComplete() override;
+
 Q_SIGNALS:
+    void imagePathChanged();
     void elementIdChanged();
-    void svgChanged();
     void naturalSizeChanged();
 
 protected Q_SLOTS:
@@ -77,7 +78,8 @@ private:
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
-    QPointer<KSvg::Svg> m_svg;
+    KSvg::Svg *m_svg;
+    Kirigami::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     bool m_textureChanged;
     QImage m_image;
