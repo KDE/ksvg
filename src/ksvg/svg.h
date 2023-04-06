@@ -58,6 +58,13 @@ public:
     };
     Q_ENUM(Status)
 
+    enum ExtraColor {
+        Positive = 0,
+        Neutral,
+        Negative,
+    };
+    Q_ENUM(ExtraColor)
+
     /**
      * Constructs an SVG object that implicitly shares and caches rendering.
      *
@@ -74,6 +81,11 @@ public:
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
+
+    void setPalette(const QPalette &palette);
+    QPalette palette() const;
+    QColor extraColor(ExtraColor role) const;
+    void setExtraColor(ExtraColor role, const QColor &color);
 
     /**
      * Set the device pixel ratio for the Svg. This is the ratio between

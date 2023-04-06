@@ -18,13 +18,14 @@
 
 #include <cmath> //floor()
 
+#include <Kirigami/PlatformTheme>
+
 namespace KSvg
 {
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
 {
-    setFlag(QQuickItem::ItemHasContents, true);
 }
 
 SvgItem::~SvgItem()
@@ -73,6 +74,14 @@ void SvgItem::setSvg(KSvg::Svg *svg)
         disconnect(m_svg.data(), nullptr, this, nullptr);
     }
     m_svg = svg;
+    // TODO: svg must only be internal
+    auto *kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+    setFlag(QQuickItem::ItemHasContents, true);
+    m_svg->setPalette(kirigamiTheme->palette());
+    m_svg->setExtraColor(Svg::Positive, kirigamiTheme->positiveTextColor());
+    m_svg->setExtraColor(Svg::Neutral, kirigamiTheme->neutralTextColor());
+    m_svg->setExtraColor(Svg::Negative, kirigamiTheme->negativeTextColor());
+
     updateDevicePixelRatio();
 
     if (svg) {

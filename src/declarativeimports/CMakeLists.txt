@@ -23,6 +23,7 @@ target_link_libraries(corebindingsplugin
         KF6::IconThemes
         Qt6::Svg
         KF6::Svg
+        KF6::Kirigami2
 )
 
 ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})

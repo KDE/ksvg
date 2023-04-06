@@ -12,14 +12,13 @@
 #include "theme.h"
 #include <QHash>
 
-#include <KColorScheme>
 #include <KImageCache>
 #include <KPluginMetaData>
 #include <KSharedDataCache>
 #include <QDebug>
 #include <QTimer>
 
-#include "libplasma-theme-global.h"
+#include <KConfigGroup>
 
 namespace KSvg
 {
@@ -50,9 +49,13 @@ public:
     bool useCache();
     void setThemeName(const QString &themeName, bool writeSettings, bool emitChanged);
 
-    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
-    const QString svgStyleSheet(KSvg::Theme::ColorGroup group, KSvg::Svg::Status status);
-    QColor color(Theme::ColorRole role, Theme::ColorGroup group = Theme::NormalColorGroup) const;
+    const QString processStyleSheet(const QString &css,
+                                    KSvg::Svg::Status status,
+                                    const QPalette &palette,
+                                    const QColor &positive,
+                                    const QColor &neutral,
+                                    const QColor &negative);
+    const QString svgStyleSheet(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative, KSvg::Svg::Status status);
 
     /**
      * TODO: timestamp shouldn't be user-provided
@@ -102,7 +105,6 @@ public:
     void insertIntoCache(const QString &key, const QPixmap &pix, const QString &id);
 
 public Q_SLOTS:
-    void colorsChanged();
     void settingsFileChanged(const QString &settings);
     void scheduledCacheUpdate();
     void onAppExitCleanup();
@@ -124,27 +126,18 @@ public:
 
     QString themeName;
     QString basePath;
+    QHash<Svg::ExtraColor, QColor> extraColors;
     KPluginMetaData pluginMetaData;
     QList<QString> fallbackThemes;
     QStringList selectors;
-    KSharedConfigPtr colors;
-    KColorScheme colorScheme;
-    KColorScheme selectionColorScheme;
-    KColorScheme buttonColorScheme;
-    KColorScheme viewColorScheme;
-    KColorScheme complementaryColorScheme;
-    KColorScheme headerColorScheme;
-    KColorScheme tooltipColorScheme;
-    QPalette palette;
-    bool eventFilter(QObject *watched, QEvent *event) override;
     KConfigGroup cfg;
     KImageCache *pixmapCache;
     QHash<QString, QPixmap> pixmapsToCache;
     QHash<QString, QString> keysToCache;
     QHash<QString, QString> idsToCache;
-    QHash<Theme::ColorGroup, QString> cachedSvgStyleSheets;
-    QHash<Theme::ColorGroup, QString> cachedSelectedSvgStyleSheets;
-    QHash<Theme::ColorGroup, QString> cachedInactiveSvgStyleSheets;
+    QHash<qint64, QString> cachedSvgStyleSheets;
+    QHash<qint64, QString> cachedSelectedSvgStyleSheets;
+    QHash<qint64, QString> cachedInactiveSvgStyleSheets;
     QHash<QString, QString> discoveries;
     QTimer *pixmapSaveTimer;
     QTimer *updateNotificationTimer;
