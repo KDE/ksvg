@@ -47,7 +47,8 @@ find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Quick Gui 
 find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
         Archive        # svgz
-        ConfigWidgets  # KColorScheme
+        Config         # rects cache
+        CoreAddons
         GuiAddons      # KImageCache
         IconThemes     # KIconEffect
         Kirigami2

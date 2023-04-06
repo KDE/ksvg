@@ -42,8 +42,6 @@ class KSVG_EXPORT Theme : public QObject
     Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY themeChanged)
 
-    Q_PROPERTY(QPalette palette READ palette NOTIFY themeChanged)
-
 public:
     enum DisplayHint { Normal = 0, Opaque, Translucent };
 
@@ -156,13 +154,6 @@ public:
     bool currentThemeHasImage(const QString &name) const;
 
     /**
-     * Returns the color scheme configurationthat goes along this theme.
-     * This can be used with KStatefulBrush and KColorScheme to determine
-     * the proper colours to use along with the visual elements in this theme.
-     */
-    KSharedConfigPtr colorScheme() const;
-
-    /**
      * Tells the theme whether to follow the global settings or use application
      * specific settings
      *
@@ -175,11 +166,6 @@ public:
      * specific settings are used.
      */
     bool useGlobalSettings() const;
-
-    /**
-     * Returns a QPalette with the colors set as defined by the theme.
-     */
-    QPalette palette() const;
 
     /**
      * Sets the maximum size of the cache (in kilobytes). If cache gets bigger
@@ -197,8 +183,6 @@ public:
      */
     KPluginMetaData metadata() const;
 
-    static QPalette globalPalette();
-
 Q_SIGNALS:
     /**
      * Emitted when the user changes the theme. REndered images, colors, etc. should
@@ -212,6 +196,7 @@ Q_SIGNALS:
 
 private:
     friend class SvgPrivate;
+    friend class Svg;
     friend class FrameSvg;
     friend class FrameSvgPrivate;
     friend class ThemePrivate;

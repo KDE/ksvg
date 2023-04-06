@@ -22,6 +22,8 @@
 
 #include <cmath> //floor()
 
+#include <Kirigami/PlatformTheme>
+
 namespace KSvg
 {
 Q_GLOBAL_STATIC(ImageTexturesCache, s_cache)
@@ -284,6 +286,8 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     , m_fastPath(true)
 {
     m_frameSvg = new KSvg::FrameSvg(this);
+
+    setFlag(QQuickItem::ItemHasContents, true);
     setFlag(ItemHasContents, true);
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
     connect(m_frameSvg, &Svg::fromCurrentThemeChanged, this, &FrameSvgItem::fromCurrentThemeChanged);
@@ -676,6 +680,17 @@ void FrameSvgItem::classBegin()
 
 void FrameSvgItem::componentComplete()
 {
+    m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+
+    auto applyTheme = [this]() {
+        m_frameSvg->setPalette(m_kirigamiTheme->palette());
+        m_frameSvg->setExtraColor(Svg::Positive, m_kirigamiTheme->positiveTextColor());
+        m_frameSvg->setExtraColor(Svg::Neutral, m_kirigamiTheme->neutralTextColor());
+        m_frameSvg->setExtraColor(Svg::Negative, m_kirigamiTheme->negativeTextColor());
+    };
+    applyTheme();
+    connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
+
     CheckMarginsChange checkMargins(m_oldMargins, m_margins);
     CheckMarginsChange checkFixedMargins(m_oldFixedMargins, m_fixedMargins);
     CheckMarginsChange checkInsetMargins(m_oldInsetMargins, m_insetMargins);

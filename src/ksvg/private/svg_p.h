@@ -12,6 +12,7 @@
 #include <QExplicitlySharedDataPointer>
 #include <QHash>
 #include <QObject>
+#include <QPalette>
 #include <QPointer>
 #include <QSharedData>
 #include <QSvgRenderer>
@@ -51,12 +52,15 @@ public:
         double devicePixelRatio;
         double scaleFactor;
         int colorGroup;
+        qint64 paletteKey;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
 
     SvgPrivate(Svg *svg);
     ~SvgPrivate();
+
+    quint64 paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const;
 
     // This function is meant for the rects cache
     CacheId cacheId(QStringView elementId) const;
@@ -106,11 +110,13 @@ public:
     qreal devicePixelRatio;
     qreal scaleFactor;
     Svg::Status status;
+    QPalette palette;
+    QHash<Svg::ExtraColor, QColor> extraColors;
     bool multipleImages : 1;
     bool themed : 1;
     bool useSystemColors : 1;
     bool fromCurrentTheme : 1;
-    bool applyColors : 1;
+    bool applyColors : 1; // TODO: remove? this colorizes the image, doesn't use the stylesheet (it's usesColors)
     bool usesColors : 1;
     bool cacheRendering : 1;
     bool themeFailed : 1;

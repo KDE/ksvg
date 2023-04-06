@@ -12,6 +12,11 @@
 
 #include <KSvg/FrameSvg>
 
+namespace Kirigami
+{
+class PlatformTheme;
+};
+
 namespace KSvg
 {
 class FrameSvg;
@@ -283,6 +288,7 @@ private:
     FrameSvgItemMargins *m_margins;
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;
+    Kirigami::PlatformTheme *m_kirigamiTheme;
     // logged margins to check for changes
     QVector<qreal> m_oldMargins;
     QVector<qreal> m_oldFixedMargins;
