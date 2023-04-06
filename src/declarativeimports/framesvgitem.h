@@ -162,15 +162,6 @@ class FrameSvgItem : public QQuickItem
     Q_PROPERTY(bool fromCurrentTheme READ fromCurrentTheme NOTIFY fromCurrentThemeChanged)
 
     /**
-     * Set a color group for the FrameSvgItem.
-     * if the Svg uses stylesheets and has elements
-     * that are either TextColor or BackgroundColor class,
-     * make them use ButtonTextColor/ButtonBackgroundColor
-     * or ViewTextColor/ViewBackgroundColor, ComplementaryTextColor etc.
-     */
-    Q_PROPERTY(KSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
-
-    /**
      * Sets the image in a selected status.
      * Svgs can be colored with system color themes, if the status is selected,
      * the TextColor will become HighlightedText color and BackgroundColor
@@ -236,9 +227,6 @@ public:
     FrameSvgItemMargins *margins();
     FrameSvgItemMargins *fixedMargins();
     FrameSvgItemMargins *inset();
-
-    void setColorGroup(KSvg::Theme::ColorGroup group);
-    KSvg::Theme::ColorGroup colorGroup() const;
 
     bool fromCurrentTheme() const;
 

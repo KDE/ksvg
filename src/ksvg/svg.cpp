@@ -31,7 +31,7 @@
 
 uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
 {
-    std::array<size_t, 11> parts = {
+    std::array<size_t, 10> parts = {
         ::qHash(id.width),
         ::qHash(id.height),
         ::qHash(id.elementName),
@@ -39,7 +39,6 @@ uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
         ::qHash(id.status),
         ::qHash(id.devicePixelRatio),
         ::qHash(id.scaleFactor),
-        ::qHash(id.colorGroup),
         ::qHash(id.paletteKey),
         ::qHash(id.extraFlags),
         ::qHash(id.lastModified),
@@ -384,7 +383,6 @@ SvgPrivate::SvgPrivate(Svg *svg)
     : q(svg)
     , renderer(nullptr)
     , styleCrc(0)
-    , colorGroup(KSvg::Theme::NormalColorGroup)
     , lastModified(0)
     , devicePixelRatio(1.0)
     , scaleFactor(s_lastScaleFactor)
@@ -418,7 +416,7 @@ quint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, c
 SvgPrivate::CacheId SvgPrivate::cacheId(QStringView elementId) const
 {
     auto idSize = size.isValid() && size != naturalSize ? size : QSizeF{-1.0, -1.0};
-    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, devicePixelRatio, scaleFactor, -1, -1, 0, lastModified};
+    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, devicePixelRatio, scaleFactor, -1, 0, lastModified};
 }
 
 // This function is meant for the pixmap cache
@@ -431,7 +429,6 @@ QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
                            status,
                            devicePixelRatio,
                            scaleFactor,
-                           colorGroup,
                            paletteId(q->palette(), q->extraColor(Svg::Positive), q->extraColor(Svg::Neutral), q->extraColor(Svg::Negative)),
                            0,
                            lastModified};
@@ -676,7 +673,7 @@ void SvgPrivate::createRenderer()
                 originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
                 SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
 
-                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, scaleFactor, -1, -1, 0, lastModified});
+                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, scaleFactor, -1, 0, lastModified});
                 SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
             }
         }
@@ -939,23 +936,6 @@ void Svg::setScaleFactor(qreal ratio)
 qreal Svg::scaleFactor() const
 {
     return d->scaleFactor;
-}
-
-void Svg::setColorGroup(KSvg::Theme::ColorGroup group)
-{
-    if (d->colorGroup == group) {
-        return;
-    }
-
-    d->colorGroup = group;
-    d->renderer = nullptr;
-    Q_EMIT colorGroupChanged();
-    Q_EMIT repaintNeeded();
-}
-
-KSvg::Theme::ColorGroup Svg::colorGroup() const
-{
-    return d->colorGroup;
 }
 
 QPixmap Svg::pixmap(const QString &elementID)

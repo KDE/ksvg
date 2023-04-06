@@ -51,7 +51,6 @@ public:
         int status;
         double devicePixelRatio;
         double scaleFactor;
-        int colorGroup;
         qint64 paletteKey;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
@@ -103,7 +102,6 @@ public:
     QSizeF size;
     QSizeF naturalSize;
     QChar styleCrc;
-    Theme::ColorGroup colorGroup;
     unsigned int lastModified;
     qreal devicePixelRatio;
     qreal scaleFactor;

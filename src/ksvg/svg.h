@@ -47,7 +47,6 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
     Q_PROPERTY(bool fromCurrentTheme READ fromCurrentTheme NOTIFY fromCurrentThemeChanged)
-    Q_PROPERTY(KSvg::Theme::ColorGroup colorGroup READ colorGroup WRITE setColorGroup NOTIFY colorGroupChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
 public:
@@ -116,20 +115,6 @@ public:
      * @param how much to scale the Svg
      */
     void setScaleFactor(qreal factor);
-
-    /**
-     * Set a color group for the Svg.
-     * if the Svg uses stylesheets and has elements
-     * that are either TextColor or BackgroundColor class,
-     * make them use ButtonTextColor/ButtonBackgroundColor
-     * or ViewTextColor/ViewBackgroundColor
-     */
-    void setColorGroup(KSvg::Theme::ColorGroup group);
-
-    /**
-     * @return the color group for this Svg
-     */
-    KSvg::Theme::ColorGroup colorGroup() const;
 
     /**
      * Returns a pixmap of the SVG represented by this object.
@@ -483,11 +468,6 @@ Q_SIGNALS:
      * Emitted whenever the color hint has changed.
      */
     void colorHintChanged();
-
-    /**
-     * Emitted whenever the color group has changed.
-     */
-    void colorGroupChanged();
 
     /**
      * Emitted when fromCurrentTheme() value has changed

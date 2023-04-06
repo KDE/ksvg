@@ -796,7 +796,6 @@ SvgPrivate::CacheId FrameSvgPrivate::cacheId(FrameData *frame, const QString &pr
                                q->status(),
                                q->devicePixelRatio(),
                                q->scaleFactor(),
-                               q->colorGroup(),
                                (uint)frame->enabledBorders,
                                q->Svg::d->lastModified};
 }

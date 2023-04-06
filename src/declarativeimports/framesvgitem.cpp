@@ -433,22 +433,6 @@ FrameSvgItemMargins *FrameSvgItem::inset()
     return m_insetMargins;
 }
 
-void FrameSvgItem::setColorGroup(KSvg::Theme::ColorGroup group)
-{
-    if (m_frameSvg->colorGroup() == group) {
-        return;
-    }
-
-    m_frameSvg->setColorGroup(group);
-
-    Q_EMIT colorGroupChanged();
-}
-
-KSvg::Theme::ColorGroup FrameSvgItem::colorGroup() const
-{
-    return m_frameSvg->colorGroup();
-}
-
 bool FrameSvgItem::fromCurrentTheme() const
 {
     return m_frameSvg->fromCurrentTheme();
