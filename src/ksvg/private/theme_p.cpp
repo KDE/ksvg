@@ -18,8 +18,6 @@
 #include <QGuiApplication>
 
 #include <KDirWatch>
-#include <KIconLoader>
-#include <KIconTheme>
 #include <KSharedConfig>
 #include <kpluginmetadata.h>
 
@@ -115,9 +113,6 @@ ThemePrivate::ThemePrivate(QObject *parent)
     // ... but also remove/recreate cycles, like KConfig does it
     connect(KDirWatch::self(), &KDirWatch::created, this, &ThemePrivate::settingsFileChanged);
 
-    QObject::connect(KIconLoader::global(), &KIconLoader::iconChanged, this, [this]() {
-        scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
-    });
 }
 
 ThemePrivate::~ThemePrivate()
@@ -166,11 +161,6 @@ bool ThemePrivate::useCache()
         }
         themeMetadataPath = configForTheme(basePath, themeName)->name();
         if (isRegularTheme) {
-            const auto *iconTheme = KIconLoader::global()->theme();
-            if (iconTheme) {
-                iconThemeMetadataPath = iconTheme->dir() + QStringLiteral("index.theme");
-            }
-
             const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
 
             QString currentCacheFileName;
@@ -189,10 +179,6 @@ bool ThemePrivate::useCache()
                 KDirWatch::self()->addFile(themeMetadataPath);
                 QObject::connect(KDirWatch::self(), &KDirWatch::created, this, &ThemePrivate::settingsFileChanged, Qt::UniqueConnection);
                 QObject::connect(KDirWatch::self(), &KDirWatch::dirty, this, &ThemePrivate::settingsFileChanged, Qt::UniqueConnection);
-
-                if (!iconThemeMetadataPath.isEmpty()) {
-                    KDirWatch::self()->addFile(iconThemeMetadataPath);
-                }
             }
 
             // now we check for, and remove if necessary, old caches
@@ -235,20 +221,6 @@ bool ThemePrivate::useCache()
 
         if (cachesTooOld) {
             discardCache(PixmapCache | SvgElementsCache);
-        }
-    }
-
-    if (cacheTheme) {
-        QString currentIconThemePath;
-        const auto *iconTheme = KIconLoader::global()->theme();
-        if (iconTheme) {
-            currentIconThemePath = iconTheme->dir();
-        }
-
-        const QString oldIconThemePath = SvgRectsCache::instance()->iconThemePath();
-        if (oldIconThemePath != currentIconThemePath) {
-            discardCache(PixmapCache | SvgElementsCache);
-            SvgRectsCache::instance()->setIconThemePath(currentIconThemePath);
         }
     }
 

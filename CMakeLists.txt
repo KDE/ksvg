@@ -50,7 +50,6 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
         Config         # rects cache
         CoreAddons
         GuiAddons      # KImageCache
-        IconThemes     # KIconEffect
         Kirigami2
 )
 

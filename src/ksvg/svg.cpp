@@ -24,9 +24,6 @@
 
 #include <KCompressionDevice>
 #include <KConfigGroup>
-#include <KIconEffect>
-#include <KIconLoader>
-#include <KIconTheme>
 #include <QDebug>
 
 #include "debug_p.h"
@@ -396,8 +393,6 @@ SvgPrivate::SvgPrivate(Svg *svg)
     , themed(false)
     , useSystemColors(false)
     , fromCurrentTheme(false)
-    , applyColors(false)
-    , usesColors(false)
     , cacheRendering(true)
     , themeFailed(false)
 {
@@ -452,13 +447,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     }
 
     bool isThemed = !actualPath.isEmpty() && !QDir::isAbsolutePath(actualPath);
-    bool inIconTheme = false;
 
-    // an absolute path.. let's try if this actually an *icon* theme
-    if (!isThemed && !actualPath.isEmpty()) {
-        const auto *iconTheme = KIconLoader::global()->theme();
-        isThemed = inIconTheme = iconTheme && actualPath.startsWith(iconTheme->dir());
-    }
     // lets check to see if we're already set to this file
     if (isThemed == themed && ((themed && themePath == actualPath) || (!themed && path == actualPath))) {
         return false;
@@ -482,17 +471,13 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     themePath.clear();
 
     bool oldFromCurrentTheme = fromCurrentTheme;
-    fromCurrentTheme = !inIconTheme && isThemed && actualTheme()->currentThemeHasImage(imagePath);
+    fromCurrentTheme = isThemed && actualTheme()->currentThemeHasImage(imagePath);
 
     if (fromCurrentTheme != oldFromCurrentTheme) {
         Q_EMIT q->fromCurrentThemeChanged(fromCurrentTheme);
     }
 
-    if (inIconTheme) {
-        themePath = actualPath;
-        path = actualPath;
-        QObject::connect(actualTheme(), SIGNAL(themeChanged()), q, SLOT(themeChanged()));
-    } else if (themed) {
+    if (themed) {
         themePath = actualPath;
         path = actualTheme()->imagePath(themePath);
         themeFailed = path.isEmpty();
@@ -525,9 +510,6 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
             }
         }
     }
-
-    // check if svg wants colorscheme applied
-    checkColorHints();
 
     // also images with absolute path needs to have a natural size initialized,
     // even if looks a bit weird using Theme to store non-themed stuff
@@ -639,13 +621,6 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
 
     renderPainter.end();
     p.setDevicePixelRatio(ratio);
-
-    // Apply current color scheme if the svg asks for it
-    if (applyColors) {
-        QImage itmp = p.toImage();
-        KIconEffect::colorize(itmp, q->palette().color(QPalette::Window), 1.0);
-        p = p.fromImage(itmp);
-    }
 
     if (cacheRendering) {
         cacheAndColorsTheme()->d->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
@@ -780,20 +755,6 @@ QRectF SvgPrivate::findAndCacheElementRect(QStringView elementId)
     return elementRect;
 }
 
-void SvgPrivate::checkColorHints()
-{
-    if (elementRect(QStringLiteral("hint-apply-color-scheme")).isValid()) {
-        applyColors = true;
-        usesColors = true;
-    } else if (elementRect(QStringLiteral("current-color-scheme")).isValid()) {
-        applyColors = false;
-        usesColors = true;
-    } else {
-        applyColors = false;
-        usesColors = false;
-    }
-}
-
 bool Svg::eventFilter(QObject *watched, QEvent *event)
 {
     return QObject::eventFilter(watched, event);
@@ -854,11 +815,6 @@ void SvgPrivate::themeChanged()
         return;
     }
 
-    if (themed) {
-        // check if new theme svg wants colorscheme applied
-        checkColorHints();
-    }
-
     QString currentPath = themed ? themePath : path;
     themePath.clear();
     eraseRenderer();
@@ -871,10 +827,6 @@ void SvgPrivate::themeChanged()
 
 void SvgPrivate::colorsChanged()
 {
-    if (!usesColors) {
-        return;
-    }
-
     eraseRenderer();
     qCDebug(LOG_KSVG) << "repaint needed from colorsChanged";
 

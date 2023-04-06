@@ -43,7 +43,6 @@ target_link_libraries(KF6Svg
 PUBLIC
     Qt6::Gui
     KF6::ConfigCore
-    #KF6::Kirigami2
 PRIVATE
     Qt6::Svg
     Qt6::Quick
@@ -51,9 +50,6 @@ PRIVATE
     KF6::CoreAddons
     KF6::GuiAddons #kimagecache
     KF6::ConfigCore
-    KF6::IconThemes
-
-    ${KSVG_EXTRA_LIBS}
 )
 
 set(KSvg_BUILD_INCLUDE_DIRS

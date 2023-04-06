@@ -21,6 +21,8 @@ namespace KSvg
 class ThemePrivate;
 class SvgPrivate;
 
+// TODO: move in the plasma part the watching and regeneration of icon themes
+
 /**
  * @class Theme ksvg/theme.h <KSvg/Theme>
  *

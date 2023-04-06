@@ -81,8 +81,6 @@ public:
     QRectF elementRect(QStringView elementId);
     QRectF findAndCacheElementRect(QStringView elementId);
 
-    void checkColorHints();
-
     // Following two are utility functions to snap rendered elements to the pixel grid
     // to and from are always 0 <= val <= 1
     qreal closestDistance(qreal to, qreal from);
@@ -116,8 +114,6 @@ public:
     bool themed : 1;
     bool useSystemColors : 1;
     bool fromCurrentTheme : 1;
-    bool applyColors : 1; // TODO: remove? this colorizes the image, doesn't use the stylesheet (it's usesColors)
-    bool usesColors : 1;
     bool cacheRendering : 1;
     bool themeFailed : 1;
 };
