@@ -421,7 +421,7 @@ public:
      *
      * @return  the theme used by this Svg
      */
-    ImageSet *theme() const;
+    ImageSet *imageSet() const;
 
     /**
      * Sets the image in a selected status.

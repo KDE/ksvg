@@ -43,7 +43,6 @@ void SvgItem::componentComplete()
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
 
     auto applyTheme = [this]() {
-        qWarning() << "BLEARCGH" << m_kirigamiTheme->palette();
         m_svg->setPalette(m_kirigamiTheme->palette());
         m_svg->setExtraColor(Svg::Positive, m_kirigamiTheme->positiveTextColor());
         m_svg->setExtraColor(Svg::Neutral, m_kirigamiTheme->neutralTextColor());

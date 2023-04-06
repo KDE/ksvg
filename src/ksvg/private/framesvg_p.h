@@ -40,7 +40,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
-        , theme(nullptr)
+        , imageSet(nullptr)
     {
     }
 
@@ -63,7 +63,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
-        , theme(nullptr)
+        , imageSet(nullptr)
     {
     }
 
@@ -120,7 +120,7 @@ public:
     bool tileCenter : 1;
     bool composeOverBorder : 1;
 
-    KSvg::ImageSetPrivate *theme;
+    KSvg::ImageSetPrivate *imageSet;
 };
 
 class FrameSvgPrivate

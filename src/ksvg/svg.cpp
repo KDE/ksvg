@@ -875,7 +875,7 @@ QColor Svg::extraColor(Svg::ExtraColor role) const
     if (it != d->extraColors.constEnd()) {
         return *it;
     }
-    return theme()->d->extraColors.value(role);
+    return imageSet()->d->extraColors.value(role);
 }
 
 void Svg::setExtraColor(Svg::ExtraColor role, const QColor &color)
@@ -1145,7 +1145,7 @@ void Svg::setImageSet(KSvg::ImageSet *theme)
     d->imageSetChanged();
 }
 
-ImageSet *Svg::theme() const
+ImageSet *Svg::imageSet() const
 {
     return d->actualImageSet();
 }

@@ -37,7 +37,7 @@ static const int MAX_FRAME_SIZE = 100000;
 
 FrameData::~FrameData()
 {
-    FrameSvgPrivate::s_sharedFrames[theme].remove(cacheId);
+    FrameSvgPrivate::s_sharedFrames[imageSet].remove(cacheId);
 }
 
 FrameSvg::FrameSvg(QObject *parent)
@@ -490,7 +490,7 @@ QSharedPointer<FrameData>
 FrameSvgPrivate::lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame, const QString &maskPrefix, const QString &maskRequestedPrefix)
 {
     const uint key = qHash(cacheId(frame.data(), maskPrefix));
-    QSharedPointer<FrameData> mask = s_sharedFrames[q->theme()->d].value(key);
+    QSharedPointer<FrameData> mask = s_sharedFrames[q->imageSet()->d].value(key);
 
     // See if we can find a suitable candidate in the shared frames.
     // If there is one, use it.
@@ -501,13 +501,13 @@ FrameSvgPrivate::lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame,
     mask.reset(new FrameData(*frame.data(), q));
     mask->prefix = maskPrefix;
     mask->requestedPrefix = maskRequestedPrefix;
-    mask->theme = q->theme()->d;
+    mask->imageSet = q->imageSet()->d;
     mask->imagePath = frame->imagePath;
     mask->enabledBorders = frame->enabledBorders;
     mask->frameSize = frameSize(frame).toSize();
     mask->cacheId = key;
     mask->lastModified = frame->lastModified;
-    s_sharedFrames[q->theme()->d].insert(key, mask);
+    s_sharedFrames[q->imageSet()->d].insert(key, mask);
 
     return mask;
 }
@@ -526,11 +526,11 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
     const bool overlayAvailable = !frame->prefix.startsWith(QLatin1String("mask-")) && q->hasElement(frame->prefix % QLatin1String("overlay"));
     QPixmap overlay;
     if (q->isUsingRenderingCache()) {
-        frameCached = q->theme()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
+        frameCached = q->imageSet()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
 
         if (overlayAvailable) {
             const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
-            overlayCached = q->theme()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
+            overlayCached = q->imageSet()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
         }
     }
 
@@ -679,7 +679,7 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
         }
 
         // qCDebug(LOG_KSVG) << "looking for" << newKey;
-        auto newFd = FrameSvgPrivate::s_sharedFrames[q->theme()->d].value(newKey);
+        auto newFd = FrameSvgPrivate::s_sharedFrames[q->imageSet()->d].value(newKey);
         if (newFd) {
             // qCDebug(LOG_KSVG) << "FOUND IT!" << newFd->refcount;
             // we've found a match, use that one
@@ -707,9 +707,9 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
     }
 
     // we know it isn't in s_sharedFrames due to the check above, so insert it now
-    FrameSvgPrivate::s_sharedFrames[q->theme()->d].insert(newKey, fd);
+    FrameSvgPrivate::s_sharedFrames[q->imageSet()->d].insert(newKey, fd);
     fd->cacheId = newKey;
-    fd->theme = q->theme()->d;
+    fd->imageSet = q->imageSet()->d;
     if (updateType == UpdateFrameAndMargins) {
         updateAndSignalSizes();
     } else {
@@ -815,12 +815,12 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
     // qCDebug(LOG_KSVG)<<"Saving to cache frame"<<id;
 
-    q->theme()->d->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
+    q->imageSet()->d->insertIntoCache(QString::number(id), background, QString::number((qint64)q, 16) % prefixToSave);
 
     if (!overlay.isNull()) {
         // insert overlay
         const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
-        q->theme()->d->insertIntoCache(QString::number(overlayId), overlay, QString::number((qint64)q, 16) % prefixToSave % QLatin1String("overlay"));
+        q->imageSet()->d->insertIntoCache(QString::number(overlayId), overlay, QString::number((qint64)q, 16) % prefixToSave % QLatin1String("overlay"));
     }
 }
 
