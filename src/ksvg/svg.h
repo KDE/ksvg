@@ -34,7 +34,7 @@ class SvgPrivate;
  *
  * KSvg::Svg provides a class for rendering SVG images to a QPainter in a
  * convenient manner. Unless an absolute path to a file is provided, it loads
- * the SVG document using KSvg::Theme. It also provides a number of internal
+ * the SVG document using KSvg::ImageSet. It also provides a number of internal
  * optimizations to help lower the cost of painting SVGs, such as caching.
  *
  * @see KSvg::FrameSvg
@@ -46,7 +46,7 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(bool multipleImages READ containsMultipleImages WRITE setContainsMultipleImages)
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
-    Q_PROPERTY(bool fromCurrentTheme READ fromCurrentTheme NOTIFY fromCurrentThemeChanged)
+    Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
 public:
@@ -76,7 +76,7 @@ public:
      *
      * @param parent options QObject to parent this to
      *
-     * @related KSvg::Theme
+     * @related KSvg::ImageSet
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
@@ -330,7 +330,7 @@ public:
      *
      * Relative paths are looked for in the current Svg theme,
      * and should not include the file extension (.svg and .svgz
-     * files will be searched for).  See Theme::imagePath().
+     * files will be searched for).  See ImageSet::imagePath().
      *
      * If the parent object of this Svg is a KSvg::Applet,
      * relative paths will be searched for in the applet's package
@@ -348,7 +348,7 @@ public:
      * include a file extension.
      *
      * @return  either an absolute path to an SVG file, or an image name
-     * @see Theme::imagePath()
+     * @see ImageSet::imagePath()
      */
     QString imagePath() const;
 
@@ -383,9 +383,9 @@ public:
      * to the default theme involved
      *
      * @return true if the svg is loaded from the current theme
-     * @see Theme::currentThemeHasImage
+     * @see ImageSet::currentImageSetHasImage
      */
-    bool fromCurrentTheme() const;
+    bool fromCurrentImageSet() const;
 
     /**
      * Sets whether the Svg uses the global system theme for its colors or
@@ -403,25 +403,25 @@ public:
     bool useSystemColors() const;
 
     /**
-     * Sets the KSvg::Theme to use with this Svg object.
+     * Sets the KSvg::ImageSet to use with this Svg object.
      *
-     * By default, Svg objects use KSvg::Theme::default().
+     * By default, Svg objects use KSvg::ImageSet::default().
      *
      * This determines how relative image paths are interpreted.
      *
      * @param theme  the theme object to use
      * @since 4.3
      */
-    void setTheme(KSvg::Theme *theme);
+    void setImageSet(KSvg::ImageSet *theme);
 
     /**
-     * The KSvg::Theme used by this Svg object.
+     * The KSvg::ImageSet used by this Svg object.
      *
      * This determines how relative image paths are interpreted.
      *
      * @return  the theme used by this Svg
      */
-    Theme *theme() const;
+    ImageSet *theme() const;
 
     /**
      * Sets the image in a selected status.
@@ -444,7 +444,7 @@ Q_SIGNALS:
     /**
      * Emitted whenever the SVG data has changed in such a way that a repaint is required.
      * Any usage of an Svg object that does the painting itself must connect to this signal
-     * and respond by updating the painting. Note that connected to Theme::themeChanged is
+     * and respond by updating the painting. Note that connected to ImageSet::imageSetChanged is
      * incorrect in such a use case as the Svg itself may not be updated yet nor may theme
      * change be the only case when a repaint is needed. Also note that classes or QML code
      * which take Svg objects as parameters for their own painting all respond to this signal
@@ -470,9 +470,9 @@ Q_SIGNALS:
     void colorHintChanged();
 
     /**
-     * Emitted when fromCurrentTheme() value has changed
+     * Emitted when fromCurrentImageSet() value has changed
      */
-    void fromCurrentThemeChanged(bool fromCurrentTheme);
+    void fromCurrentImageSetChanged(bool fromCurrentImageSet);
 
     /**
      * Emitted when the status changes
@@ -484,7 +484,7 @@ private:
     SvgPrivate *const d;
     bool eventFilter(QObject *watched, QEvent *event) override;
 
-    Q_PRIVATE_SLOT(d, void themeChanged())
+    Q_PRIVATE_SLOT(d, void imageSetChanged())
     Q_PRIVATE_SLOT(d, void colorsChanged())
 
     friend class SvgPrivate;

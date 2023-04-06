@@ -390,7 +390,7 @@ SvgPrivate::SvgPrivate(Svg *svg)
     , multipleImages(false)
     , themed(false)
     , useSystemColors(false)
-    , fromCurrentTheme(false)
+    , fromCurrentImageSet(false)
     , cacheRendering(true)
     , themeFailed(false)
 {
@@ -456,7 +456,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     // then lets not schedule a repaint because we are just initializing!
     bool updateNeeded = true; //! path.isEmpty() || !themePath.isEmpty();
 
-    QObject::disconnect(actualTheme(), SIGNAL(themeChanged()), q, SLOT(themeChanged()));
+    QObject::disconnect(actualImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()));
     if (isThemed && !themed && s_systemColorsCache) {
         // catch the case where we weren't themed, but now we are, and the colors cache was set up
         // ensure we are not connected to that theme previously
@@ -467,20 +467,20 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     path.clear();
     themePath.clear();
 
-    bool oldFromCurrentTheme = fromCurrentTheme;
-    fromCurrentTheme = isThemed && actualTheme()->currentThemeHasImage(imagePath);
+    bool oldfromCurrentImageSet = fromCurrentImageSet;
+    fromCurrentImageSet = isThemed && actualImageSet()->currentImageSetHasImage(imagePath);
 
-    if (fromCurrentTheme != oldFromCurrentTheme) {
-        Q_EMIT q->fromCurrentThemeChanged(fromCurrentTheme);
+    if (fromCurrentImageSet != oldfromCurrentImageSet) {
+        Q_EMIT q->fromCurrentImageSetChanged(fromCurrentImageSet);
     }
 
     if (themed) {
         themePath = actualPath;
-        path = actualTheme()->imagePath(themePath);
+        path = actualImageSet()->imagePath(themePath);
         themeFailed = path.isEmpty();
-        QObject::connect(actualTheme(), SIGNAL(themeChanged()), q, SLOT(themeChanged()));
+        QObject::connect(actualImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()));
     } else if (QFileInfo::exists(actualPath)) {
-        QObject::connect(cacheAndColorsTheme(), SIGNAL(themeChanged()), q, SLOT(themeChanged()), Qt::UniqueConnection);
+        QObject::connect(cacheAndColorsImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()), Qt::UniqueConnection);
         path = actualPath;
     } else {
 #ifndef NDEBUG
@@ -509,7 +509,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     }
 
     // also images with absolute path needs to have a natural size initialized,
-    // even if looks a bit weird using Theme to store non-themed stuff
+    // even if looks a bit weird using ImageSet to store non-themed stuff
     if ((themed && !path.isEmpty() && lastModifiedDate.isValid()) || QFileInfo::exists(actualPath)) {
         naturalSize = SvgRectsCache::instance()->naturalSize(path, scaleFactor);
         if (naturalSize.isEmpty()) {
@@ -525,24 +525,24 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     return updateNeeded;
 }
 
-Theme *SvgPrivate::actualTheme()
+ImageSet *SvgPrivate::actualImageSet()
 {
     if (!theme) {
-        theme = new KSvg::Theme(q);
+        theme = new KSvg::ImageSet(q);
     }
 
     return theme.data();
 }
 
-Theme *SvgPrivate::cacheAndColorsTheme()
+ImageSet *SvgPrivate::cacheAndColorsImageSet()
 {
     if (themed || !useSystemColors) {
-        return actualTheme();
+        return actualImageSet();
     } else {
         // use a separate cache source for unthemed svg's
         if (!s_systemColorsCache) {
             // FIXME: reference count this, so that it is deleted when no longer in use
-            s_systemColorsCache = new KSvg::Theme(QStringLiteral("internal-system-colors"));
+            s_systemColorsCache = new KSvg::ImageSet(QStringLiteral("internal-system-colors"));
         }
 
         return s_systemColorsCache.data();
@@ -593,7 +593,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
 
     QPixmap p;
     if (cacheRendering && lastModified == SvgRectsCache::instance()->lastModifiedTimeFromCache(path)
-        && cacheAndColorsTheme()->d->findInCache(id, p, lastModified)) {
+        && cacheAndColorsImageSet()->d->findInCache(id, p, lastModified)) {
         p.setDevicePixelRatio(ratio);
         // qCDebug(LOG_KSVG) << "found cached version of " << id << p.size();
         return p;
@@ -620,7 +620,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     p.setDevicePixelRatio(ratio);
 
     if (cacheRendering) {
-        cacheAndColorsTheme()->d->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
+        cacheAndColorsImageSet()->d->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
     }
 
     SvgRectsCache::instance()->updateLastModified(path, lastModified);
@@ -636,7 +636,7 @@ void SvgPrivate::createRenderer()
 
     if (themed && path.isEmpty() && !themeFailed) {
         if (path.isEmpty()) {
-            path = actualTheme()->imagePath(themePath);
+            path = actualImageSet()->imagePath(themePath);
             themeFailed = path.isEmpty();
             if (themeFailed) {
                 qCWarning(LOG_KSVG) << "No image path found for" << themePath;
@@ -644,8 +644,11 @@ void SvgPrivate::createRenderer()
         }
     }
 
-    QString styleSheet =
-        cacheAndColorsTheme()->d->svgStyleSheet(q->palette(), q->extraColor(Svg::Positive), q->extraColor(Svg::Neutral), q->extraColor(Svg::Negative), status);
+    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(q->palette(),
+                                                                    q->extraColor(Svg::Positive),
+                                                                    q->extraColor(Svg::Neutral),
+                                                                    q->extraColor(Svg::Negative),
+                                                                    status);
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
     QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
@@ -704,7 +707,7 @@ QRectF SvgPrivate::elementRect(QStringView elementId)
             return QRectF();
         }
 
-        path = actualTheme()->imagePath(themePath);
+        path = actualImageSet()->imagePath(themePath);
         themeFailed = path.isEmpty();
 
         if (themeFailed) {
@@ -806,7 +809,7 @@ QRectF SvgPrivate::makeUniform(const QRectF &orig, const QRectF &dst)
     return res;
 }
 
-void SvgPrivate::themeChanged()
+void SvgPrivate::imageSetChanged()
 {
     if (q->imagePath().isEmpty()) {
         return;
@@ -831,7 +834,7 @@ void SvgPrivate::colorsChanged()
 }
 
 QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
-QPointer<Theme> SvgPrivate::s_systemColorsCache;
+QPointer<ImageSet> SvgPrivate::s_systemColorsCache;
 qreal SvgPrivate::s_lastScaleFactor = 1.0;
 
 Svg::Svg(QObject *parent)
@@ -1107,9 +1110,9 @@ bool Svg::isUsingRenderingCache() const
     return d->cacheRendering;
 }
 
-bool Svg::fromCurrentTheme() const
+bool Svg::fromCurrentImageSet() const
 {
-    return d->fromCurrentTheme;
+    return d->fromCurrentImageSet;
 }
 
 void Svg::setUseSystemColors(bool system)
@@ -1127,7 +1130,7 @@ bool Svg::useSystemColors() const
     return d->useSystemColors;
 }
 
-void Svg::setTheme(KSvg::Theme *theme)
+void Svg::setImageSet(KSvg::ImageSet *theme)
 {
     if (!theme || theme == d->theme.data()) {
         return;
@@ -1138,13 +1141,13 @@ void Svg::setTheme(KSvg::Theme *theme)
     }
 
     d->theme = theme;
-    connect(theme, SIGNAL(themeChanged()), this, SLOT(themeChanged()));
-    d->themeChanged();
+    connect(theme, SIGNAL(imageSetChanged()), this, SLOT(imageSetChanged()));
+    d->imageSetChanged();
 }
 
-Theme *Svg::theme() const
+ImageSet *Svg::theme() const
 {
-    return d->actualTheme();
+    return d->actualImageSet();
 }
 
 void Svg::setStatus(KSvg::Svg::Status status)

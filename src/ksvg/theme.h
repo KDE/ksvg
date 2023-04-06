@@ -18,47 +18,47 @@ class KPluginMetaData;
 
 namespace KSvg
 {
-class ThemePrivate;
+class ImageSetPrivate;
 class SvgPrivate;
 
 // TODO: move in the plasma part the watching and regeneration of icon themes
 
 /**
- * @class Theme ksvg/theme.h <KSvg/Theme>
+ * @class ImageSet ksvg/theme.h <KSvg/ImageSet>
  *
  * @short Interface to the Svg theme
  *
  *
- * KSvg::Theme provides access to a common and standardized set of graphic
+ * KSvg::ImageSet provides access to a common and standardized set of graphic
  * elements stored in SVG format. This allows artists to create single packages
  * of SVGs that will affect the look and feel of all workspace components.
  *
- * KSvg::Svg uses KSvg::Theme internally to locate and load the appropriate
- * SVG data. Alternatively, KSvg::Theme can be used directly to retrieve
+ * KSvg::Svg uses KSvg::ImageSet internally to locate and load the appropriate
+ * SVG data. Alternatively, KSvg::ImageSet can be used directly to retrieve
  * file system paths to SVGs by name.
  */
-class KSVG_EXPORT Theme : public QObject
+class KSVG_EXPORT ImageSet : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString themeName READ themeName NOTIFY themeChanged)
-    Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY themeChanged)
+    Q_PROPERTY(QString imageSetName READ imageSetName NOTIFY imageSetChanged)
+    Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY imageSetChanged)
 
 public:
     /**
      * Default constructor. It will be the global theme configured in plasmarc
      * @param parent the parent object
      */
-    explicit Theme(QObject *parent = nullptr);
+    explicit ImageSet(QObject *parent = nullptr);
 
     /**
-     * Construct a theme. It will be a custom theme instance of themeName.
-     * @param themeName the name of the theme to create
+     * Construct a theme. It will be a custom theme instance of imageSetName.
+     * @param imageSetName the name of the theme to create
      * @param parent the parent object
      */
-    explicit Theme(const QString &themeName, QObject *parent = nullptr);
+    explicit ImageSet(const QString &imageSetName, QObject *parent = nullptr);
 
-    ~Theme() override;
+    ~ImageSet() override;
 
     /**
      * Sets a base path for the theme to look for svgs.
@@ -93,12 +93,12 @@ public:
     /**
      * Sets the current theme being used.
      */
-    void setThemeName(const QString &themeName);
+    void setImageSetName(const QString &imageSetName);
 
     /**
      * @return the name of the theme.
      */
-    QString themeName() const;
+    QString imageSetName() const;
 
     /**
      * Retrieve the path for an SVG image in the current theme.
@@ -125,7 +125,7 @@ public:
      *           ".svg" part or a leading slash)
      * @return true if the image exists for this theme
      */
-    bool currentThemeHasImage(const QString &name) const;
+    bool currentImageSetHasImage(const QString &name) const;
 
     /**
      * Tells the theme whether to follow the global settings or use application
@@ -162,19 +162,19 @@ Q_SIGNALS:
      * Emitted when the user changes the theme. REndered images, colors, etc. should
      * be updated at this point. However, SVGs should *not* be repainted in response
      * to this signal; connect to Svg::repaintNeeded() instead for that, as Svg objects
-     * need repainting not only when themeChanged() is emitted; moreover Svg objects
-     * connect to and respond appropriately to themeChanged() internally, emitting
+     * need repainting not only when imageSetChanged() is emitted; moreover Svg objects
+     * connect to and respond appropriately to imageSetChanged() internally, emitting
      * Svg::repaintNeeded() at an appropriate time.
      */
-    void themeChanged();
+    void imageSetChanged();
 
 private:
     friend class SvgPrivate;
     friend class Svg;
     friend class FrameSvg;
     friend class FrameSvgPrivate;
-    friend class ThemePrivate;
-    ThemePrivate *d;
+    friend class ImageSetPrivate;
+    ImageSetPrivate *d;
 };
 
 } // KSvg namespace

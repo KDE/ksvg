@@ -69,8 +69,8 @@ public:
 
     bool setImagePath(const QString &imagePath);
 
-    Theme *actualTheme();
-    Theme *cacheAndColorsTheme();
+    ImageSet *actualImageSet();
+    ImageSet *cacheAndColorsImageSet();
 
     QPixmap findInCache(const QString &elementId, qreal ratio, const QSizeF &s = QSizeF());
 
@@ -87,15 +87,15 @@ public:
     QRectF makeUniform(const QRectF &orig, const QRectF &dst);
 
     // Slots
-    void themeChanged();
+    void imageSetChanged();
     void colorsChanged();
 
     static QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
-    static QPointer<Theme> s_systemColorsCache;
+    static QPointer<ImageSet> s_systemColorsCache;
     static qreal s_lastScaleFactor;
 
     Svg *q;
-    QPointer<Theme> theme;
+    QPointer<ImageSet> theme;
     SharedSvgRenderer::Ptr renderer;
     QString themePath;
     QString path;
@@ -111,7 +111,7 @@ public:
     bool multipleImages : 1;
     bool themed : 1;
     bool useSystemColors : 1;
-    bool fromCurrentTheme : 1;
+    bool fromCurrentImageSet : 1;
     bool cacheRendering : 1;
     bool themeFailed : 1;
 };

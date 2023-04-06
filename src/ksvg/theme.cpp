@@ -25,30 +25,30 @@
 
 namespace KSvg
 {
-Theme::Theme(QObject *parent)
+ImageSet::ImageSet(QObject *parent)
     : QObject(parent)
 {
-    if (!ThemePrivate::globalTheme) {
-        ThemePrivate::globalTheme = new ThemePrivate;
-        ThemePrivate::globalTheme->settingsChanged(false);
+    if (!ImageSetPrivate::globalImageSet) {
+        ImageSetPrivate::globalImageSet = new ImageSetPrivate;
+        ImageSetPrivate::globalImageSet->settingsChanged(false);
         if (QCoreApplication::instance()) {
-            connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, ThemePrivate::globalTheme, &ThemePrivate::onAppExitCleanup);
+            connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, ImageSetPrivate::globalImageSet, &ImageSetPrivate::onAppExitCleanup);
         }
     }
-    ThemePrivate::globalTheme->ref.ref();
-    d = ThemePrivate::globalTheme;
+    ImageSetPrivate::globalImageSet->ref.ref();
+    d = ImageSetPrivate::globalImageSet;
 
-    connect(d, &ThemePrivate::themeChanged, this, &Theme::themeChanged);
+    connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
 }
 
-Theme::Theme(const QString &themeName, QObject *parent)
+ImageSet::ImageSet(const QString &imageSetName, QObject *parent)
     : QObject(parent)
 {
-    auto &priv = ThemePrivate::themes[themeName];
+    auto &priv = ImageSetPrivate::themes[imageSetName];
     if (!priv) {
-        priv = new ThemePrivate;
+        priv = new ImageSetPrivate;
         if (QCoreApplication::instance()) {
-            connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ThemePrivate::onAppExitCleanup);
+            connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ImageSetPrivate::onAppExitCleanup);
         }
     }
 
@@ -56,31 +56,31 @@ Theme::Theme(const QString &themeName, QObject *parent)
     d = priv;
 
     // turn off caching so we don't accidentally trigger unnecessary disk activity at this point
-    bool useCache = d->cacheTheme;
-    d->cacheTheme = false;
-    d->setThemeName(themeName, false, false);
-    d->cacheTheme = useCache;
+    bool useCache = d->cacheImageSet;
+    d->cacheImageSet = false;
+    d->setImageSetName(imageSetName, false, false);
+    d->cacheImageSet = useCache;
     d->fixedName = true;
-    connect(d, &ThemePrivate::themeChanged, this, &Theme::themeChanged);
+    connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
 }
 
-Theme::~Theme()
+ImageSet::~ImageSet()
 {
-    if (d == ThemePrivate::globalTheme) {
+    if (d == ImageSetPrivate::globalImageSet) {
         if (!d->ref.deref()) {
-            disconnect(ThemePrivate::globalTheme, nullptr, this, nullptr);
-            delete ThemePrivate::globalTheme;
-            ThemePrivate::globalTheme = nullptr;
+            disconnect(ImageSetPrivate::globalImageSet, nullptr, this, nullptr);
+            delete ImageSetPrivate::globalImageSet;
+            ImageSetPrivate::globalImageSet = nullptr;
             d = nullptr;
         }
     } else {
         if (!d->ref.deref()) {
-            delete ThemePrivate::themes.take(d->themeName);
+            delete ImageSetPrivate::themes.take(d->imageSetName);
         }
     }
 }
 
-void Theme::setBasePath(const QString &basePath)
+void ImageSet::setBasePath(const QString &basePath)
 {
     if (d->basePath == basePath) {
         return;
@@ -88,86 +88,86 @@ void Theme::setBasePath(const QString &basePath)
 
     d->basePath = basePath;
 
-    d->scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
+    d->scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
 }
 
-QString Theme::basePath() const
+QString ImageSet::basePath() const
 {
     return d->basePath;
 }
 
-void Theme::setSelectors(const QStringList &selectors)
+void ImageSet::setSelectors(const QStringList &selectors)
 {
     d->selectors = selectors;
-    d->scheduleThemeChangeNotification(PixmapCache | SvgElementsCache);
+    d->scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
 }
 
-QStringList Theme::selectors() const
+QStringList ImageSet::selectors() const
 {
     return d->selectors;
 }
 
-void Theme::setThemeName(const QString &themeName)
+void ImageSet::setImageSetName(const QString &imageSetName)
 {
-    if (d->themeName == themeName) {
+    if (d->imageSetName == imageSetName) {
         return;
     }
 
-    if (d != ThemePrivate::globalTheme) {
+    if (d != ImageSetPrivate::globalImageSet) {
         disconnect(QCoreApplication::instance(), nullptr, d, nullptr);
         if (!d->ref.deref()) {
-            delete ThemePrivate::themes.take(d->themeName);
+            delete ImageSetPrivate::themes.take(d->imageSetName);
         }
 
-        auto &priv = ThemePrivate::themes[themeName];
+        auto &priv = ImageSetPrivate::themes[imageSetName];
         if (!priv) {
-            priv = new ThemePrivate;
+            priv = new ImageSetPrivate;
             if (QCoreApplication::instance()) {
-                connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ThemePrivate::onAppExitCleanup);
+                connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ImageSetPrivate::onAppExitCleanup);
             }
         }
         priv->ref.ref();
         d = priv;
-        connect(d, &ThemePrivate::themeChanged, this, &Theme::themeChanged);
+        connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
     }
 
-    d->setThemeName(themeName, true, true);
+    d->setImageSetName(imageSetName, true, true);
 }
 
-QString Theme::themeName() const
+QString ImageSet::imageSetName() const
 {
-    return d->themeName;
+    return d->imageSetName;
 }
 
-QString Theme::imagePath(const QString &name) const
+QString ImageSet::imagePath(const QString &name) const
 {
     // look for a compressed svg file in the theme
     if (name.contains(QLatin1String("../")) || name.isEmpty()) {
         // we don't support relative paths
-        // qCDebug(LOG_KSVG) << "Theme says: bad image path " << name;
+        // qCDebug(LOG_KSVG) << "ImageSet says: bad image path " << name;
         return QString();
     }
 
     const QString svgzName = name % QLatin1String(".svgz");
-    QString path = d->findInTheme(svgzName, d->themeName);
+    QString path = d->findInImageSet(svgzName, d->imageSetName);
 
     if (path.isEmpty()) {
         // try for an uncompressed svg file
         const QString svgName = name % QLatin1String(".svg");
-        path = d->findInTheme(svgName, d->themeName);
+        path = d->findInImageSet(svgName, d->imageSetName);
 
         // search in fallback themes if necessary
-        for (int i = 0; path.isEmpty() && i < d->fallbackThemes.count(); ++i) {
-            if (d->themeName == d->fallbackThemes[i]) {
+        for (int i = 0; path.isEmpty() && i < d->fallbackImageSets.count(); ++i) {
+            if (d->imageSetName == d->fallbackImageSets[i]) {
                 continue;
             }
 
             // try a compressed svg file in the fallback theme
-            path = d->findInTheme(svgzName, d->fallbackThemes[i]);
+            path = d->findInImageSet(svgzName, d->fallbackImageSets[i]);
 
             if (path.isEmpty()) {
                 // try an uncompressed svg file in the fallback theme
-                path = d->findInTheme(svgName, d->fallbackThemes[i]);
+                path = d->findInImageSet(svgName, d->fallbackImageSets[i]);
             }
         }
     }
@@ -175,46 +175,46 @@ QString Theme::imagePath(const QString &name) const
     return path;
 }
 
-QString Theme::filePath(const QString &name) const
+QString ImageSet::filePath(const QString &name) const
 {
     // look for a compressed svg file in the theme
     if (name.contains(QLatin1String("../")) || name.isEmpty()) {
         // we don't support relative paths
-        // qCDebug(LOG_KSVG) << "Theme says: bad image path " << name;
+        // qCDebug(LOG_KSVG) << "ImageSet says: bad image path " << name;
         return QString();
     }
 
-    QString path = d->findInTheme(name, d->themeName);
+    QString path = d->findInImageSet(name, d->imageSetName);
 
     if (path.isEmpty()) {
         // search in fallback themes if necessary
-        for (int i = 0; path.isEmpty() && i < d->fallbackThemes.count(); ++i) {
-            if (d->themeName == d->fallbackThemes[i]) {
+        for (int i = 0; path.isEmpty() && i < d->fallbackImageSets.count(); ++i) {
+            if (d->imageSetName == d->fallbackImageSets[i]) {
                 continue;
             }
 
-            path = d->findInTheme(name, d->fallbackThemes[i]);
+            path = d->findInImageSet(name, d->fallbackImageSets[i]);
         }
     }
 
     return path;
 }
 
-bool Theme::currentThemeHasImage(const QString &name) const
+bool ImageSet::currentImageSetHasImage(const QString &name) const
 {
     if (name.contains(QLatin1String("../"))) {
         // we don't support relative paths
         return false;
     }
 
-    QString path = d->findInTheme(name % QLatin1String(".svgz"), d->themeName);
+    QString path = d->findInImageSet(name % QLatin1String(".svgz"), d->imageSetName);
     if (path.isEmpty()) {
-        path = d->findInTheme(name % QLatin1String(".svg"), d->themeName);
+        path = d->findInImageSet(name % QLatin1String(".svg"), d->imageSetName);
     }
-    return path.contains(d->basePath % d->themeName);
+    return path.contains(d->basePath % d->imageSetName);
 }
 
-void Theme::setUseGlobalSettings(bool useGlobal)
+void ImageSet::setUseGlobalSettings(bool useGlobal)
 {
     if (d->useGlobal == useGlobal) {
         return;
@@ -222,23 +222,23 @@ void Theme::setUseGlobalSettings(bool useGlobal)
 
     d->useGlobal = useGlobal;
     d->cfg = KConfigGroup();
-    d->themeName.clear();
+    d->imageSetName.clear();
     d->settingsChanged(true);
 }
 
-bool Theme::useGlobalSettings() const
+bool ImageSet::useGlobalSettings() const
 {
     return d->useGlobal;
 }
 
-void Theme::setCacheLimit(int kbytes)
+void ImageSet::setCacheLimit(int kbytes)
 {
     d->cacheSize = kbytes;
     delete d->pixmapCache;
     d->pixmapCache = nullptr;
 }
 
-KPluginMetaData Theme::metadata() const
+KPluginMetaData ImageSet::metadata() const
 {
     return d->pluginMetaData;
 }

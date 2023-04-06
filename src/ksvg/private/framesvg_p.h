@@ -120,7 +120,7 @@ public:
     bool tileCenter : 1;
     bool composeOverBorder : 1;
 
-    KSvg::ThemePrivate *theme;
+    KSvg::ImageSetPrivate *theme;
 };
 
 class FrameSvgPrivate
@@ -189,7 +189,7 @@ public:
     // this can differ from frame->frameSize if we are in a transition
     QSize pendingFrameSize;
 
-    static QHash<ThemePrivate *, QHash<uint, QWeakPointer<FrameData>>> s_sharedFrames;
+    static QHash<ImageSetPrivate *, QHash<uint, QWeakPointer<FrameData>>> s_sharedFrames;
 
     bool cacheAll : 1;
     bool repaintBlocked : 1;

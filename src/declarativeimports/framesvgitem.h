@@ -159,7 +159,7 @@ class FrameSvgItem : public QQuickItem
     /**
      * Holds whether the current svg is present in the current theme and NO fallback is involved
      */
-    Q_PROPERTY(bool fromCurrentTheme READ fromCurrentTheme NOTIFY fromCurrentThemeChanged)
+    Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
 
     /**
      * Sets the image in a selected status.
@@ -228,7 +228,7 @@ public:
     FrameSvgItemMargins *fixedMargins();
     FrameSvgItemMargins *inset();
 
-    bool fromCurrentTheme() const;
+    bool fromCurrentImageSet() const;
 
     void setStatus(KSvg::Svg::Status status);
     KSvg::Svg::Status status() const;
@@ -258,7 +258,7 @@ Q_SIGNALS:
     void imagePathChanged();
     void prefixChanged();
     void enabledBordersChanged();
-    void fromCurrentThemeChanged();
+    void fromCurrentImageSetChanged();
     void colorGroupChanged();
     void repaintNeeded();
     void statusChanged();

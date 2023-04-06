@@ -56,23 +56,23 @@ void FrameSvgTest::repaintBlocked()
     QCOMPARE(m_frameSvg->frameSize(), QSizeF(100, 100));
 }
 
-void FrameSvgTest::setTheme()
+void FrameSvgTest::setImageSet()
 {
     // Should not crash
 
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setTheme(new KSvg::Theme("breeze-light", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", this));
     frameSvg->framePixmap();
-    frameSvg->setTheme(new KSvg::Theme("breeze-dark", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", this));
     frameSvg->framePixmap();
     delete frameSvg;
 
     frameSvg = new KSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setTheme(new KSvg::Theme("breeze-light", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", this));
     frameSvg->framePixmap();
-    frameSvg->setTheme(new KSvg::Theme("breeze-dark", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", this));
     frameSvg->framePixmap();
     delete frameSvg;
 }

@@ -21,7 +21,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void margins();
     void contentsRect();
-    void setTheme();
+    void setImageSet();
     void repaintBlocked();
 
 private:
