@@ -22,10 +22,10 @@
 #include <QDebug>
 
 #include "debug_p.h"
+#include "imageset.h"
 #include "private/framesvg_helpers.h"
+#include "private/imageset_p.h"
 #include "private/svg_p.h"
-#include "private/theme_p.h"
-#include "theme.h"
 
 namespace KSvg
 {

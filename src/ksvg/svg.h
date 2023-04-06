@@ -10,8 +10,8 @@
 #include <QObject>
 #include <QPixmap>
 
+#include <ksvg/imageset.h>
 #include <ksvg/ksvg_export.h>
-#include <ksvg/theme.h>
 
 class QPainter;
 class QPoint;

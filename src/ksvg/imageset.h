@@ -5,8 +5,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef KSVG_THEME_H
-#define KSVG_THEME_H
+#ifndef KSVG_IMAGESET_H
+#define KSVG_IMAGESET_H
 
 #include <QGuiApplication>
 #include <QObject>
@@ -24,9 +24,9 @@ class SvgPrivate;
 // TODO: move in the plasma part the watching and regeneration of icon themes
 
 /**
- * @class ImageSet ksvg/theme.h <KSvg/ImageSet>
+ * @class ImageSet ksvg/imageset.h <KSvg/ImageSet>
  *
- * @short Interface to the Svg theme
+ * @short Interface to the Svg image set
  *
  *
  * KSvg::ImageSet provides access to a common and standardized set of graphic

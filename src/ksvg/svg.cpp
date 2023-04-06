@@ -7,8 +7,8 @@
 
 #include "svg.h"
 #include "framesvg.h"
+#include "private/imageset_p.h"
 #include "private/svg_p.h"
-#include "private/theme_p.h"
 
 #include <array>
 #include <cmath>
@@ -27,7 +27,7 @@
 #include <QDebug>
 
 #include "debug_p.h"
-#include "theme.h"
+#include "imageset.h"
 
 uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
 {

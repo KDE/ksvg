@@ -4,9 +4,9 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#include "theme.h"
+#include "imageset.h"
+#include "private/imageset_p.h"
 #include "private/svg_p.h"
-#include "private/theme_p.h"
 
 #include <QDebug>
 #include <QFile>
@@ -245,4 +245,4 @@ KPluginMetaData ImageSet::metadata() const
 
 }
 
-#include "moc_theme.cpp"
+#include "moc_imageset.cpp"

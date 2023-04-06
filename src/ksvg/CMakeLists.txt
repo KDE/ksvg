@@ -17,8 +17,8 @@ set_target_properties(KF6Svg PROPERTIES
 target_sources(KF6Svg PRIVATE
     framesvg.cpp
     svg.cpp
-    theme.cpp
-    private/theme_p.cpp
+    imageset.cpp
+    private/imageset_p.cpp
 )
 
 ecm_qt_declare_logging_category(KF6Svg
@@ -69,7 +69,7 @@ ecm_generate_headers(KSvg_CamelCase_HEADERS
     HEADER_NAMES
         FrameSvg
         Svg
-        Theme
+        ImageSet
     REQUIRED_HEADERS KSvg_HEADERS
     PREFIX KSvg
 )

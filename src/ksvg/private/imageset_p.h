@@ -5,11 +5,11 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef KSVG_THEME_P_H
-#define KSVG_THEME_P_H
+#ifndef KSVG_IMAGESET_P_H
+#define KSVG_IMAGESET_P_H
 
+#include "imageset.h"
 #include "svg.h"
-#include "theme.h"
 #include <QHash>
 
 #include <KImageCache>

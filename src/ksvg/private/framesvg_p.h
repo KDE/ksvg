@@ -14,7 +14,7 @@
 
 #include <QDebug>
 
-#include <KSvg/Theme>
+#include <KSvg/ImageSet>
 
 #include "svg_p.h"
 

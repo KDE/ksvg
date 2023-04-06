@@ -16,7 +16,6 @@
 
 #include "framesvgitem.h"
 #include "svgitem.h"
-#include "theme.h"
 
 #include <QDebug>
 #include <QWindow>

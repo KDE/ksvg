@@ -5,7 +5,7 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#include "theme_p.h"
+#include "imageset_p.h"
 #include "debug_p.h"
 #include "framesvg.h"
 #include "framesvg_p.h"
@@ -581,4 +581,4 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool writ
 
 }
 
-#include "moc_theme_p.cpp"
+#include "moc_imageset_p.cpp"
