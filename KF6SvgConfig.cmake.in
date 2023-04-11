@@ -12,5 +12,6 @@ set(KSvg_LIBRARIES KF6::Svg)
 include(CMakeFindDependencyMacro)
 find_dependency(Qt6Gui "@REQUIRED_QT_VERSION@")
 
-@PACKAGE_SETUP_AUTOMOC_VARIABLES@
+include("${CMAKE_CURRENT_LIST_DIR}/KF6SvgTargets.cmake")
 
+@PACKAGE_SETUP_AUTOMOC_VARIABLES@

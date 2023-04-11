@@ -3,7 +3,7 @@
 # Consumer's include dir which has to be explicitly used to make headers of this lib visible to documented includes
 # Results in duplicate of prefix-dir & C++ namespace below, but part of different things, so by design:
 # <visibility-layer>/<C++ namespace>/class header files
-set(KSVG_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/Svg")
+set(KSVG_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/KSvg")
 
 add_library(KF6Svg)
 add_library(KF6::Svg ALIAS KF6Svg)
@@ -55,7 +55,7 @@ PRIVATE
 set(KSvg_BUILD_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/..
     ${CMAKE_CURRENT_BINARY_DIR}
-    ${CMAKE_CURRENT_BINARY_DIR}/Svg
+    ${CMAKE_CURRENT_BINARY_DIR}/KSvg
 )
 target_include_directories(KF6Svg
     PUBLIC
@@ -70,20 +70,20 @@ ecm_generate_headers(KSvg_CamelCase_HEADERS
         FrameSvg
         Svg
         ImageSet
-    REQUIRED_HEADERS KSvg_HEADERS
+    REQUIRED_HEADERS KSvg_namespaced_HEADERS
     PREFIX KSvg
 )
 
-install(FILES
-        ${KSvg_HEADERS}
-        ${CMAKE_CURRENT_BINARY_DIR}/ksvg/ksvg_export.h
-    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/ksvg # C++ namespace
+install(
+    FILES ${KSvg_namespaced_HEADERS}
+          ${CMAKE_CURRENT_BINARY_DIR}/ksvg_export.h
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg/ksvg # C++ namespace
     COMPONENT Devel
 )
 
 install(
     FILES ${KSvg_CamelCase_HEADERS}
-    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg # C++ namespace
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg/KSvg # C++ namespace
     COMPONENT Devel
 )
 
@@ -92,12 +92,12 @@ install(TARGETS KF6Svg EXPORT KF6SvgTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 if(BUILD_QCH)
     ecm_add_qch(
         KF6Svg_QCH
-        NAME Svg
+        NAME KSvg
         BASE_NAME KF6Svg
         VERSION ${KF_VERSION}
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
-            ${KSvg_HEADERS}
+            ${KSvg_CamelCase_HEADERS}
             Mainpage.dox
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS

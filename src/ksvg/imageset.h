@@ -12,7 +12,7 @@
 #include <QObject>
 
 #include <KSharedConfig>
-#include <ksvg/ksvg_export.h>
+#include <ksvg_export.h>
 
 class KPluginMetaData;
 
