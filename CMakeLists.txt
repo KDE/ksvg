@@ -34,7 +34,7 @@ add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt 
 
 ecm_setup_version(PROJECT
                   VARIABLE_PREFIX PLASMA
-                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/plasma_version.h"
+                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h"
                   PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfigVersion.cmake"
                   SOVERSION 6)
 
@@ -72,7 +72,7 @@ if(BUILD_COVERAGE)
     set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -lgcov")
 endif()
 
-# make plasma_version.h available
+# make ksvg_version.h available
 include_directories(${CMAKE_CURRENT_BINARY_DIR})
 
 ################# list the subdirectories #################
@@ -118,7 +118,7 @@ install(EXPORT KF6SvgTargets
         NAMESPACE KF6::
         COMPONENT Devel)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/plasma_version.h
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h
         DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/Plasma COMPONENT Devel )
 
 feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
