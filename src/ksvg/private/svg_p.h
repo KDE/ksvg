@@ -4,8 +4,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef PLASMA_SVG_P_H
-#define PLASMA_SVG_P_H
+#ifndef KSVG_SVG_P_H
+#define KSVG_SVG_P_H
 
 #include "svg.h"
 

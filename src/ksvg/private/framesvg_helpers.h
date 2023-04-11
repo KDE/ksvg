@@ -4,8 +4,8 @@
     SPDX-License-Identifier: LGPL-2.0-or-later
 */
 
-#ifndef FRAMESVG_HELPERS_H
-#define FRAMESVG_HELPERS_H
+#ifndef KSVG_FRAMESVG_HELPERS_H
+#define KSVG_FRAMESVG_HELPERS_H
 
 #include "framesvg.h"
 
