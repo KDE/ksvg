@@ -60,7 +60,6 @@ void SvgItem::setImagePath(const QString &path)
         return;
     }
 
-    updateDevicePixelRatio();
     m_svg->setImagePath(path);
 
     Q_EMIT imagePathChanged();
@@ -165,21 +164,6 @@ void SvgItem::updateNeeded()
         setImplicitHeight(naturalSize().height());
     }
     scheduleImageUpdate();
-}
-
-void SvgItem::updateDevicePixelRatio()
-{
-    if (m_svg) {
-        // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
-        //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
-        if (window()) {
-            m_svg->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(window()->devicePixelRatio())));
-        } else {
-            m_svg->setDevicePixelRatio(qMax<qreal>(1.0, std::ceil(qApp->devicePixelRatio())));
-        }
-        // TODO: remove scalefactor
-        m_svg->setScaleFactor(1.0);
-    }
 }
 
 void SvgItem::scheduleImageUpdate()

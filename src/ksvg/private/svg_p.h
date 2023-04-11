@@ -49,7 +49,6 @@ public:
         QString filePath;
         QString elementName;
         int status;
-        double devicePixelRatio;
         double scaleFactor;
         qint64 paletteKey;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
@@ -72,7 +71,7 @@ public:
     ImageSet *actualImageSet();
     ImageSet *cacheAndColorsImageSet();
 
-    QPixmap findInCache(const QString &elementId, qreal ratio, const QSizeF &s = QSizeF());
+    QPixmap findInCache(const QString &elementId, const QSizeF &s = QSizeF());
 
     void createRenderer();
     void eraseRenderer();
@@ -103,7 +102,6 @@ public:
     QSizeF naturalSize;
     QChar styleCrc;
     unsigned int lastModified;
-    qreal devicePixelRatio;
     qreal scaleFactor;
     Svg::Status status;
     QPalette palette;

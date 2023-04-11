@@ -70,7 +70,6 @@ Q_SIGNALS:
 protected Q_SLOTS:
     /// @cond INTERNAL_DOCS
     void updateNeeded();
-    void updateDevicePixelRatio();
     /// @endcond
 
 private:
