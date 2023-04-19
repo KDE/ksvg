@@ -26,7 +26,6 @@
 namespace KSvg
 {
 const char ImageSetPrivate::defaultImageSet[] = "default";
-const char ImageSetPrivate::themeRcFile[] = "plasmarc";
 // the system colors theme is used to cache unthemed svgs with colorization needs
 // these svgs do not follow the theme's colors, but rather the system colors
 const char ImageSetPrivate::systemColorsImageSet[] = "internal-system-colors";
@@ -92,7 +91,6 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
         basePath = QStringLiteral("ksvg");
     }
     basePath += u"/svgtheme/";
-    basePath = QStringLiteral("plasma/desktoptheme/"); // FIXME temporary hack
     pixmapSaveTimer = new QTimer(this);
     pixmapSaveTimer->setSingleShot(true);
     pixmapSaveTimer->setInterval(600);
@@ -104,41 +102,12 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ImageSetPrivate::notifyOfChanged);
 
     QCoreApplication::instance()->installEventFilter(this);
-
-    const QString configFile = QStandardPaths::writableLocation(QStandardPaths::GenericConfigLocation) + QLatin1Char('/') + QLatin1String(themeRcFile);
-    KDirWatch::self()->addFile(configFile);
-
-    // Catch both, direct changes to the config file ...
-    connect(KDirWatch::self(), &KDirWatch::dirty, this, &ImageSetPrivate::settingsFileChanged);
-    // ... but also remove/recreate cycles, like KConfig does it
-    connect(KDirWatch::self(), &KDirWatch::created, this, &ImageSetPrivate::settingsFileChanged);
 }
 
 ImageSetPrivate::~ImageSetPrivate()
 {
     FrameSvgPrivate::s_sharedFrames.remove(this);
     delete pixmapCache;
-}
-
-KConfigGroup &ImageSetPrivate::config()
-{
-    if (!cfg.isValid()) {
-        QString groupName = QStringLiteral("ImageSet");
-
-        if (!useGlobal) {
-            QString app = QCoreApplication::applicationName();
-
-            if (!app.isEmpty()) {
-#ifndef NDEBUG
-                // qCDebug(LOG_KSVG) << "using theme for app" << app;
-#endif
-                groupName.append(QLatin1Char('-')).append(app);
-            }
-        }
-        cfg = KConfigGroup(KSharedConfig::openConfig(QFile::decodeName(themeRcFile)), groupName);
-    }
-
-    return cfg;
 }
 
 bool ImageSetPrivate::useCache()
@@ -173,11 +142,6 @@ bool ImageSetPrivate::useCache()
                     cacheFile += QLatin1String("_v") + themeVersion;
                     currentCacheFileName = cacheFile + QLatin1String(".kcache");
                 }
-
-                // watch the metadata file for changes at runtime
-                KDirWatch::self()->addFile(themeMetadataPath);
-                QObject::connect(KDirWatch::self(), &KDirWatch::created, this, &ImageSetPrivate::settingsFileChanged, Qt::UniqueConnection);
-                QObject::connect(KDirWatch::self(), &KDirWatch::dirty, this, &ImageSetPrivate::settingsFileChanged, Qt::UniqueConnection);
             }
 
             // now we check for, and remove if necessary, old caches
@@ -412,30 +376,6 @@ ImageSetPrivate::svgStyleSheet(const QPalette &palette, const QColor &positive, 
     return stylesheet;
 }
 
-void ImageSetPrivate::settingsFileChanged(const QString &file)
-{
-    qCDebug(LOG_KSVG) << "settingsFile: " << file;
-    if (file == themeMetadataPath) {
-        const KPluginMetaData data = metaDataForImageSet(basePath, imageSetName);
-        if (!data.isValid() || themeVersion != data.version()) {
-            scheduleImageSetChangeNotification(SvgElementsCache);
-        }
-    } else if (file.endsWith(QLatin1String(themeRcFile))) {
-        config().config()->reparseConfiguration();
-        settingsChanged(true);
-    }
-}
-
-void ImageSetPrivate::settingsChanged(bool emitChanges)
-{
-    if (fixedName) {
-        return;
-    }
-    // qCDebug(LOG_KSVG) << "Settings Changed!";
-    KConfigGroup cg = config();
-    setImageSetName(cg.readEntry("name", ImageSetPrivate::defaultImageSet), false, emitChanges);
-}
-
 bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
 {
     // TODO KF6: Make lastModified non-optional.
@@ -487,7 +427,7 @@ void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix, co
     }
 }
 
-void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool writeSettings, bool emitChanged)
+void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emitChanged)
 {
     QString theme = tempImageSetName;
     if (theme.isEmpty() || theme == imageSetName) {
@@ -565,13 +505,6 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool writ
                 apiRevision = parts.value(2).toInt();
             }
         }
-    }
-
-    if (realImageSet && isDefault && writeSettings) {
-        // we're the default theme, let's save our status
-        KConfigGroup &cg = config();
-        cg.writeEntry("name", imageSetName);
-        cg.sync();
     }
 
     if (emitChanged) {

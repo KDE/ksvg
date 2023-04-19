@@ -40,14 +40,12 @@ public:
     explicit ImageSetPrivate(QObject *parent = nullptr);
     ~ImageSetPrivate() override;
 
-    KConfigGroup &config();
-
     QString imagePath(const QString &theme, const QString &type, const QString &image);
     QString findInImageSet(const QString &image, const QString &theme, bool cache = true);
     void discardCache(CacheTypes caches);
     void scheduleImageSetChangeNotification(CacheTypes caches);
     bool useCache();
-    void setImageSetName(const QString &themeName, bool writeSettings, bool emitChanged);
+    void setImageSetName(const QString &themeName, bool emitChanged);
 
     const QString processStyleSheet(const QString &css,
                                     KSvg::Svg::Status status,
@@ -105,11 +103,9 @@ public:
     void insertIntoCache(const QString &key, const QPixmap &pix, const QString &id);
 
 public Q_SLOTS:
-    void settingsFileChanged(const QString &settings);
     void scheduledCacheUpdate();
     void onAppExitCleanup();
     void notifyOfChanged();
-    void settingsChanged(bool emitChanges);
 
 Q_SIGNALS:
     void imageSetChanged();

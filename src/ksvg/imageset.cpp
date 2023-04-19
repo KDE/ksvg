@@ -30,7 +30,6 @@ ImageSet::ImageSet(QObject *parent)
 {
     if (!ImageSetPrivate::globalImageSet) {
         ImageSetPrivate::globalImageSet = new ImageSetPrivate;
-        ImageSetPrivate::globalImageSet->settingsChanged(false);
         if (QCoreApplication::instance()) {
             connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, ImageSetPrivate::globalImageSet, &ImageSetPrivate::onAppExitCleanup);
         }
@@ -58,7 +57,7 @@ ImageSet::ImageSet(const QString &imageSetName, QObject *parent)
     // turn off caching so we don't accidentally trigger unnecessary disk activity at this point
     bool useCache = d->cacheImageSet;
     d->cacheImageSet = false;
-    d->setImageSetName(imageSetName, false, false);
+    d->setImageSetName(imageSetName, false);
     d->cacheImageSet = useCache;
     d->fixedName = true;
     connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
@@ -131,7 +130,7 @@ void ImageSet::setImageSetName(const QString &imageSetName)
         connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
     }
 
-    d->setImageSetName(imageSetName, true, true);
+    d->setImageSetName(imageSetName, true);
 }
 
 QString ImageSet::imageSetName() const
@@ -223,7 +222,6 @@ void ImageSet::setUseGlobalSettings(bool useGlobal)
     d->useGlobal = useGlobal;
     d->cfg = KConfigGroup();
     d->imageSetName.clear();
-    d->settingsChanged(true);
 }
 
 bool ImageSet::useGlobalSettings() const
