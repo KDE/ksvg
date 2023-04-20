@@ -76,7 +76,7 @@ ecm_generate_headers(KSvg_CamelCase_HEADERS
 
 install(
     FILES ${KSvg_namespaced_HEADERS}
-          ${CMAKE_CURRENT_BINARY_DIR}/ksvg_export.h
+          ${CMAKE_CURRENT_BINARY_DIR}/ksvg/ksvg_export.h
     DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg/ksvg # C++ namespace
     COMPONENT Devel
 )
