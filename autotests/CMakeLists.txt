@@ -7,10 +7,6 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_STRICT_ITERATORS -DQT_NO_CAST_FR
 include(ECMMarkAsTest)
 include(ECMAddTests)
 
-find_package(KF6CoreAddons REQUIRED)
-find_package(KF6XmlGui REQUIRED)
-find_package(Qt6Widgets REQUIRED)
-
 # add_definitions( -DKDESRCDIR=${CMAKE_CURRENT_SOURCE_DIR} )
 
 if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
