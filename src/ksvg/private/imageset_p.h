@@ -71,7 +71,7 @@ public:
      *
      * @return true when pixmap was found and loaded from cache, false otherwise
      **/
-    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified = 0);
+    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified);
 
     /**
      * Insert specified pixmap into the cache.

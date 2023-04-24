@@ -378,7 +378,6 @@ ImageSetPrivate::svgStyleSheet(const QPalette &palette, const QColor &positive, 
 
 bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
 {
-    // TODO KF6: Make lastModified non-optional.
     if (lastModified == 0) {
         qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
         return false;
