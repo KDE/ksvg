@@ -37,7 +37,7 @@ using QSP = QStandardPaths;
 KSharedConfig::Ptr configForImageSet(const QString &basePath, const QString &theme)
 {
     const QString baseName = basePath % theme;
-    QString configPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/plasmarc"));
+    QString configPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/config"));
     if (!configPath.isEmpty()) {
         return KSharedConfig::openConfig(configPath, KConfig::SimpleConfig);
     }

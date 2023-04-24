@@ -46,7 +46,7 @@ class KSVG_EXPORT ImageSet : public QObject
 
 public:
     /**
-     * Default constructor. It will be the global theme configured in plasmarc
+     * Default constructor.
      * @param parent the parent object
      */
     explicit ImageSet(QObject *parent = nullptr);
