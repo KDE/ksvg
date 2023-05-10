@@ -1,4 +1,6 @@
-/** @page KSvg framework
+/** @mainpage KSvg framework
+
+\section Introduction
 
 The KSvg framework introduces a series of apis to render SVG based graphics both with a QPainter-based api and and accelerated QtQuick component set.
 
@@ -11,6 +13,14 @@ Important classes are:
 
  - KSvg::Svg and KSvg::FrameSvg: provides themable, cached SVGs
 
+\subsection types All Types
+- \link KSvg::Svg Svg \endlink
+- \link KSvg::SvgItem SvgItem \endlink
+- \link KSvg::FrameSvg FrameSvg \endlink
+- \link KSvg::FrameSvgItem FrameSvgItem \endlink
+- \link KSvg::FrameSvgItemMargins FrameSvgItemMargins \endlink
+- \link KSvg::ImageSet ImageSet \endlink
+- \link ImageTexturesCache ImageTexturesCache \endlink
 
 @authors
 Aaron Seigo \<aseigo@kde.org\><br>
