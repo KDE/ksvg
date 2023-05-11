@@ -90,12 +90,12 @@ set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6Svg")
 
 if (BUILD_QCH)
     ecm_install_qch_export(
-        TARGETS KF6Plasma_QCH
-        FILE KF6PlasmaQchTargets.cmake
+        TARGETS KF6Svg_QCH
+        FILE KF6SvgQchTargets.cmake
         DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
         COMPONENT Devel
     )
-    set(PACKAGE_INCLUDE_QCHTARGETS "include(\"\${CMAKE_CURRENT_LIST_DIR}/KF6PlasmaQchTargets.cmake\")")
+    set(PACKAGE_INCLUDE_QCHTARGETS "include(\"\${CMAKE_CURRENT_LIST_DIR}/KF6SvgQchTargets.cmake\")")
 endif()
 
 configure_package_config_file(
