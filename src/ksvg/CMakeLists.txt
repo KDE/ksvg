@@ -98,7 +98,7 @@ if(BUILD_QCH)
         VERSION ${KF_VERSION}
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
-            ${KSvg_CamelCase_HEADERS}
+            ${KSvg_namespaced_HEADERS}
             Mainpage.dox
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS
