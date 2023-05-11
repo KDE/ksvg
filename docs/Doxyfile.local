@@ -2,6 +2,6 @@
 
 # define so that deprecated API is not skipped
 PREDEFINED += \
-    "PLASMA_ENABLE_DEPRECATED_SINCE(x, y)=1" \
-    "PLASMA_BUILD_DEPRECATED_SINCE(x, y)=1" \
-    "PLASMA_DEPRECATED_VERSION(x, y, t)="
+    "KSVG_ENABLE_DEPRECATED_SINCE(x, y)=1" \
+    "KSVG_BUILD_DEPRECATED_SINCE(x, y)=1" \
+    "KSVG_DEPRECATED_VERSION(x, y, t)="
