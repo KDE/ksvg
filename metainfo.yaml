@@ -11,9 +11,8 @@ portingAid: false
 deprecated: false
 release: true
 libraries:
- - cmake: KF6::Plasma
- - cmake: KF6::PlasmaQuick
-cmakename: KF6Plasma
+ - cmake: KF6::Svg
+cmakename: KF6Svg
 
 public_lib: true
 group: Frameworks
