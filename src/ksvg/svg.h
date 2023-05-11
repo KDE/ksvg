@@ -22,6 +22,9 @@ class QSize;
 class QSizeF;
 class QMatrix;
 
+/**
+ * The KSvg namespace.
+ */
 namespace KSvg
 {
 class FrameSvgPrivate;
