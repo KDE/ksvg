@@ -42,6 +42,13 @@ class SvgItem : public QQuickItem
      */
     Q_PROPERTY(QSizeF naturalSize READ naturalSize NOTIFY naturalSizeChanged)
 
+    /**
+     * The internal Svg instance.
+     * Usually specifying just the imagePAth is enough. use this only if you
+     * have many items taking the same svg as source, to share the internal Svg
+     */
+    Q_PROPERTY(KSvg::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
+
 public:
     /// @cond INTERNAL_DOCS
 
@@ -54,6 +61,9 @@ public:
     void setElementId(const QString &elementID);
     QString elementId() const;
 
+    void setSvg(KSvg::Svg *svg);
+    KSvg::Svg *svg() const;
+
     QSizeF naturalSize() const;
 
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData) override;
@@ -65,6 +75,7 @@ protected:
 Q_SIGNALS:
     void imagePathChanged();
     void elementIdChanged();
+    void svgChanged();
     void naturalSizeChanged();
 
 protected Q_SLOTS:
@@ -77,7 +88,7 @@ private:
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
-    KSvg::Svg *m_svg;
+    QPointer<KSvg::Svg> m_svg;
     Kirigami::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     bool m_textureChanged;

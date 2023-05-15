@@ -99,6 +99,38 @@ QString SvgItem::elementId() const
     return m_elementID;
 }
 
+void SvgItem::setSvg(KSvg::Svg *svg)
+{
+    if (m_svg) {
+        disconnect(m_svg.data(), nullptr, this, nullptr);
+    }
+    m_svg = svg;
+
+    if (svg) {
+        connect(svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
+        connect(svg, &Svg::repaintNeeded, this, &SvgItem::naturalSizeChanged);
+        connect(svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
+    }
+
+    if (implicitWidth() <= 0) {
+        setImplicitWidth(naturalSize().width());
+    }
+    if (implicitHeight() <= 0) {
+        setImplicitHeight(naturalSize().height());
+    }
+
+    scheduleImageUpdate();
+
+    Q_EMIT svgChanged();
+    Q_EMIT naturalSizeChanged();
+    Q_EMIT imagePathChanged();
+}
+
+KSvg::Svg *SvgItem::svg() const
+{
+    return m_svg.data();
+}
+
 QSizeF SvgItem::naturalSize() const
 {
     if (!m_svg) {
