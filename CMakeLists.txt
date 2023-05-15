@@ -48,9 +48,10 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
         Archive        # svgz
         Config         # rects cache
+        ColorScheme
         CoreAddons
         GuiAddons      # KImageCache
-        Kirigami2
+        Kirigami2      # Kirigami.Theme
 )
 
 #########################################################################

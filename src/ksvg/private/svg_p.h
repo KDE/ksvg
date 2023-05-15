@@ -9,6 +9,8 @@
 
 #include "svg.h"
 
+#include <KColorScheme>
+
 #include <QExplicitlySharedDataPointer>
 #include <QHash>
 #include <QObject>
@@ -50,7 +52,7 @@ public:
         QString elementName;
         int status;
         double scaleFactor;
-        qint64 paletteKey;
+        int colorSet;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
@@ -101,11 +103,11 @@ public:
     QSizeF size;
     QSizeF naturalSize;
     QChar styleCrc;
+    KColorScheme::ColorSet colorSet = KColorScheme::Window;
     unsigned int lastModified;
     qreal scaleFactor;
     Svg::Status status;
     QPalette palette;
-    QHash<Svg::ExtraColor, QColor> extraColors;
     bool multipleImages : 1;
     bool themed : 1;
     bool useSystemColors : 1;

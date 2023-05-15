@@ -666,10 +666,8 @@ void FrameSvgItem::componentComplete()
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
 
     auto applyTheme = [this]() {
+        // TODO
         m_frameSvg->setPalette(m_kirigamiTheme->palette());
-        m_frameSvg->setExtraColor(Svg::Positive, m_kirigamiTheme->positiveTextColor());
-        m_frameSvg->setExtraColor(Svg::Neutral, m_kirigamiTheme->neutralTextColor());
-        m_frameSvg->setExtraColor(Svg::Negative, m_kirigamiTheme->negativeTextColor());
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);

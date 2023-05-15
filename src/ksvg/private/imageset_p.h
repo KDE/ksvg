@@ -12,6 +12,7 @@
 #include "svg.h"
 #include <QHash>
 
+#include <KColorScheme>
 #include <KImageCache>
 #include <KPluginMetaData>
 #include <KSharedDataCache>
@@ -47,13 +48,8 @@ public:
     bool useCache();
     void setImageSetName(const QString &themeName, bool emitChanged);
 
-    const QString processStyleSheet(const QString &css,
-                                    KSvg::Svg::Status status,
-                                    const QPalette &palette,
-                                    const QColor &positive,
-                                    const QColor &neutral,
-                                    const QColor &negative);
-    const QString svgStyleSheet(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative, KSvg::Svg::Status status);
+    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
+    const QString svgStyleSheet(KColorScheme::ColorSet group, KSvg::Svg::Status status);
 
     /**
      * TODO: timestamp shouldn't be user-provided
@@ -102,6 +98,8 @@ public:
      **/
     void insertIntoCache(const QString &key, const QPixmap &pix, const QString &id);
 
+    void colorsChanged();
+
 public Q_SLOTS:
     void scheduledCacheUpdate();
     void onAppExitCleanup();
@@ -112,6 +110,8 @@ Q_SIGNALS:
     void applicationPaletteChange();
 
 public:
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
     static const char defaultImageSet[];
     static const char systemColorsImageSet[];
     static const char themeRcFile[];
@@ -122,9 +122,16 @@ public:
 
     QString imageSetName;
     QString basePath;
-    QHash<Svg::ExtraColor, QColor> extraColors;
     KPluginMetaData pluginMetaData;
     QList<QString> fallbackImageSets;
+    KSharedConfigPtr colors;
+    KColorScheme colorScheme;
+    KColorScheme selectionColorScheme;
+    KColorScheme buttonColorScheme;
+    KColorScheme viewColorScheme;
+    KColorScheme complementaryColorScheme;
+    KColorScheme headerColorScheme;
+    KColorScheme tooltipColorScheme;
     QStringList selectors;
     KConfigGroup cfg;
     KImageCache *pixmapCache;

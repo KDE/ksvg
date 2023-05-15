@@ -38,7 +38,7 @@ uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
         ::qHash(id.filePath),
         ::qHash(id.status),
         ::qHash(id.scaleFactor),
-        ::qHash(id.paletteKey),
+        ::qHash(id.colorSet),
         ::qHash(id.extraFlags),
         ::qHash(id.lastModified),
     };
@@ -420,15 +420,7 @@ SvgPrivate::CacheId SvgPrivate::cacheId(QStringView elementId) const
 // This function is meant for the pixmap cache
 QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
 {
-    auto cacheId = CacheId{double(size.width()),
-                           double(size.height()),
-                           path,
-                           id,
-                           status,
-                           scaleFactor,
-                           paletteId(q->palette(), q->extraColor(Svg::Positive), q->extraColor(Svg::Neutral), q->extraColor(Svg::Negative)),
-                           0,
-                           lastModified};
+    auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, scaleFactor, colorSet, 0, lastModified};
     return QString::number(qHash(cacheId, SvgRectsCache::s_seed));
 }
 
@@ -639,11 +631,8 @@ void SvgPrivate::createRenderer()
         }
     }
 
-    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(q->palette(),
-                                                                    q->extraColor(Svg::Positive),
-                                                                    q->extraColor(Svg::Neutral),
-                                                                    q->extraColor(Svg::Negative),
-                                                                    status);
+    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(colorSet, status);
+
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
     QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
@@ -862,25 +851,6 @@ void Svg::setPalette(const QPalette &palette)
 QPalette Svg::palette() const
 {
     return d->palette;
-}
-
-QColor Svg::extraColor(Svg::ExtraColor role) const
-{
-    auto it = d->extraColors.constFind(role);
-    if (it != d->extraColors.constEnd()) {
-        return *it;
-    }
-    return imageSet()->d->extraColors.value(role);
-}
-
-void Svg::setExtraColor(Svg::ExtraColor role, const QColor &color)
-{
-    if (color == extraColor(role)) {
-        return;
-    }
-
-    d->extraColors[role] = color;
-    d->colorsChanged();
 }
 
 void Svg::setScaleFactor(qreal ratio)
