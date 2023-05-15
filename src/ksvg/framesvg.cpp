@@ -519,7 +519,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
 
     bool frameCached = !frame->cachedBackground.isNull();
     bool overlayCached = false;
-    // TODO KF6: Kill Overlays
+
     const bool overlayAvailable = !frame->prefix.startsWith(QLatin1String("mask-")) && q->hasElement(frame->prefix % QLatin1String("overlay"));
     QPixmap overlay;
     if (q->isUsingRenderingCache()) {
