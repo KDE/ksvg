@@ -399,7 +399,7 @@ SvgPrivate::~SvgPrivate()
     eraseRenderer();
 }
 
-quint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const
+qint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const
 {
     std::array<size_t, 4> parts = {
         ::qHash(palette.cacheKey()),

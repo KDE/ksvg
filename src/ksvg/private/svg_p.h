@@ -58,7 +58,7 @@ public:
     SvgPrivate(Svg *svg);
     ~SvgPrivate();
 
-    quint64 paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const;
+    qint64 paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const;
 
     // This function is meant for the rects cache
     CacheId cacheId(QStringView elementId) const;
