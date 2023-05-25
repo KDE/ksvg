@@ -48,8 +48,8 @@ public:
     bool useCache();
     void setImageSetName(const QString &themeName, bool emitChanged);
 
-    const QString processStyleSheet(const QString &css, KSvg::Svg::Status status);
-    const QString svgStyleSheet(KColorScheme::ColorSet group, KSvg::Svg::Status status);
+    QColor namedColor(const QString &colorName, const KSvg::Svg *svg);
+    const QString svgStyleSheet(KSvg::Svg *svg);
 
     /**
      * TODO: timestamp shouldn't be user-provided

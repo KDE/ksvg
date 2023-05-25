@@ -308,263 +308,258 @@ void ImageSetPrivate::notifyOfChanged()
     Q_EMIT imageSetChanged();
 }
 
-const QString ImageSetPrivate::processStyleSheet(const QString &css, KSvg::Svg::Status status)
+QColor ImageSetPrivate::namedColor(const QString &colorName, const KSvg::Svg *svg)
 {
-    QString stylesheet(css);
-    QHash<QString, QString> elements;
-    // If you add elements here, make sure their names are sufficiently unique to not cause
-    // clashes between element keys
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%textcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else if (status == Svg::Status::Inactive) {
-        elements[QStringLiteral("%textcolor")] = colorScheme.foreground(KColorScheme::InactiveText).color().name();
+    const KSvg::Svg::Status status = svg->status();
+    KColorScheme *currentScheme = nullptr;
+
+    switch (KColorScheme::ColorSet(svg->colorSet())) {
+    case KColorScheme::Button:
+        currentScheme = &buttonColorScheme;
+        break;
+    case KColorScheme::View:
+        currentScheme = &viewColorScheme;
+        break;
+    case KColorScheme::Complementary:
+        currentScheme = &complementaryColorScheme;
+        break;
+    case KColorScheme::Header:
+        currentScheme = &headerColorScheme;
+        break;
+    case KColorScheme::Tooltip:
+        currentScheme = &tooltipColorScheme;
+        break;
+    default:
+        currentScheme = &colorScheme;
+    }
+
+    if (colorName == QStringLiteral("Text")) {
+        switch (status) {
+        case Svg::Status::Selected:
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        case Svg::Status::Inactive:
+            return currentScheme->foreground(KColorScheme::InactiveText).color();
+        default:
+            return currentScheme->foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("Background")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return colorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("Highlight")) {
+        return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+    } else if (colorName == QStringLiteral("HighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("PositiveText")) {
+        return currentScheme->foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("NeutralText")) {
+        return currentScheme->foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("NegativeText")) {
+        return currentScheme->foreground(KColorScheme::NegativeText).color();
+
+    } else if (colorName == QStringLiteral("ButtonText")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return buttonColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("ButtonBackground")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return buttonColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("ButtonHover")) {
+        return buttonColorScheme.decoration(KColorScheme::HoverColor).color();
+    } else if (colorName == QStringLiteral("ButtonFocus")) {
+        return buttonColorScheme.decoration(KColorScheme::FocusColor).color();
+    } else if (colorName == QStringLiteral("ButtonHighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("ButtonPositiveText")) {
+        return buttonColorScheme.foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("ButtonNeutralText")) {
+        return buttonColorScheme.foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("ButtonNegativeText")) {
+        return buttonColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    } else if (colorName == QStringLiteral("ViewText")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return viewColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("ViewBackground")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return viewColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("ViewHover")) {
+        return viewColorScheme.decoration(KColorScheme::HoverColor).color();
+    } else if (colorName == QStringLiteral("ViewFocus")) {
+        return viewColorScheme.decoration(KColorScheme::FocusColor).color();
+    } else if (colorName == QStringLiteral("ViewHighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("ViewPositiveText")) {
+        return viewColorScheme.foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("ViewNeutralText")) {
+        return viewColorScheme.foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("ViewNegativeText")) {
+        return viewColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    } else if (colorName == QStringLiteral("TooltipText")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return tooltipColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("TooltipBackground")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return tooltipColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("TooltipHover")) {
+        return tooltipColorScheme.decoration(KColorScheme::HoverColor).color();
+    } else if (colorName == QStringLiteral("TooltipFocus")) {
+        return tooltipColorScheme.decoration(KColorScheme::FocusColor).color();
+    } else if (colorName == QStringLiteral("TooltipHighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("TooltipPositiveText")) {
+        return tooltipColorScheme.foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("TooltipNeutralText")) {
+        return tooltipColorScheme.foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("TooltipNegativeText")) {
+        return tooltipColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    } else if (colorName == QStringLiteral("ComplementaryText")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return complementaryColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("ComplementaryBackground")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return complementaryColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("ComplementaryHover")) {
+        return complementaryColorScheme.decoration(KColorScheme::HoverColor).color();
+    } else if (colorName == QStringLiteral("ComplementaryFocus")) {
+        return complementaryColorScheme.decoration(KColorScheme::FocusColor).color();
+    } else if (colorName == QStringLiteral("ComplementaryHighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("ComplementaryPositiveText")) {
+        return complementaryColorScheme.foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("ComplementaryNeutralText")) {
+        return complementaryColorScheme.foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("ComplementaryNegativeText")) {
+        return complementaryColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    } else if (colorName == QStringLiteral("HeaderText")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return headerColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    } else if (colorName == QStringLiteral("HeaderBackground")) {
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return headerColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    } else if (colorName == QStringLiteral("HeaderHover")) {
+        return headerColorScheme.decoration(KColorScheme::HoverColor).color();
+    } else if (colorName == QStringLiteral("HeaderFocus")) {
+        return headerColorScheme.decoration(KColorScheme::FocusColor).color();
+    } else if (colorName == QStringLiteral("HeaderHighlightedText")) {
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    } else if (colorName == QStringLiteral("HeaderPositiveText")) {
+        return headerColorScheme.foreground(KColorScheme::PositiveText).color();
+    } else if (colorName == QStringLiteral("HeaderNeutralText")) {
+        return headerColorScheme.foreground(KColorScheme::NeutralText).color();
+    } else if (colorName == QStringLiteral("HeaderNegativeText")) {
+        return headerColorScheme.foreground(KColorScheme::NegativeText).color();
     } else {
-        elements[QStringLiteral("%textcolor")] = colorScheme.foreground(KColorScheme::NormalText).color().name();
+        return {};
     }
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%backgroundcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%backgroundcolor")] = colorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%highlightcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    elements[QStringLiteral("%highlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%visitedlink")] = colorScheme.foreground(KColorScheme::VisitedText).color().name();
-    elements[QStringLiteral("%activatedlink")] = colorScheme.foreground(KColorScheme::ActiveText).color().name();
-    elements[QStringLiteral("%hoveredlink")] = colorScheme.foreground(KColorScheme::ActiveText).color().name();
-    elements[QStringLiteral("%link")] = colorScheme.foreground(KColorScheme::LinkText).color().name();
-    elements[QStringLiteral("%positivetextcolor")] = colorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%neutraltextcolor")] = colorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%negativetextcolor")] = colorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%buttontextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else {
-        elements[QStringLiteral("%buttontextcolor")] = buttonColorScheme.foreground(KColorScheme::NormalText).color().name();
-    }
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%buttontextcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%buttontextcolor")] = buttonColorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%buttonhovercolor")] = buttonColorScheme.decoration(KColorScheme::HoverColor).color().name();
-    elements[QStringLiteral("%buttonfocuscolor")] = buttonColorScheme.decoration(KColorScheme::FocusColor).color().name();
-    elements[QStringLiteral("%buttonhighlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%buttonpositivetextcolor")] = buttonColorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%buttonneutraltextcolor")] = buttonColorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%buttonnegativetextcolor")] = buttonColorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%viewtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else {
-        elements[QStringLiteral("%viewtextcolor")] = viewColorScheme.foreground(KColorScheme::NormalText).color().name();
-    }
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%viewhovercolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%viewhovercolor")] = viewColorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%viewhovercolor")] = buttonColorScheme.decoration(KColorScheme::HoverColor).color().name();
-    elements[QStringLiteral("%viewfocuscolor")] = buttonColorScheme.decoration(KColorScheme::FocusColor).color().name();
-    elements[QStringLiteral("%viewhighlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%viewpositivetextcolor")] = buttonColorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%viewneutraltextcolor")] = buttonColorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%viewnegativetextcolor")] = buttonColorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%tooltiptextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else {
-        elements[QStringLiteral("%tooltiptextcolor")] = tooltipColorScheme.foreground(KColorScheme::NormalText).color().name();
-    }
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%tooltipbackgroundcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%tooltipbackgroundcolor")] = tooltipColorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%tooltiphovercolor")] = buttonColorScheme.decoration(KColorScheme::HoverColor).color().name();
-    elements[QStringLiteral("%tooltipfocuscolor")] = buttonColorScheme.decoration(KColorScheme::FocusColor).color().name();
-    elements[QStringLiteral("%tooltiphighlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%tooltippositivetextcolor")] = buttonColorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%tooltipneutraltextcolor")] = buttonColorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%tooltipnegativetextcolor")] = buttonColorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%complementarytextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else {
-        elements[QStringLiteral("%complementarytextcolor")] = tooltipColorScheme.foreground(KColorScheme::NormalText).color().name();
-    }
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%complementarybackgroundcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%complementarybackgroundcolor")] = tooltipColorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%complementaryhovercolor")] = buttonColorScheme.decoration(KColorScheme::HoverColor).color().name();
-    elements[QStringLiteral("%complementaryfocuscolor")] = buttonColorScheme.decoration(KColorScheme::FocusColor).color().name();
-    elements[QStringLiteral("%complementaryhighlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%complementarypositivetextcolor")] = buttonColorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%complementaryneutraltextcolor")] = buttonColorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%complementarynegativetextcolor")] = buttonColorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%headertextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    } else {
-        elements[QStringLiteral("%headertextcolor")] = tooltipColorScheme.foreground(KColorScheme::NormalText).color().name();
-    }
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%headerbackgroundcolor")] = selectionColorScheme.background(KColorScheme::NormalBackground).color().name();
-    } else {
-        elements[QStringLiteral("%headerbackgroundcolor")] = tooltipColorScheme.background(KColorScheme::NormalBackground).color().name();
-    }
-
-    elements[QStringLiteral("%headerhovercolor")] = buttonColorScheme.decoration(KColorScheme::HoverColor).color().name();
-    elements[QStringLiteral("%headerfocuscolor")] = buttonColorScheme.decoration(KColorScheme::FocusColor).color().name();
-    elements[QStringLiteral("%headerhighlightedtextcolor")] = selectionColorScheme.foreground(KColorScheme::NormalText).color().name();
-    elements[QStringLiteral("%headerpositivetextcolor")] = buttonColorScheme.foreground(KColorScheme::PositiveText).color().name();
-    elements[QStringLiteral("%headerneutraltextcolor")] = buttonColorScheme.foreground(KColorScheme::NeutralText).color().name();
-    elements[QStringLiteral("%headernegativetextcolor")] = buttonColorScheme.foreground(KColorScheme::NegativeText).color().name();
-
-    QFont font = QGuiApplication::font();
-    elements[QStringLiteral("%fontsize")] = QStringLiteral("%1pt").arg(font.pointSize());
-    QString family{font.family()};
-    family.truncate(family.indexOf(QLatin1Char('[')));
-    elements[QStringLiteral("%fontfamily")] = family;
-    elements[QStringLiteral("%smallfontsize")] = QStringLiteral("%1pt").arg(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pointSize());
-
-    QHash<QString, QString>::const_iterator it = elements.constBegin();
-    QHash<QString, QString>::const_iterator itEnd = elements.constEnd();
-    for (; it != itEnd; ++it) {
-        stylesheet.replace(it.key(), it.value());
-    }
-    return stylesheet;
 }
 
-const QString ImageSetPrivate::svgStyleSheet(KColorScheme::ColorSet group, KSvg::Svg::Status status)
+const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
 {
+    const KSvg::Svg::Status status = svg->status();
+    const KColorScheme::ColorSet colorSet = KColorScheme::ColorSet(svg->colorSet());
     QString stylesheet = (status == Svg::Status::Selected)
-        ? cachedSelectedSvgStyleSheets.value(group)
-        : (status == Svg::Status::Inactive ? cachedInactiveSvgStyleSheets.value(group) : cachedSvgStyleSheets.value(group));
+        ? cachedSelectedSvgStyleSheets.value(colorSet)
+        : (status == Svg::Status::Inactive ? cachedInactiveSvgStyleSheets.value(colorSet) : cachedSvgStyleSheets.value(colorSet));
+
     if (stylesheet.isEmpty()) {
-        QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
+        const QStringList namedColors({QStringLiteral("Text"),
+                                       QStringLiteral("Background"),
+                                       QStringLiteral("Highlight"),
+                                       QStringLiteral("HighlightedText"),
+                                       QStringLiteral("PositiveText"),
+                                       QStringLiteral("NeutralText"),
+                                       QStringLiteral("NegativeText"),
 
-        switch (group) {
-        case KColorScheme::Button:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%buttontextcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%buttonbackgroundcolor"));
+                                       QStringLiteral("ButtonText"),
+                                       QStringLiteral("ButtonBackground"),
+                                       QStringLiteral("ButtonHover"),
+                                       QStringLiteral("ButtonFocus"),
+                                       QStringLiteral("ButtonHighlightedText"),
+                                       QStringLiteral("ButtonPositiveText"),
+                                       QStringLiteral("ButtonNeutralText"),
+                                       QStringLiteral("ButtonNegativeText"),
 
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%buttonhovercolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%buttonhighlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%buttonpositivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%buttonneutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%buttonnegativetextcolor"));
-            break;
-        case KColorScheme::View:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%viewtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%viewbackgroundcolor"));
+                                       QStringLiteral("ViewText"),
+                                       QStringLiteral("ViewBackground"),
+                                       QStringLiteral("ViewHover"),
+                                       QStringLiteral("ViewFocus"),
+                                       QStringLiteral("ViewHighlightedText"),
+                                       QStringLiteral("ViewPositiveText"),
+                                       QStringLiteral("ViewNeutralText"),
+                                       QStringLiteral("ViewNegativeText"),
 
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%viewhovercolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%viewhighlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%viewpositivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%viewneutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%viewnegativetextcolor"));
-            break;
-        case KColorScheme::Complementary:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%complementarytextcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%complementarybackgroundcolor"));
+                                       QStringLiteral("TooltipText"),
+                                       QStringLiteral("TooltipBackground"),
+                                       QStringLiteral("TooltipHover"),
+                                       QStringLiteral("TooltipFocus"),
+                                       QStringLiteral("TooltipHighlightedText"),
+                                       QStringLiteral("TooltipPositiveText"),
+                                       QStringLiteral("TooltipNeutralText"),
+                                       QStringLiteral("TooltipNegativeText"),
 
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%complementaryhovercolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%complementaryhighlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%complementarypositivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%complementaryneutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%complementarynegativetextcolor"));
-            break;
-        case KColorScheme::Header:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%headertextcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%headerbackgroundcolor"));
+                                       QStringLiteral("ComplementaryText"),
+                                       QStringLiteral("ComplementaryBackground"),
+                                       QStringLiteral("ComplementaryHover"),
+                                       QStringLiteral("ComplementaryFocus"),
+                                       QStringLiteral("ComplementaryHighlightedText"),
+                                       QStringLiteral("ComplementaryPositiveText"),
+                                       QStringLiteral("ComplementaryNeutralText"),
+                                       QStringLiteral("ComplementaryNegativeText"),
 
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%headerhovercolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%headerhighlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%headerpositivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%headerneutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%headernegativetextcolor"));
-            break;
-        case KColorScheme::Tooltip:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%tooltiptextcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%tooltipbackgroundcolor"));
-
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%tooltiphovercolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%tooltiphighlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%tooltippositivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%tooltipneutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%tooltipnegativetextcolor"));
-            break;
-        default:
-            stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%textcolor"));
-            stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%backgroundcolor"));
-
-            stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%highlightcolor"));
-            stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%highlightedtextcolor"));
-            stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%positivetextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%neutraltextcolor"));
-            stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%negativetextcolor"));
+                                       QStringLiteral("HeaderText"),
+                                       QStringLiteral("HeaderBackground"),
+                                       QStringLiteral("HeaderHover"),
+                                       QStringLiteral("HeaderFocus"),
+                                       QStringLiteral("HeaderHighlightedText"),
+                                       QStringLiteral("HeaderPositiveText"),
+                                       QStringLiteral("HeaderNeutralText"),
+                                       QStringLiteral("HeaderNegativeText")});
+        const QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
+        for (const QString &colorName : std::as_const(namedColors)) {
+            stylesheet += skel.arg(colorName, svg->color(colorName).name());
         }
 
-        stylesheet += skel.arg(QStringLiteral("ButtonText"), QStringLiteral("%buttontextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonBackground"), QStringLiteral("%buttonbackgroundcolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonHover"), QStringLiteral("%buttonhovercolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonFocus"), QStringLiteral("%buttonfocuscolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonHighlightedText"), QStringLiteral("%buttonhighlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonPositiveText"), QStringLiteral("%buttonpositivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonNeutralText"), QStringLiteral("%buttonneutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ButtonNegativeText"), QStringLiteral("%buttonnegativetextcolor"));
-
-        stylesheet += skel.arg(QStringLiteral("ViewText"), QStringLiteral("%viewtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewBackground"), QStringLiteral("%viewbackgroundcolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewHover"), QStringLiteral("%viewhovercolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewFocus"), QStringLiteral("%viewfocuscolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewHighlightedText"), QStringLiteral("%viewhighlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewPositiveText"), QStringLiteral("%viewpositivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewNeutralText"), QStringLiteral("%viewneutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ViewNegativeText"), QStringLiteral("%viewnegativetextcolor"));
-
-        stylesheet += skel.arg(QStringLiteral("ComplementaryText"), QStringLiteral("%complementarytextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryBackground"), QStringLiteral("%complementarybackgroundcolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryHover"), QStringLiteral("%complementaryhovercolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryFocus"), QStringLiteral("%complementaryfocuscolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryHighlightedText"), QStringLiteral("%complementaryhighlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryPositiveText"), QStringLiteral("%complementarypositivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryNeutralText"), QStringLiteral("%complementaryneutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("ComplementaryNegativeText"), QStringLiteral("%complementarynegativetextcolor"));
-
-        stylesheet += skel.arg(QStringLiteral("HeaderText"), QStringLiteral("%headertextcolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderBackground"), QStringLiteral("%headerbackgroundcolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderHover"), QStringLiteral("%headerhovercolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderFocus"), QStringLiteral("%headerfocuscolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderHighlightedText"), QStringLiteral("%headerhighlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderPositiveText"), QStringLiteral("%headerpositivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderNeutralText"), QStringLiteral("%headerneutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("HeaderNegativeText"), QStringLiteral("%headernegativetextcolor"));
-
-        stylesheet += skel.arg(QStringLiteral("TootipText"), QStringLiteral("%tooltiptextcolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipBackground"), QStringLiteral("%tooltipbackgroundcolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipHover"), QStringLiteral("%tooltiphovercolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipFocus"), QStringLiteral("%tooltipfocuscolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipHighlightedText"), QStringLiteral("%tooltiphighlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipPositiveText"), QStringLiteral("%tooltippositivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipNeutralText"), QStringLiteral("%tooltipneutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("TootipNegativeText"), QStringLiteral("%tooltipnegativetextcolor"));
-
-        stylesheet = processStyleSheet(stylesheet, status);
         if (status == Svg::Status::Selected) {
-            cachedSelectedSvgStyleSheets.insert(group, stylesheet);
+            cachedSelectedSvgStyleSheets.insert(colorSet, stylesheet);
         } else if (status == Svg::Status::Inactive) {
-            cachedInactiveSvgStyleSheets.insert(group, stylesheet);
+            cachedInactiveSvgStyleSheets.insert(colorSet, stylesheet);
         } else {
-            cachedSvgStyleSheets.insert(group, stylesheet);
+            cachedSvgStyleSheets.insert(colorSet, stylesheet);
         }
     }
 

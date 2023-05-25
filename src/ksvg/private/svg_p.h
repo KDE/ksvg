@@ -103,6 +103,7 @@ public:
     QSizeF size;
     QSizeF naturalSize;
     QChar styleCrc;
+    QHash<QString, QColor> colorOverrides;
     KColorScheme::ColorSet colorSet = KColorScheme::Window;
     unsigned int lastModified;
     qreal scaleFactor;

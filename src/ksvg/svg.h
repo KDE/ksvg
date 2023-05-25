@@ -51,6 +51,7 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
     Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(KSvg::Svg::ColorSet colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged)
 
 public:
     enum Status {
@@ -59,6 +60,61 @@ public:
         Inactive,
     };
     Q_ENUM(Status)
+
+    // Those are copied from KColorScheme but is needed to make it a Q_ENUM
+    enum ColorSet {
+        /**
+         * Views; for example, frames, input fields, etc.
+         *
+         * If it contains things that can be selected, it is probably a View.
+         */
+        View,
+        /**
+         * Non-editable window elements; for example, menus.
+         *
+         * If it isn't a Button, View, or Tooltip, it is probably a Window.
+         */
+        Window,
+        /**
+         * Buttons and button-like controls.
+         *
+         * In addition to buttons, "button-like" controls such as non-editable
+         * dropdowns, scrollbar sliders, slider handles, etc. should also use
+         * this role.
+         */
+        Button,
+        /**
+         * Selected items in views.
+         *
+         * Note that unfocused or disabled selections should use the Window
+         * role. This makes it more obvious to the user that the view
+         * containing the selection does not have input focus.
+         */
+        Selection,
+        /**
+         * Tooltips.
+         *
+         * The tooltip set can often be substituted for the view
+         * set when editing is not possible, but the Window set is deemed
+         * inappropriate. "What's This" help is an excellent example, another
+         * might be pop-up notifications (depending on taste).
+         */
+        Tooltip,
+        /**
+         * Complementary areas.
+         *
+         * Some applications want some areas to have a different color scheme.
+         * Usually dark areas over a light theme. For instance the fullscreen UI
+         * of a picture viewer, or the logout/lock screen of the plasma workspace
+         * ask for a dark color scheme even on light themes.
+         */
+        Complementary,
+        /**
+         * Colors for header areas that should be used both by the top toolbar and the titlebar.
+         */
+        Header
+    };
+    Q_ENUM(ColorSet)
 
     /**
      * Constructs an SVG object that implicitly shares and caches rendering.
@@ -420,6 +476,25 @@ public:
      */
     Svg::Status status() const;
 
+    /**
+     * Set a color set for the Svg.
+     * if the Svg uses stylesheets and has elements
+     * that are either TextColor or BackgroundColor class,
+     * make them use ButtonTextColor/ButtonBackgroundColor
+     * or ViewTextColor/ViewBackgroundColor
+     */
+    void setColorSet(ColorSet colorSet);
+
+    /**
+     * @return the color set for this Svg
+     */
+    KSvg::Svg::ColorSet colorSet() const;
+
+    QColor color(const QString colorName) const;
+    void setColor(const QString &colorName, const QColor &color);
+
+    void clearColorOverrides();
+
 Q_SIGNALS:
     /**
      * Emitted whenever the SVG data has changed in such a way that a repaint is required.
@@ -456,9 +531,13 @@ Q_SIGNALS:
 
     /**
      * Emitted when the status changes
-     * @since 5.23
      */
     void statusChanged(KSvg::Svg::Status status);
+
+    /**
+     * Emitted when the color set changes
+     */
+    void colorSetChanged(KSvg::Svg::ColorSet colorSet);
 
 private:
     SvgPrivate *const d;

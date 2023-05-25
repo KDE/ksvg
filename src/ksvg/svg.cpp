@@ -631,7 +631,8 @@ void SvgPrivate::createRenderer()
         }
     }
 
-    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(colorSet, status);
+    // TODO: pass this instead
+    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(q);
 
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
@@ -1104,6 +1105,48 @@ void Svg::setStatus(KSvg::Svg::Status status)
 Svg::Status Svg::status() const
 {
     return d->status;
+}
+
+void Svg::setColorSet(KSvg::Svg::ColorSet colorSet)
+{
+    const KColorScheme::ColorSet convertedSet = KColorScheme::ColorSet(colorSet);
+    if (convertedSet == d->colorSet) {
+        return;
+    }
+
+    d->colorSet = convertedSet;
+    d->eraseRenderer();
+    Q_EMIT colorSetChanged(colorSet);
+    Q_EMIT repaintNeeded();
+}
+
+Svg::ColorSet Svg::colorSet() const
+{
+    return Svg::ColorSet(d->colorSet);
+}
+
+QColor Svg::color(const QString colorName) const
+{
+    auto it = d->colorOverrides.constFind(colorName);
+    if (it != d->colorOverrides.constEnd()) {
+        return *it;
+    }
+    return d->cacheAndColorsImageSet()->d->namedColor(colorName, this);
+}
+
+void Svg::setColor(const QString &colorName, const QColor &color)
+{
+    if (d->colorOverrides.value(colorName) == color) {
+        return;
+    }
+    d->colorOverrides[colorName] = color;
+    Q_EMIT repaintNeeded();
+}
+
+void Svg::clearColorOverrides()
+{
+    d->colorOverrides.clear();
+    Q_EMIT repaintNeeded();
 }
 
 } // KSvg namespace
