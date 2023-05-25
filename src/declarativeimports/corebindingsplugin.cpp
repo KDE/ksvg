@@ -15,6 +15,7 @@
 #include <ksvg/svg.h>
 
 #include "framesvgitem.h"
+#include "imageset.h"
 #include "svgitem.h"
 
 #include <QDebug>
@@ -23,8 +24,6 @@
 void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
-
-
 }
 
 void CoreBindingsPlugin::registerTypes(const char *uri)
@@ -35,4 +34,9 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
     qmlRegisterType<KSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
     qmlRegisterType<KSvg::SvgItem>(uri, 2, 0, "SvgItem");
     qmlRegisterType<KSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
+    qmlRegisterType<KSvg::ImageSet>(uri, 2, 0, "ImageSet");
+
+    qmlRegisterSingletonType<KSvg::ImageSet>(uri, 2, 0, "ImageSet", [](QQmlEngine *, QJSEngine *) {
+        return new KSvg::ImageSet;
+    });
 }

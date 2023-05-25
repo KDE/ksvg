@@ -53,6 +53,7 @@ public:
         int status;
         double scaleFactor;
         int colorSet;
+        uint styleSheet;
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
@@ -103,12 +104,14 @@ public:
     QSizeF size;
     QSizeF naturalSize;
     QChar styleCrc;
-    QHash<QString, QColor> colorOverrides;
+    // We need colorOverrides.values() to have a stable order
+    QMap<Svg::StyleSheetColor, QColor> colorOverrides;
+    QString stylesheetOverride;
     KColorScheme::ColorSet colorSet = KColorScheme::Window;
     unsigned int lastModified;
     qreal scaleFactor;
     Svg::Status status;
-    QPalette palette;
+
     bool multipleImages : 1;
     bool themed : 1;
     bool useSystemColors : 1;

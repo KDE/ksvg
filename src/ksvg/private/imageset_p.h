@@ -48,7 +48,7 @@ public:
     bool useCache();
     void setImageSetName(const QString &themeName, bool emitChanged);
 
-    QColor namedColor(const QString &colorName, const KSvg::Svg *svg);
+    QColor namedColor(Svg::StyleSheetColor colorName, const KSvg::Svg *svg);
     const QString svgStyleSheet(KSvg::Svg *svg);
 
     /**
@@ -106,7 +106,7 @@ public Q_SLOTS:
     void notifyOfChanged();
 
 Q_SIGNALS:
-    void imageSetChanged();
+    void imageSetChanged(const QString &imageSetName);
     void applicationPaletteChange();
 
 public:
@@ -120,7 +120,7 @@ public:
     static ImageSetPrivate *globalImageSet;
     static QHash<QString, ImageSetPrivate *> themes;
 
-    QString imageSetName;
+    QString imageSetName = QStringLiteral("default");
     QString basePath;
     KPluginMetaData pluginMetaData;
     QList<QString> fallbackImageSets;

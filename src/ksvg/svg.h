@@ -61,60 +61,73 @@ public:
     };
     Q_ENUM(Status)
 
-    // Those are copied from KColorScheme but is needed to make it a Q_ENUM
+    // FIXME? Those are copied from KColorScheme because is needed to make it a Q_ENUM
     enum ColorSet {
-        /**
-         * Views; for example, frames, input fields, etc.
-         *
-         * If it contains things that can be selected, it is probably a View.
-         */
         View,
-        /**
-         * Non-editable window elements; for example, menus.
-         *
-         * If it isn't a Button, View, or Tooltip, it is probably a Window.
-         */
         Window,
-        /**
-         * Buttons and button-like controls.
-         *
-         * In addition to buttons, "button-like" controls such as non-editable
-         * dropdowns, scrollbar sliders, slider handles, etc. should also use
-         * this role.
-         */
         Button,
-        /**
-         * Selected items in views.
-         *
-         * Note that unfocused or disabled selections should use the Window
-         * role. This makes it more obvious to the user that the view
-         * containing the selection does not have input focus.
-         */
         Selection,
-        /**
-         * Tooltips.
-         *
-         * The tooltip set can often be substituted for the view
-         * set when editing is not possible, but the Window set is deemed
-         * inappropriate. "What's This" help is an excellent example, another
-         * might be pop-up notifications (depending on taste).
-         */
         Tooltip,
-        /**
-         * Complementary areas.
-         *
-         * Some applications want some areas to have a different color scheme.
-         * Usually dark areas over a light theme. For instance the fullscreen UI
-         * of a picture viewer, or the logout/lock screen of the plasma workspace
-         * ask for a dark color scheme even on light themes.
-         */
         Complementary,
-        /**
-         * Colors for header areas that should be used both by the top toolbar and the titlebar.
-         */
         Header
     };
     Q_ENUM(ColorSet)
+
+    enum StyleSheetColor {
+        Text,
+        Background,
+        Highlight,
+        HighlightedText,
+        PositiveText,
+        NeutralText,
+        NegativeText,
+
+        ButtonText,
+        ButtonBackground,
+        ButtonHover,
+        ButtonFocus,
+        ButtonHighlightedText,
+        ButtonPositiveText,
+        ButtonNeutralText,
+        ButtonNegativeText,
+
+        ViewText,
+        ViewBackground,
+        ViewHover,
+        ViewFocus,
+        ViewHighlightedText,
+        ViewPositiveText,
+        ViewNeutralText,
+        ViewNegativeText,
+
+        TooltipText,
+        TooltipBackground,
+        TooltipHover,
+        TooltipFocus,
+        TooltipHighlightedText,
+        TooltipPositiveText,
+        TooltipNeutralText,
+        TooltipNegativeText,
+
+        ComplementaryText,
+        ComplementaryBackground,
+        ComplementaryHover,
+        ComplementaryFocus,
+        ComplementaryHighlightedText,
+        ComplementaryPositiveText,
+        ComplementaryNeutralText,
+        ComplementaryNegativeText,
+
+        HeaderText,
+        HeaderBackground,
+        HeaderHover,
+        HeaderFocus,
+        HeaderHighlightedText,
+        HeaderPositiveText,
+        HeaderNeutralText,
+        HeaderNegativeText
+    };
+    Q_ENUM(StyleSheetColor);
 
     /**
      * Constructs an SVG object that implicitly shares and caches rendering.
@@ -132,10 +145,6 @@ public:
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
-
-    // TODO: remove
-    void setPalette(const QPalette &palette);
-    QPalette palette() const;
 
     /**
      * Setting a scale factor greater than one it will result in final images scaled by it.
@@ -490,8 +499,8 @@ public:
      */
     KSvg::Svg::ColorSet colorSet() const;
 
-    QColor color(const QString colorName) const;
-    void setColor(const QString &colorName, const QColor &color);
+    QColor color(StyleSheetColor colorName) const;
+    void setColor(StyleSheetColor colorName, const QColor &color);
 
     void clearColorOverrides();
 
@@ -549,6 +558,7 @@ private:
     friend class SvgPrivate;
     friend class FrameSvgPrivate;
     friend class FrameSvg;
+    friend class ImageSetPrivate;
 };
 
 } // KSvg namespace

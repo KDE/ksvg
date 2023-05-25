@@ -270,10 +270,10 @@ private:
     void applyPrefixes();
 
     KSvg::FrameSvg *m_frameSvg;
+    Kirigami::PlatformTheme *m_kirigamiTheme;
     FrameSvgItemMargins *m_margins;
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;
-    Kirigami::PlatformTheme *m_kirigamiTheme;
     // logged margins to check for changes
     QVector<qreal> m_oldMargins;
     QVector<qreal> m_oldFixedMargins;
