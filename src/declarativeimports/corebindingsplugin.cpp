@@ -31,8 +31,8 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QByteArray("org.kde.ksvg"));
 
-    qmlRegisterType<KSvg::Svg>(uri, 2, 0, "Svg");
-    qmlRegisterType<KSvg::FrameSvg>(uri, 2, 0, "FrameSvg");
-    qmlRegisterType<KSvg::SvgItem>(uri, 2, 0, "SvgItem");
-    qmlRegisterType<KSvg::FrameSvgItem>(uri, 2, 0, "FrameSvgItem");
+    qmlRegisterType<KSvg::Svg>(uri, 1, 0, "Svg");
+    qmlRegisterType<KSvg::FrameSvg>(uri, 1, 0, "FrameSvg");
+    qmlRegisterType<KSvg::SvgItem>(uri, 1, 0, "SvgItem");
+    qmlRegisterType<KSvg::FrameSvgItem>(uri, 1, 0, "FrameSvgItem");
 }
