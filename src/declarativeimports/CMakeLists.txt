@@ -22,6 +22,7 @@ target_link_libraries(corebindingsplugin
         Qt6::Qml
         Qt6::Svg
         KF6::Svg
+        KF6::ColorScheme
         KF6::Kirigami2
 )
 

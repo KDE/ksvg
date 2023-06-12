@@ -9,6 +9,7 @@
 #include "debug_p.h"
 #include "framesvg.h"
 #include "framesvg_p.h"
+#include "imageset.h"
 #include "svg_p.h"
 
 #include <QDir>
@@ -16,6 +17,7 @@
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QGuiApplication>
+#include <QMetaEnum>
 
 #include <KDirWatch>
 #include <KSharedConfig>
@@ -63,6 +65,13 @@ KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &them
 
 ImageSetPrivate::ImageSetPrivate(QObject *parent)
     : QObject(parent)
+    , colorScheme(QPalette::Active, KColorScheme::Window, KSharedConfigPtr(nullptr))
+    , selectionColorScheme(QPalette::Active, KColorScheme::Selection, KSharedConfigPtr(nullptr))
+    , buttonColorScheme(QPalette::Active, KColorScheme::Button, KSharedConfigPtr(nullptr))
+    , viewColorScheme(QPalette::Active, KColorScheme::View, KSharedConfigPtr(nullptr))
+    , complementaryColorScheme(QPalette::Active, KColorScheme::Complementary, KSharedConfigPtr(nullptr))
+    , headerColorScheme(QPalette::Active, KColorScheme::Header, KSharedConfigPtr(nullptr))
+    , tooltipColorScheme(QPalette::Active, KColorScheme::Tooltip, KSharedConfigPtr(nullptr))
     , pixmapCache(nullptr)
     , cacheSize(DEFAULT_CACHE_SIZE)
     , cachesToDiscard(NoCache)
@@ -74,11 +83,6 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     , apiMinor(0)
     , apiRevision(0)
 {
-    // Colors from Breeze
-    extraColors[Svg::Positive] = QColor(39, 174, 96);
-    extraColors[Svg::Neutral] = QColor(256, 116, 0);
-    extraColors[Svg::Negative] = QColor(218, 68, 83);
-
     const QString org = QCoreApplication::organizationName();
     if (!org.isEmpty()) {
         basePath += u'/' + org;
@@ -274,6 +278,23 @@ void ImageSetPrivate::scheduledCacheUpdate()
     idsToCache.clear();
 }
 
+void ImageSetPrivate::colorsChanged()
+{
+    // in the case the theme follows the desktop settings, refetch the colorschemes
+    // and discard the svg pixmap cache
+    if (!colors) {
+        KSharedConfig::openConfig()->reparseConfiguration();
+    }
+    colorScheme = KColorScheme(QPalette::Active, KColorScheme::Window, colors);
+    buttonColorScheme = KColorScheme(QPalette::Active, KColorScheme::Button, colors);
+    viewColorScheme = KColorScheme(QPalette::Active, KColorScheme::View, colors);
+    selectionColorScheme = KColorScheme(QPalette::Active, KColorScheme::Selection, colors);
+    complementaryColorScheme = KColorScheme(QPalette::Active, KColorScheme::Complementary, colors);
+    headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
+    tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
+    Q_EMIT applicationPaletteChange();
+}
+
 void ImageSetPrivate::scheduleImageSetChangeNotification(CacheTypes caches)
 {
     cachesToDiscard |= caches;
@@ -285,91 +306,268 @@ void ImageSetPrivate::notifyOfChanged()
     // qCDebug(LOG_KSVG) << cachesToDiscard;
     discardCache(cachesToDiscard);
     cachesToDiscard = NoCache;
-    Q_EMIT imageSetChanged();
+    Q_EMIT imageSetChanged(imageSetName);
 }
 
-const QString ImageSetPrivate::processStyleSheet(const QString &css,
-                                                 KSvg::Svg::Status status,
-                                                 const QPalette &palette,
-                                                 const QColor &positive,
-                                                 const QColor &neutral,
-                                                 const QColor &negative)
+QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::Svg *svg)
 {
-    QString stylesheet(css);
+    const KSvg::Svg::Status status = svg->status();
+    KColorScheme *currentScheme = nullptr;
 
-    QPalette::ColorGroup group;
-    switch (status) {
-    case Svg::Status::Inactive:
-        group = QPalette::Disabled;
+    switch (KColorScheme::ColorSet(svg->colorSet())) {
+    case KColorScheme::Button:
+        currentScheme = &buttonColorScheme;
         break;
-    case Svg::Status::Selected:
-        group = QPalette::Active;
+    case KColorScheme::View:
+        currentScheme = &viewColorScheme;
+        break;
+    case KColorScheme::Complementary:
+        currentScheme = &complementaryColorScheme;
+        break;
+    case KColorScheme::Header:
+        currentScheme = &headerColorScheme;
+        break;
+    case KColorScheme::Tooltip:
+        currentScheme = &tooltipColorScheme;
         break;
     default:
-        group = QPalette::Normal;
+        currentScheme = &colorScheme;
     }
 
-    QHash<QString, QString> elements;
-    // If you add elements here, make sure their names are sufficiently unique to not cause
-    // clashes between element keys
-    if (status == Svg::Status::Selected) {
-        elements[QStringLiteral("%textcolor")] = palette.color(group, QPalette::HighlightedText).name();
-        elements[QStringLiteral("%backgroundcolor")] = palette.color(group, QPalette::Highlight).name();
-    } else {
-        elements[QStringLiteral("%textcolor")] = palette.color(group, QPalette::WindowText).name();
-        elements[QStringLiteral("%backgroundcolor")] = palette.color(group, QPalette::Window).name();
+    switch (colorName) {
+    case Svg::Text:
+        switch (status) {
+        case Svg::Status::Selected:
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        case Svg::Status::Inactive:
+            return currentScheme->foreground(KColorScheme::InactiveText).color();
+        default:
+            return currentScheme->foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::Background:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return colorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::Highlight:
+        return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+    case Svg::HighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::PositiveText:
+        return currentScheme->foreground(KColorScheme::PositiveText).color();
+    case Svg::NeutralText:
+        return currentScheme->foreground(KColorScheme::NeutralText).color();
+    case Svg::NegativeText:
+        return currentScheme->foreground(KColorScheme::NegativeText).color();
+
+    case Svg::ButtonText:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return buttonColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::ButtonBackground:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return buttonColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::ButtonHover:
+        return buttonColorScheme.decoration(KColorScheme::HoverColor).color();
+    case Svg::ButtonFocus:
+        return buttonColorScheme.decoration(KColorScheme::FocusColor).color();
+    case Svg::ButtonHighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::ButtonPositiveText:
+        return buttonColorScheme.foreground(KColorScheme::PositiveText).color();
+    case Svg::ButtonNeutralText:
+        return buttonColorScheme.foreground(KColorScheme::NeutralText).color();
+    case Svg::ButtonNegativeText:
+        return buttonColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    case Svg::ViewText:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return viewColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::ViewBackground:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return viewColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::ViewHover:
+        return viewColorScheme.decoration(KColorScheme::HoverColor).color();
+    case Svg::ViewFocus:
+        return viewColorScheme.decoration(KColorScheme::FocusColor).color();
+    case Svg::ViewHighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::ViewPositiveText:
+        return viewColorScheme.foreground(KColorScheme::PositiveText).color();
+    case Svg::ViewNeutralText:
+        return viewColorScheme.foreground(KColorScheme::NeutralText).color();
+    case Svg::ViewNegativeText:
+        return viewColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    case Svg::TooltipText:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return tooltipColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::TooltipBackground:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return tooltipColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::TooltipHover:
+        return tooltipColorScheme.decoration(KColorScheme::HoverColor).color();
+    case Svg::TooltipFocus:
+        return tooltipColorScheme.decoration(KColorScheme::FocusColor).color();
+    case Svg::TooltipHighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::TooltipPositiveText:
+        return tooltipColorScheme.foreground(KColorScheme::PositiveText).color();
+    case Svg::TooltipNeutralText:
+        return tooltipColorScheme.foreground(KColorScheme::NeutralText).color();
+    case Svg::TooltipNegativeText:
+        return tooltipColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    case Svg::ComplementaryText:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return complementaryColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::ComplementaryBackground:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return complementaryColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::ComplementaryHover:
+        return complementaryColorScheme.decoration(KColorScheme::HoverColor).color();
+    case Svg::ComplementaryFocus:
+        return complementaryColorScheme.decoration(KColorScheme::FocusColor).color();
+    case Svg::ComplementaryHighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::ComplementaryPositiveText:
+        return complementaryColorScheme.foreground(KColorScheme::PositiveText).color();
+    case Svg::ComplementaryNeutralText:
+        return complementaryColorScheme.foreground(KColorScheme::NeutralText).color();
+    case Svg::ComplementaryNegativeText:
+        return complementaryColorScheme.foreground(KColorScheme::NegativeText).color();
+
+    case Svg::HeaderText:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+        } else {
+            return headerColorScheme.foreground(KColorScheme::NormalText).color();
+        }
+    case Svg::HeaderBackground:
+        if (status == Svg::Status::Selected) {
+            return selectionColorScheme.background(KColorScheme::NormalBackground).color();
+        } else {
+            return headerColorScheme.background(KColorScheme::NormalBackground).color();
+        }
+    case Svg::HeaderHover:
+        return headerColorScheme.decoration(KColorScheme::HoverColor).color();
+    case Svg::HeaderFocus:
+        return headerColorScheme.decoration(KColorScheme::FocusColor).color();
+    case Svg::HeaderHighlightedText:
+        return selectionColorScheme.foreground(KColorScheme::NormalText).color();
+    case Svg::HeaderPositiveText:
+        return headerColorScheme.foreground(KColorScheme::PositiveText).color();
+    case Svg::HeaderNeutralText:
+        return headerColorScheme.foreground(KColorScheme::NeutralText).color();
+    case Svg::HeaderNegativeText:
+        return headerColorScheme.foreground(KColorScheme::NegativeText).color();
+    default:
+        return {};
     }
-
-    elements[QStringLiteral("%highlightcolor")] = palette.color(group, QPalette::Highlight).name();
-    elements[QStringLiteral("%highlightedtextcolor")] = palette.color(group, QPalette::HighlightedText).name();
-    elements[QStringLiteral("%visitedlink")] = palette.color(group, QPalette::LinkVisited).name();
-    elements[QStringLiteral("%activatedlink")] = palette.color(group, QPalette::Highlight).name();
-    elements[QStringLiteral("%hoveredlink")] = palette.color(group, QPalette::Highlight).name();
-    elements[QStringLiteral("%link")] = palette.color(group, QPalette::Link).name();
-    elements[QStringLiteral("%positivetextcolor")] = positive.name();
-    elements[QStringLiteral("%neutraltextcolor")] = neutral.name();
-    elements[QStringLiteral("%negativetextcolor")] = negative.name();
-
-    QFont font = QGuiApplication::font();
-    elements[QStringLiteral("%fontsize")] = QStringLiteral("%1pt").arg(font.pointSize());
-    QString family{font.family()};
-    family.truncate(family.indexOf(QLatin1Char('[')));
-    elements[QStringLiteral("%fontfamily")] = family;
-    elements[QStringLiteral("%smallfontsize")] = QStringLiteral("%1pt").arg(QFontDatabase::systemFont(QFontDatabase::SmallestReadableFont).pointSize());
-
-    QHash<QString, QString>::const_iterator it = elements.constBegin();
-    QHash<QString, QString>::const_iterator itEnd = elements.constEnd();
-    for (; it != itEnd; ++it) {
-        stylesheet.replace(it.key(), it.value());
-    }
-    return stylesheet;
 }
 
-const QString
-ImageSetPrivate::svgStyleSheet(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative, KSvg::Svg::Status status)
+const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
 {
-    QString stylesheet = (status == Svg::Status::Selected)
-        ? cachedSelectedSvgStyleSheets.value(palette.cacheKey())
-        : (status == Svg::Status::Inactive ? cachedInactiveSvgStyleSheets.value(palette.cacheKey()) : cachedSvgStyleSheets.value(palette.cacheKey()));
+    const KSvg::Svg::Status status = svg->status();
+    const KColorScheme::ColorSet colorSet = KColorScheme::ColorSet(svg->colorSet());
+    const bool useCache = svg->d->colorOverrides.isEmpty();
+    QString stylesheet;
+    if (useCache) {
+        stylesheet = (status == Svg::Status::Selected)
+            ? cachedSelectedSvgStyleSheets.value(colorSet)
+            : (status == Svg::Status::Inactive ? cachedInactiveSvgStyleSheets.value(colorSet) : cachedSvgStyleSheets.value(colorSet));
+    }
+
     if (stylesheet.isEmpty()) {
-        QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
+        const QList<Svg::StyleSheetColor> namedColors({Svg::Text,
+                                                       Svg::Background,
+                                                       Svg::Highlight,
+                                                       Svg::HighlightedText,
+                                                       Svg::PositiveText,
+                                                       Svg::NeutralText,
+                                                       Svg::NegativeText,
 
-        stylesheet += skel.arg(QStringLiteral("Text"), QStringLiteral("%textcolor"));
-        stylesheet += skel.arg(QStringLiteral("Background"), QStringLiteral("%backgroundcolor"));
+                                                       Svg::ButtonText,
+                                                       Svg::ButtonBackground,
+                                                       Svg::ButtonHover,
+                                                       Svg::ButtonFocus,
+                                                       Svg::ButtonHighlightedText,
+                                                       Svg::ButtonPositiveText,
+                                                       Svg::ButtonNeutralText,
+                                                       Svg::ButtonNegativeText,
 
-        stylesheet += skel.arg(QStringLiteral("Highlight"), QStringLiteral("%highlightcolor"));
-        stylesheet += skel.arg(QStringLiteral("HighlightedText"), QStringLiteral("%highlightedtextcolor"));
-        stylesheet += skel.arg(QStringLiteral("PositiveText"), QStringLiteral("%positivetextcolor"));
-        stylesheet += skel.arg(QStringLiteral("NeutralText"), QStringLiteral("%neutraltextcolor"));
-        stylesheet += skel.arg(QStringLiteral("NegativeText"), QStringLiteral("%negativetextcolor"));
+                                                       Svg::ViewText,
+                                                       Svg::ViewBackground,
+                                                       Svg::ViewHover,
+                                                       Svg::ViewFocus,
+                                                       Svg::ViewHighlightedText,
+                                                       Svg::ViewPositiveText,
+                                                       Svg::ViewNeutralText,
+                                                       Svg::ViewNegativeText,
 
-        stylesheet = processStyleSheet(stylesheet, status, palette, positive, neutral, negative);
+                                                       Svg::TooltipText,
+                                                       Svg::TooltipBackground,
+                                                       Svg::TooltipHover,
+                                                       Svg::TooltipFocus,
+                                                       Svg::TooltipHighlightedText,
+                                                       Svg::TooltipPositiveText,
+                                                       Svg::TooltipNeutralText,
+                                                       Svg::TooltipNegativeText,
+
+                                                       Svg::ComplementaryText,
+                                                       Svg::ComplementaryBackground,
+                                                       Svg::ComplementaryHover,
+                                                       Svg::ComplementaryFocus,
+                                                       Svg::ComplementaryHighlightedText,
+                                                       Svg::ComplementaryPositiveText,
+                                                       Svg::ComplementaryNeutralText,
+                                                       Svg::ComplementaryNegativeText,
+
+                                                       Svg::HeaderText,
+                                                       Svg::HeaderBackground,
+                                                       Svg::HeaderHover,
+                                                       Svg::HeaderFocus,
+                                                       Svg::HeaderHighlightedText,
+                                                       Svg::HeaderPositiveText,
+                                                       Svg::HeaderNeutralText,
+                                                       Svg::HeaderNegativeText});
+        const QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
+        const QMetaEnum metaEnum = QMetaEnum::fromType<Svg::StyleSheetColor>();
+
+        for (const auto colorName : std::as_const(namedColors)) {
+            stylesheet += skel.arg(QString::fromUtf8(metaEnum.valueToKey(colorName)), svg->color(colorName).name());
+        }
+
         if (status == Svg::Status::Selected) {
-            cachedSelectedSvgStyleSheets.insert(palette.cacheKey(), stylesheet);
+            cachedSelectedSvgStyleSheets.insert(colorSet, stylesheet);
         } else if (status == Svg::Status::Inactive) {
-            cachedInactiveSvgStyleSheets.insert(palette.cacheKey(), stylesheet);
+            cachedInactiveSvgStyleSheets.insert(colorSet, stylesheet);
         } else {
-            cachedSvgStyleSheets.insert(palette.cacheKey(), stylesheet);
+            cachedSvgStyleSheets.insert(colorSet, stylesheet);
         }
     }
 
@@ -466,6 +664,20 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
 
     // qCDebug(LOG_KSVG) << "we're going for..." << colorsFile << "*******************";
 
+    if (colorsFile.isEmpty()) {
+        colors = nullptr;
+    } else {
+        colors = KSharedConfig::openConfig(colorsFile);
+    }
+
+    colorScheme = KColorScheme(QPalette::Active, KColorScheme::Window, colors);
+    selectionColorScheme = KColorScheme(QPalette::Active, KColorScheme::Selection, colors);
+    buttonColorScheme = KColorScheme(QPalette::Active, KColorScheme::Button, colors);
+    viewColorScheme = KColorScheme(QPalette::Active, KColorScheme::View, colors);
+    complementaryColorScheme = KColorScheme(QPalette::Active, KColorScheme::Complementary, colors);
+    headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
+    tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
+
     if (realImageSet) {
         pluginMetaData = metaDataForImageSet(basePath, theme);
         KSharedConfigPtr metadata = configForImageSet(basePath, theme);
@@ -511,6 +723,15 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     }
 }
 
+bool ImageSetPrivate::eventFilter(QObject *watched, QEvent *event)
+{
+    if (watched == QCoreApplication::instance()) {
+        if (event->type() == QEvent::ApplicationPaletteChange) {
+            colorsChanged();
+        }
+    }
+    return QObject::eventFilter(watched, event);
+}
 }
 
 #include "moc_imageset_p.cpp"

@@ -43,10 +43,13 @@ void SvgItem::componentComplete()
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
 
     auto applyTheme = [this]() {
-        m_svg->setPalette(m_kirigamiTheme->palette());
-        m_svg->setExtraColor(Svg::Positive, m_kirigamiTheme->positiveTextColor());
-        m_svg->setExtraColor(Svg::Neutral, m_kirigamiTheme->neutralTextColor());
-        m_svg->setExtraColor(Svg::Negative, m_kirigamiTheme->negativeTextColor());
+        m_svg->setColor(Svg::Text, m_kirigamiTheme->textColor());
+        m_svg->setColor(Svg::Background, m_kirigamiTheme->backgroundColor());
+        m_svg->setColor(Svg::Highlight, m_kirigamiTheme->highlightColor());
+        m_svg->setColor(Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor());
+        m_svg->setColor(Svg::PositiveText, m_kirigamiTheme->positiveTextColor());
+        m_svg->setColor(Svg::NeutralText, m_kirigamiTheme->neutralTextColor());
+        m_svg->setColor(Svg::NegativeText, m_kirigamiTheme->negativeTextColor());
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);

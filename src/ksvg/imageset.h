@@ -41,7 +41,8 @@ class KSVG_EXPORT ImageSet : public QObject
 {
     Q_OBJECT
 
-    Q_PROPERTY(QString imageSetName READ imageSetName NOTIFY imageSetChanged)
+    Q_PROPERTY(QString imageSetName READ imageSetName WRITE setImageSetName NOTIFY imageSetChanged)
+    Q_PROPERTY(QString basePath READ basePath WRITE setBasePath NOTIFY imageSetChanged)
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY imageSetChanged)
 
 public:
@@ -159,14 +160,19 @@ public:
 
 Q_SIGNALS:
     /**
-     * Emitted when the user changes the theme. REndered images, colors, etc. should
+     * Emitted when the user changes the theme. Rendered images, colors, etc. should
      * be updated at this point. However, SVGs should *not* be repainted in response
      * to this signal; connect to Svg::repaintNeeded() instead for that, as Svg objects
      * need repainting not only when imageSetChanged() is emitted; moreover Svg objects
      * connect to and respond appropriately to imageSetChanged() internally, emitting
      * Svg::repaintNeeded() at an appropriate time.
      */
-    void imageSetChanged();
+    void imageSetChanged(const QString &basePath);
+
+    /**
+     * Emitted when the user changes the base path of the image set
+     */
+    void basePathChanged(const QString &basePath);
 
 private:
     friend class SvgPrivate;

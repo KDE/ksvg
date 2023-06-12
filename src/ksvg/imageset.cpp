@@ -9,6 +9,7 @@
 #include "private/svg_p.h"
 
 #include <QDebug>
+#include <QDir>
 #include <QFile>
 #include <QFileInfo>
 #include <QMutableListIterator>
@@ -86,8 +87,12 @@ void ImageSet::setBasePath(const QString &basePath)
     }
 
     d->basePath = basePath;
+    if (!d->basePath.endsWith(QDir::separator())) {
+        d->basePath += QDir::separator();
+    }
 
     d->scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
+    Q_EMIT basePathChanged(basePath);
 }
 
 QString ImageSet::basePath() const

@@ -51,6 +51,7 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
     Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
+    Q_PROPERTY(KSvg::Svg::ColorSet colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged)
 
 public:
     enum Status {
@@ -60,12 +61,65 @@ public:
     };
     Q_ENUM(Status)
 
-    enum ExtraColor {
-        Positive = 0,
-        Neutral,
-        Negative,
+    // FIXME? Those are copied from KColorScheme because is needed to make it a Q_ENUM
+    enum ColorSet { View, Window, Button, Selection, Tooltip, Complementary, Header };
+    Q_ENUM(ColorSet)
+
+    enum StyleSheetColor {
+        Text,
+        Background,
+        Highlight,
+        HighlightedText,
+        PositiveText,
+        NeutralText,
+        NegativeText,
+
+        ButtonText,
+        ButtonBackground,
+        ButtonHover,
+        ButtonFocus,
+        ButtonHighlightedText,
+        ButtonPositiveText,
+        ButtonNeutralText,
+        ButtonNegativeText,
+
+        ViewText,
+        ViewBackground,
+        ViewHover,
+        ViewFocus,
+        ViewHighlightedText,
+        ViewPositiveText,
+        ViewNeutralText,
+        ViewNegativeText,
+
+        TooltipText,
+        TooltipBackground,
+        TooltipHover,
+        TooltipFocus,
+        TooltipHighlightedText,
+        TooltipPositiveText,
+        TooltipNeutralText,
+        TooltipNegativeText,
+
+        ComplementaryText,
+        ComplementaryBackground,
+        ComplementaryHover,
+        ComplementaryFocus,
+        ComplementaryHighlightedText,
+        ComplementaryPositiveText,
+        ComplementaryNeutralText,
+        ComplementaryNegativeText,
+
+        HeaderText,
+        HeaderBackground,
+        HeaderHover,
+        HeaderFocus,
+        HeaderHighlightedText,
+        HeaderPositiveText,
+        HeaderNeutralText,
+        HeaderNegativeText
     };
-    Q_ENUM(ExtraColor)
+    Q_ENUM(StyleSheetColor);
 
     /**
      * Constructs an SVG object that implicitly shares and caches rendering.
@@ -83,11 +137,6 @@ public:
      */
     explicit Svg(QObject *parent = nullptr);
     ~Svg() override;
-
-    void setPalette(const QPalette &palette);
-    QPalette palette() const;
-    QColor extraColor(ExtraColor role) const;
-    void setExtraColor(ExtraColor role, const QColor &color);
 
     /**
      * Setting a scale factor greater than one it will result in final images scaled by it.
@@ -428,6 +477,25 @@ public:
      */
     Svg::Status status() const;
 
+    /**
+     * Set a color set for the Svg.
+     * if the Svg uses stylesheets and has elements
+     * that are either TextColor or BackgroundColor class,
+     * make them use ButtonTextColor/ButtonBackgroundColor
+     * or ViewTextColor/ViewBackgroundColor
+     */
+    void setColorSet(ColorSet colorSet);
+
+    /**
+     * @return the color set for this Svg
+     */
+    KSvg::Svg::ColorSet colorSet() const;
+
+    QColor color(StyleSheetColor colorName) const;
+    void setColor(StyleSheetColor colorName, const QColor &color);
+
+    void clearColorOverrides();
+
 Q_SIGNALS:
     /**
      * Emitted whenever the SVG data has changed in such a way that a repaint is required.
@@ -464,9 +532,13 @@ Q_SIGNALS:
 
     /**
      * Emitted when the status changes
-     * @since 5.23
      */
     void statusChanged(KSvg::Svg::Status status);
+
+    /**
+     * Emitted when the color set changes
+     */
+    void colorSetChanged(KSvg::Svg::ColorSet colorSet);
 
 private:
     SvgPrivate *const d;
@@ -478,6 +550,7 @@ private:
     friend class SvgPrivate;
     friend class FrameSvgPrivate;
     friend class FrameSvg;
+    friend class ImageSetPrivate;
 };
 
 } // KSvg namespace

@@ -38,10 +38,34 @@ uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
         ::qHash(id.filePath),
         ::qHash(id.status),
         ::qHash(id.scaleFactor),
-        ::qHash(id.paletteKey),
+        ::qHash(id.colorSet),
+        ::qHash(id.styleSheet),
         ::qHash(id.extraFlags),
         ::qHash(id.lastModified),
     };
+    return qHashRange(parts.begin(), parts.end(), seed);
+}
+
+uint qHash(const QColor &color, uint seed)
+{
+    std::array<size_t, 10> parts = {
+        ::qHash(color.red()),
+        ::qHash(color.green()),
+        ::qHash(color.blue()),
+        ::qHash(color.alpha()),
+    };
+    return qHashRange(parts.begin(), parts.end(), seed);
+}
+
+uint qHash(const QList<QColor> &colors, uint seed)
+{
+    std::vector<size_t> parts;
+    for (const QColor &c : std::as_const(colors)) {
+        parts.push_back(::qHash(c.red()));
+        parts.push_back(::qHash(c.green()));
+        parts.push_back(::qHash(c.blue()));
+        parts.push_back(::qHash(c.alpha()));
+    }
     return qHashRange(parts.begin(), parts.end(), seed);
 }
 
@@ -414,21 +438,23 @@ qint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, co
 SvgPrivate::CacheId SvgPrivate::cacheId(QStringView elementId) const
 {
     auto idSize = size.isValid() && size != naturalSize ? size : QSizeF{-1.0, -1.0};
-    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, scaleFactor, -1, 0, lastModified};
+    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, scaleFactor, -1, 0, 0, lastModified};
 }
 
 // This function is meant for the pixmap cache
 QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
 {
-    auto cacheId = CacheId{double(size.width()),
-                           double(size.height()),
-                           path,
-                           id,
-                           status,
-                           scaleFactor,
-                           paletteId(q->palette(), q->extraColor(Svg::Positive), q->extraColor(Svg::Neutral), q->extraColor(Svg::Negative)),
-                           0,
-                           lastModified};
+    std::vector<size_t> parts;
+    const auto colors = colorOverrides.values();
+    for (const QColor &c : std::as_const(colors)) {
+        parts.push_back(::qHash(c.red()));
+        parts.push_back(::qHash(c.green()));
+        parts.push_back(::qHash(c.blue()));
+        parts.push_back(::qHash(c.alpha()));
+    }
+    const uint colorsHash = qHashRange(parts.begin(), parts.end(), SvgRectsCache::s_seed);
+
+    auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, scaleFactor, colorSet, colorsHash, 0, lastModified};
     return QString::number(qHash(cacheId, SvgRectsCache::s_seed));
 }
 
@@ -453,7 +479,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     // then lets not schedule a repaint because we are just initializing!
     bool updateNeeded = true; //! path.isEmpty() || !themePath.isEmpty();
 
-    QObject::disconnect(actualImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()));
+    // QObject::disconnect(actualImageSet(), &ImageSet::imageSetChanged, this, &SvgPrivate::imageSetChanged);
     if (isThemed && !themed && s_systemColorsCache) {
         // catch the case where we weren't themed, but now we are, and the colors cache was set up
         // ensure we are not connected to that theme previously
@@ -475,9 +501,14 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         themePath = actualPath;
         path = actualImageSet()->imagePath(themePath);
         themeFailed = path.isEmpty();
-        QObject::connect(actualImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()));
+        QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
+            imageSetChanged();
+        });
     } else if (QFileInfo::exists(actualPath)) {
-        QObject::connect(cacheAndColorsImageSet(), SIGNAL(imageSetChanged()), q, SLOT(imageSetChanged()), Qt::UniqueConnection);
+        // QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, this, &SvgPrivate::imageSetChanged, Qt::UniqueConnection);
+        QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
+            imageSetChanged();
+        });
         path = actualPath;
     } else {
 #ifndef NDEBUG
@@ -639,11 +670,16 @@ void SvgPrivate::createRenderer()
         }
     }
 
-    QString styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(q->palette(),
-                                                                    q->extraColor(Svg::Positive),
-                                                                    q->extraColor(Svg::Neutral),
-                                                                    q->extraColor(Svg::Negative),
-                                                                    status);
+    QString styleSheet;
+    if (colorOverrides.isEmpty()) {
+        if (stylesheetOverride.isEmpty()) {
+            stylesheetOverride = cacheAndColorsImageSet()->d->svgStyleSheet(q);
+        }
+        styleSheet = stylesheetOverride;
+    } else {
+        styleSheet = cacheAndColorsImageSet()->d->svgStyleSheet(q);
+    }
+
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
     QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
@@ -847,40 +883,6 @@ Svg::Svg(QObject *parent)
 Svg::~Svg()
 {
     delete d;
-}
-
-void Svg::setPalette(const QPalette &palette)
-{
-    if (palette == d->palette) {
-        return;
-    }
-
-    d->palette = palette;
-    d->colorsChanged();
-}
-
-QPalette Svg::palette() const
-{
-    return d->palette;
-}
-
-QColor Svg::extraColor(Svg::ExtraColor role) const
-{
-    auto it = d->extraColors.constFind(role);
-    if (it != d->extraColors.constEnd()) {
-        return *it;
-    }
-    return imageSet()->d->extraColors.value(role);
-}
-
-void Svg::setExtraColor(Svg::ExtraColor role, const QColor &color)
-{
-    if (color == extraColor(role)) {
-        return;
-    }
-
-    d->extraColors[role] = color;
-    d->colorsChanged();
 }
 
 void Svg::setScaleFactor(qreal ratio)
@@ -1134,6 +1136,58 @@ void Svg::setStatus(KSvg::Svg::Status status)
 Svg::Status Svg::status() const
 {
     return d->status;
+}
+
+void Svg::setColorSet(KSvg::Svg::ColorSet colorSet)
+{
+    const KColorScheme::ColorSet convertedSet = KColorScheme::ColorSet(colorSet);
+    if (convertedSet == d->colorSet) {
+        return;
+    }
+
+    d->colorSet = convertedSet;
+    d->eraseRenderer();
+    Q_EMIT colorSetChanged(colorSet);
+    Q_EMIT repaintNeeded();
+}
+
+Svg::ColorSet Svg::colorSet() const
+{
+    return Svg::ColorSet(d->colorSet);
+}
+
+QColor Svg::color(StyleSheetColor colorName) const
+{
+    auto it = d->colorOverrides.constFind(colorName);
+    if (it != d->colorOverrides.constEnd()) {
+        return *it;
+    }
+    return d->cacheAndColorsImageSet()->d->namedColor(colorName, this);
+}
+
+void Svg::setColor(StyleSheetColor colorName, const QColor &color)
+{
+    if (d->colorOverrides.value(colorName) == color) {
+        return;
+    }
+
+    if (color.isValid()) {
+        d->colorOverrides[colorName] = color;
+    } else {
+        d->colorOverrides.remove(colorName);
+    }
+    d->stylesheetOverride.clear();
+
+    d->eraseRenderer();
+    Q_EMIT repaintNeeded();
+}
+
+void Svg::clearColorOverrides()
+{
+    d->colorOverrides.clear();
+    d->stylesheetOverride.clear();
+    d->eraseRenderer();
+    Q_EMIT repaintNeeded();
 }
 
 } // KSvg namespace
