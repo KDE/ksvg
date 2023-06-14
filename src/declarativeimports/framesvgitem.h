@@ -192,6 +192,9 @@ class FrameSvgItem : public QQuickItem
      */
     Q_PROPERTY(int minimumDrawingWidth READ minimumDrawingWidth NOTIFY repaintNeeded)
 
+    // FIXME: here only for compatibility
+    Q_PROPERTY(KSvg::Svg::ColorSet colorGroup READ colorSet WRITE setColorSet NOTIFY repaintNeeded)
+
 public:
     /**
      * @return true if the svg has the necessary elements with the given prefix
@@ -223,6 +226,9 @@ public:
 
     void setEnabledBorders(const KSvg::FrameSvg::EnabledBorders borders);
     KSvg::FrameSvg::EnabledBorders enabledBorders() const;
+
+    void setColorSet(KSvg::Svg::ColorSet colorSet);
+    KSvg::Svg::ColorSet colorSet() const;
 
     FrameSvgItemMargins *margins();
     FrameSvgItemMargins *fixedMargins();

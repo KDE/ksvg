@@ -43,6 +43,9 @@ void SvgItem::componentComplete()
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
 
     auto applyTheme = [this]() {
+        if (!m_svg) {
+            return;
+        }
         m_svg->setColor(Svg::Text, m_kirigamiTheme->textColor());
         m_svg->setColor(Svg::Background, m_kirigamiTheme->backgroundColor());
         m_svg->setColor(Svg::Highlight, m_kirigamiTheme->highlightColor());
@@ -59,7 +62,7 @@ void SvgItem::componentComplete()
 
 void SvgItem::setImagePath(const QString &path)
 {
-    if (m_svg->imagePath() == path) {
+    if (!m_svg || m_svg->imagePath() == path) {
         return;
     }
 

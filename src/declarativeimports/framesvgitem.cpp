@@ -466,6 +466,23 @@ KSvg::FrameSvg::EnabledBorders FrameSvgItem::enabledBorders() const
     return m_frameSvg->enabledBorders();
 }
 
+void FrameSvgItem::setColorSet(KSvg::Svg::ColorSet colorSet)
+{
+    if (m_frameSvg->colorSet() == colorSet) {
+        return;
+    }
+
+    m_frameSvg->setColorSet(colorSet);
+    m_textureChanged = true;
+
+    update();
+}
+
+KSvg::Svg::ColorSet FrameSvgItem::colorSet() const
+{
+    return m_frameSvg->colorSet();
+}
+
 bool FrameSvgItem::hasElementPrefix(const QString &prefix) const
 {
     return m_frameSvg->hasElementPrefix(prefix);

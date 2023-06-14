@@ -6,12 +6,12 @@
 
 import QtQuick 2.2
 import QtQuick.Controls 2.15 as Controls
-import org.kde.plasma.core 2.0 as PlasmaCore
+import org.kde.ksvg 1.0 as KSvg
 
-PlasmaCore.FrameSvgItem {
+KSvg.FrameSvgItem {
     id: root
     imagePath: "widgets/background"
-    state: PlasmaCore.Svg.Normal
+    state: KSvg.Svg.Normal
     width: 600
     height: 800
 
@@ -21,21 +21,15 @@ PlasmaCore.FrameSvgItem {
 
         Controls.Button {
             text: "Switch Selected State"
-            onClicked: root.state = (root.state == PlasmaCore.Svg.Selected ? PlasmaCore.Svg.Normal : PlasmaCore.Svg.Selected)
+            onClicked: root.state = (root.state == KSvg.Svg.Selected ? KSvg.Svg.Normal : KSvg.Svg.Selected)
         }
 
-        PlasmaCore.SvgItem {
-            svg: PlasmaCore.Svg {
+        KSvg.SvgItem {
+            svg: KSvg.Svg {
                 id: svg
                 imagePath: "icons/phone"
                 state: root.state
             }
-        }
-
-        PlasmaCore.IconItem {
-            id: icon
-            source: "phone"
-            state: root.state
         }
     }
 }
