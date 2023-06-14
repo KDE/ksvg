@@ -1,36 +1,42 @@
-# Plasma Framework
-
-Foundational libraries, components, and tools of the Plasma workspaces
+# KSvg
+A library for rendering SVG-based themes with stylesheet recoloring and on disk cache
 
 ## Introduction
-The plasma framework provides the following:
-- QML components
-- A C++ library: libplasma
-- Script engines
+KSvg provides both C++ classes and QtQuick components to render svgs based on image packs.
+Compared to plain QSvg it caches the rendered images on disk with KImageCache and can recolor
+properly crafted svg shapes with stylesheet.
 
-## QML components
-### org.kde.plasma.core
+By default will recolor with the application palette making it possible to make UI elements in SVG
 
-Bindings for libplasma functionality, such FrameSvg, see @ref core.
+## C++
+In C++ there are 3 main classes, usable also in QWidget aplications with a QPainter compatible API:
 
-### org.kde.plasma.components
-Graphical components for common items such as buttons, lineedits, tabbars and so on. Compatible subset of the MeeGo components used on the N9, see @ref plasmacomponents.
+* ``ImageSet``: Used to tell the other classes where to find the SVG files: by default, SVG "themes"
+                will be searched in the application data dir (share/application_name/theme_name)
+* ``Svg``: Class to used to render Svg files: it loads a file with ``setImagePath`` using relative paths
+            to the theme specified in ``ImageSet``
+* ``FrameSvg``: A subclass of Svg usedto render 9 patch images, such as Buttons, where you want to stretch
+                only the central area but not the edges
 
-### org.kde.plasma.extras
-Extra graphical components that extend org.kde.plasma.components but are not in the standard api, see @ref plasmaextracomponents.
+## QML
+The QML bindings are imported under the ``org.kde.ksvg 1.0 as KSvg`` name.
 
-### org.kde.plasma.plasmoid
-Attached properties for manipulating the current applet or containment, see @ref libplasmaquick
+ImageSet is exported directly to QML which makes possible to sett he theme also from QML side.
 
-## libplasma
-This C++ library provides:
-- rendering of SVG themes
-- loading of files from a certain filesystem structure: packages
-- data access through data engines
-- loading of the plugin structure of the workspace: containments and applets
+Svg and FrameSvg have correspondences called ``SvgItem`` and ``FrameSvgItem`` which inherit from QQuickItem
+and will paint their associated ``Svg`` or ``FrameSvg`` stretched to their full geometry.
 
-See @ref libplasma.
+Code example:
 
-## Script engines
-Provides support to create applets or containments in various scripting languages.
+```
+FrameSvgItem {
+    imagePath: "widgets/button" // This resolves to a file like /usr/share/myapp/mytheme/widgets/button.svgz
+    prefix: "pressed"
+}
+```
 
+## More documentation
+Those assume the theme filesystem hyerarchy used by the Plasma shell, but the general concepts apply everywhere
+
+* https://develop.kde.org/docs/plasma/theme/theme-elements/
+* https://develop.kde.org/docs/plasma/theme/quickstart/
