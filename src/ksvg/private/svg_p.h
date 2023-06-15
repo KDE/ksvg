@@ -74,7 +74,7 @@ public:
     ImageSet *actualImageSet();
     ImageSet *cacheAndColorsImageSet();
 
-    QPixmap findInCache(const QString &elementId, const QSizeF &s = QSizeF());
+    QPixmap findInCache(const QString &elementId, qreal ratio, const QSizeF &s = QSizeF());
 
     void createRenderer();
     void eraseRenderer();
@@ -94,7 +94,6 @@ public:
 
     static QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
     static QPointer<ImageSet> s_systemColorsCache;
-    static qreal s_lastScaleFactor;
 
     Svg *q;
     QPointer<ImageSet> theme;
@@ -109,7 +108,7 @@ public:
     QString stylesheetOverride;
     KColorScheme::ColorSet colorSet = KColorScheme::Window;
     unsigned int lastModified;
-    qreal scaleFactor;
+    qreal devicePixelRatio;
     Svg::Status status;
 
     bool multipleImages : 1;
@@ -137,8 +136,8 @@ public:
     bool loadImageFromCache(const QString &path, uint lastModified);
     void dropImageFromCache(const QString &path);
 
-    void setNaturalSize(const QString &path, qreal scaleFactor, const QSizeF &size);
-    QSizeF naturalSize(const QString &path, qreal scaleFactor);
+    void setNaturalSize(const QString &path, const QSizeF &size);
+    QSizeF naturalSize(const QString &path);
 
     QList<QSize> sizeHintsForId(const QString &path, const QString &id);
     void insertSizeHintForId(const QString &path, const QString &id, const QSize &size);

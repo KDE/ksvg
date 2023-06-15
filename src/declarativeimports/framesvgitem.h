@@ -252,6 +252,8 @@ public:
 
     QSGNode *updatePaintNode(QSGNode *, UpdatePaintNodeData *) override;
 
+    void itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &data) override;
+
 protected:
     void classBegin() override;
     void componentComplete() override;
@@ -273,6 +275,7 @@ private Q_SLOTS:
     void doUpdate();
 
 private:
+    void updateDevicePixelRatio();
     void applyPrefixes();
 
     KSvg::FrameSvg *m_frameSvg;

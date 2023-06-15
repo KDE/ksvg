@@ -345,21 +345,21 @@ void SvgRectsCache::setIconThemePath(const QString &path)
     QMetaObject::invokeMethod(m_configSyncTimer, qOverload<>(&QTimer::start));
 }
 
-void SvgRectsCache::setNaturalSize(const QString &path, qreal scaleFactor, const QSizeF &size)
+void SvgRectsCache::setNaturalSize(const QString &path, const QSizeF &size)
 {
     KConfigGroup imageGroup(m_svgElementsCache, path);
 
     // FIXME: needs something faster, perhaps even sprintf
-    imageGroup.writeEntry(QStringLiteral("NaturalSize_") % QString::number(scaleFactor), size);
+    imageGroup.writeEntry(QStringLiteral("NaturalSize"), size);
     QMetaObject::invokeMethod(m_configSyncTimer, qOverload<>(&QTimer::start));
 }
 
-QSizeF SvgRectsCache::naturalSize(const QString &path, qreal scaleFactor)
+QSizeF SvgRectsCache::naturalSize(const QString &path)
 {
     KConfigGroup imageGroup(m_svgElementsCache, path);
 
     // FIXME: needs something faster, perhaps even sprintf
-    return imageGroup.readEntry(QStringLiteral("NaturalSize_") % QString::number(scaleFactor), QSizeF());
+    return imageGroup.readEntry(QStringLiteral("NaturalSize"), QSizeF());
 }
 
 QStringList SvgRectsCache::cachedKeysForPath(const QString &path) const
@@ -407,7 +407,7 @@ SvgPrivate::SvgPrivate(Svg *svg)
     , renderer(nullptr)
     , styleCrc(0)
     , lastModified(0)
-    , scaleFactor(s_lastScaleFactor)
+    , devicePixelRatio(1.0)
     , status(Svg::Status::Normal)
     , multipleImages(false)
     , themed(false)
@@ -438,7 +438,7 @@ qint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, co
 SvgPrivate::CacheId SvgPrivate::cacheId(QStringView elementId) const
 {
     auto idSize = size.isValid() && size != naturalSize ? size : QSizeF{-1.0, -1.0};
-    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, scaleFactor, -1, 0, 0, lastModified};
+    return CacheId{idSize.width(), idSize.height(), path, elementId.toString(), status, devicePixelRatio, -1, 0, 0, lastModified};
 }
 
 // This function is meant for the pixmap cache
@@ -454,7 +454,7 @@ QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
     }
     const uint colorsHash = qHashRange(parts.begin(), parts.end(), SvgRectsCache::s_seed);
 
-    auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, scaleFactor, colorSet, colorsHash, 0, lastModified};
+    auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, devicePixelRatio, colorSet, colorsHash, 0, lastModified};
     return QString::number(qHash(cacheId, SvgRectsCache::s_seed));
 }
 
@@ -539,11 +539,11 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     // also images with absolute path needs to have a natural size initialized,
     // even if looks a bit weird using ImageSet to store non-themed stuff
     if ((themed && !path.isEmpty() && lastModifiedDate.isValid()) || QFileInfo::exists(actualPath)) {
-        naturalSize = SvgRectsCache::instance()->naturalSize(path, scaleFactor);
+        naturalSize = SvgRectsCache::instance()->naturalSize(path);
         if (naturalSize.isEmpty()) {
             createRenderer();
-            naturalSize = renderer->defaultSize() * scaleFactor;
-            SvgRectsCache::instance()->setNaturalSize(path, scaleFactor, naturalSize);
+            naturalSize = renderer->defaultSize();
+            SvgRectsCache::instance()->setNaturalSize(path, naturalSize);
         }
     }
 
@@ -577,7 +577,7 @@ ImageSet *SvgPrivate::cacheAndColorsImageSet()
     }
 }
 
-QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
+QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSizeF &s)
 {
     QSize size;
     QString actualElementId;
@@ -591,7 +591,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
             QSizeF bestFit(-1, -1);
 
             for (const auto &hint : elementSizeHints) {
-                if (hint.width() >= s.width() && hint.height() >= s.height()
+                if (hint.width() >= s.width() * ratio && hint.height() >= s.height() * ratio
                     && (!bestFit.isValid() || (bestFit.width() * bestFit.height()) > (hint.width() * hint.height()))) {
                     bestFit = hint;
                 }
@@ -608,9 +608,9 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
     }
 
     if (elementId.isEmpty() || (multipleImages && s.isValid())) {
-        size = s.toSize();
+        size = s.toSize() * ratio;
     } else {
-        size = elementRect(actualElementId).size().toSize();
+        size = elementRect(actualElementId).size().toSize() * ratio;
     }
 
     if (size.isEmpty()) {
@@ -622,7 +622,8 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
     QPixmap p;
     if (cacheRendering && lastModified == SvgRectsCache::instance()->lastModifiedTimeFromCache(path)
         && cacheAndColorsImageSet()->d->findInCache(id, p, lastModified)) {
-        // qCDebug(LOG_KSVG) << "found cached version of " << id << p.size();
+        p.setDevicePixelRatio(ratio);
+        // qCDebug(LOG_PLASMA) << "found cached version of " << id << p.size();
         return p;
     }
 
@@ -644,6 +645,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, const QSizeF &s)
     }
 
     renderPainter.end();
+    p.setDevicePixelRatio(ratio);
 
     if (cacheRendering) {
         cacheAndColorsImageSet()->d->insertIntoCache(id, p, QString::number((qint64)q, 16) % QLatin1Char('_') % actualElementId);
@@ -707,7 +709,7 @@ void SvgPrivate::createRenderer()
                 originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
                 SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
 
-                const CacheId cacheId({-1.0, -1.0, path, elementId, status, scaleFactor, -1, 0, lastModified});
+                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, -1, 0, lastModified});
                 SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
             }
         }
@@ -775,7 +777,7 @@ QRectF SvgPrivate::findAndCacheElementRect(QStringView elementId)
         ? renderer->transformForElement(elementIdString).map(renderer->boundsOnElement(elementIdString)).boundingRect()
         : QRectF();
 
-    naturalSize = renderer->defaultSize() * scaleFactor;
+    naturalSize = renderer->defaultSize();
 
     qreal dx = size.width() / renderer->defaultSize().width();
     qreal dy = size.height() / renderer->defaultSize().height();
@@ -866,7 +868,6 @@ void SvgPrivate::colorsChanged()
 
 QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
 QPointer<ImageSet> SvgPrivate::s_systemColorsCache;
-qreal SvgPrivate::s_lastScaleFactor = 1.0;
 
 Svg::Svg(QObject *parent)
     : QObject(parent)
@@ -885,55 +886,49 @@ Svg::~Svg()
     delete d;
 }
 
-void Svg::setScaleFactor(qreal ratio)
+void Svg::setDevicePixelRatio(qreal ratio)
 {
     // be completely integer for now
-    // scaleFactor is always set integer in the svg, so needs at least 192dpi to double up.
+    // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
     //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
-    if (floor(d->scaleFactor) == floor(ratio)) {
+    if (floor(d->devicePixelRatio) == floor(ratio)) {
         return;
     }
 
-    d->scaleFactor = floor(ratio);
-    d->s_lastScaleFactor = d->scaleFactor;
-    // not resize() because we want to do it unconditionally
-
-    d->naturalSize = SvgRectsCache::instance()->naturalSize(d->path, d->scaleFactor);
-    if (d->naturalSize.isEmpty()) {
-        d->createRenderer();
-        d->naturalSize = d->renderer->defaultSize() * d->scaleFactor;
+    if (FrameSvg *f = qobject_cast<FrameSvg *>(this)) {
+        f->clearCache();
     }
 
-    d->size = d->naturalSize;
+    d->devicePixelRatio = floor(ratio);
 
     Q_EMIT repaintNeeded();
-    Q_EMIT sizeChanged();
 }
 
-qreal Svg::scaleFactor() const
+qreal Svg::devicePixelRatio() const
 {
-    return d->scaleFactor;
+    return d->devicePixelRatio;
 }
 
 QPixmap Svg::pixmap(const QString &elementID)
 {
     if (elementID.isNull() || d->multipleImages) {
-        return d->findInCache(elementID, size());
+        return d->findInCache(elementID, d->devicePixelRatio, size());
     } else {
-        return d->findInCache(elementID);
+        return d->findInCache(elementID, d->devicePixelRatio);
     }
 }
 
 QImage Svg::image(const QSize &size, const QString &elementID)
 {
-    QPixmap pix(d->findInCache(elementID, size));
+    QPixmap pix(d->findInCache(elementID, d->devicePixelRatio, size));
     return pix.toImage();
 }
 
 void Svg::paint(QPainter *painter, const QPointF &point, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    QPixmap pix((elementID.isNull() || d->multipleImages) ? d->findInCache(elementID, size()) : d->findInCache(elementID));
+    const int ratio = painter->device()->devicePixelRatio();
+    QPixmap pix((elementID.isNull() || d->multipleImages) ? d->findInCache(elementID, ratio, size()) : d->findInCache(elementID, ratio));
 
     if (pix.isNull()) {
         return;
@@ -950,7 +945,8 @@ void Svg::paint(QPainter *painter, int x, int y, const QString &elementID)
 void Svg::paint(QPainter *painter, const QRectF &rect, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    QPixmap pix(d->findInCache(elementID, rect.size()));
+    const int ratio = painter->device()->devicePixelRatio();
+    QPixmap pix(d->findInCache(elementID, ratio, rect.size()));
 
     painter->drawPixmap(QRectF(rect.topLeft(), rect.size()), pix, QRectF(QPointF(0, 0), pix.size()));
 }
@@ -958,7 +954,8 @@ void Svg::paint(QPainter *painter, const QRectF &rect, const QString &elementID)
 void Svg::paint(QPainter *painter, int x, int y, int width, int height, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    QPixmap pix(d->findInCache(elementID, QSizeF(width, height)));
+    const int ratio = painter->device()->devicePixelRatio();
+    QPixmap pix(d->findInCache(elementID, ratio, QSizeF(width, height)));
     painter->drawPixmap(x, y, pix, 0, 0, pix.size().width(), pix.size().height());
 }
 
@@ -1037,7 +1034,7 @@ bool Svg::isValid() const
     }
 
     // try very hard to avoid creation of a parser
-    QSizeF naturalSize = SvgRectsCache::instance()->naturalSize(d->path, d->scaleFactor);
+    QSizeF naturalSize = SvgRectsCache::instance()->naturalSize(d->path);
     if (!naturalSize.isEmpty()) {
         return true;
     }

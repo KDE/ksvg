@@ -332,6 +332,7 @@ void FrameSvgItem::setImagePath(const QString &path)
     CheckMarginsChange checkFixedMargins(m_oldFixedMargins, m_fixedMargins);
     CheckMarginsChange checkInsetMargins(m_oldInsetMargins, m_insetMargins);
 
+    updateDevicePixelRatio();
     m_frameSvg->setImagePath(path);
 
     if (implicitWidth() <= 0) {
@@ -704,6 +705,18 @@ void FrameSvgItem::componentComplete()
     m_textureChanged = true;
 }
 
+void FrameSvgItem::updateDevicePixelRatio()
+{
+    // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
+    //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
+    const auto newDevicePixelRatio = std::max<qreal>(1.0, floor(window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
+
+    if (newDevicePixelRatio != m_frameSvg->devicePixelRatio()) {
+        m_frameSvg->setDevicePixelRatio(newDevicePixelRatio);
+        m_textureChanged = true;
+    }
+}
+
 void FrameSvgItem::applyPrefixes()
 {
     if (m_frameSvg->imagePath().isEmpty()) {
@@ -735,6 +748,17 @@ void FrameSvgItem::applyPrefixes()
     if (oldPrefix != m_frameSvg->prefix()) {
         Q_EMIT usedPrefixChanged();
     }
+}
+
+void FrameSvgItem::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
+{
+    if (change == ItemSceneChange && value.window) {
+        updateDevicePixelRatio();
+    } else if (change == QQuickItem::ItemDevicePixelRatioHasChanged) {
+        updateDevicePixelRatio();
+    }
+
+    QQuickItem::itemChange(change, value);
 }
 
 } // KSvg namespace

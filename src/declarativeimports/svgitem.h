@@ -69,6 +69,8 @@ public:
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData) override;
     /// @endcond
 
+    void itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &data) override;
+
 protected:
     void componentComplete() override;
 
@@ -84,6 +86,7 @@ protected Q_SLOTS:
     /// @endcond
 
 private:
+    void updateDevicePixelRatio();
     void scheduleImageUpdate();
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;

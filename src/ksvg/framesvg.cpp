@@ -478,6 +478,9 @@ QPixmap FrameSvgPrivate::alphaMask()
 
     if (maskFrame->cachedBackground.isNull()) {
         generateBackground(maskFrame);
+        // When we take the maskFrame from cache, the pixel ratio gets
+        // reset to 1
+        maskFrame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
     }
 
     return maskFrame->cachedBackground;
@@ -589,7 +592,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
 void FrameSvgPrivate::generateFrameBackground(const QSharedPointer<FrameData> &frame)
 {
     // qCDebug(LOG_KSVG) << "generating background";
-    const QSize size = frameSize(frame).toSize();
+    const QSize size = frameSize(frame).toSize() * q->devicePixelRatio();
 
     if (!size.isValid()) {
 #ifndef NDEBUG
@@ -618,28 +621,31 @@ void FrameSvgPrivate::generateFrameBackground(const QSharedPointer<FrameData> &f
 
     // Sides
     const int leftHeight = q->elementSize(frame->prefix % QLatin1String("left")).height();
-    paintBorder(p, frame, FrameSvg::LeftBorder, QSize(frame->leftWidth, leftHeight), contentRect);
+    paintBorder(p, frame, FrameSvg::LeftBorder, QSize(frame->leftWidth, leftHeight) * q->devicePixelRatio(), contentRect);
     const int rightHeight = q->elementSize(frame->prefix % QLatin1String("right")).height();
-    paintBorder(p, frame, FrameSvg::RightBorder, QSize(frame->rightWidth, rightHeight), contentRect);
+    paintBorder(p, frame, FrameSvg::RightBorder, QSize(frame->rightWidth, rightHeight) * q->devicePixelRatio(), contentRect);
 
     const int topWidth = q->elementSize(frame->prefix % QLatin1String("top")).width();
-    paintBorder(p, frame, FrameSvg::TopBorder, QSize(topWidth, frame->topHeight), contentRect);
+    paintBorder(p, frame, FrameSvg::TopBorder, QSize(topWidth, frame->topHeight) * q->devicePixelRatio(), contentRect);
     const int bottomWidth = q->elementSize(frame->prefix % QLatin1String("bottom")).width();
-    paintBorder(p, frame, FrameSvg::BottomBorder, QSize(bottomWidth, frame->bottomHeight), contentRect);
+    paintBorder(p, frame, FrameSvg::BottomBorder, QSize(bottomWidth, frame->bottomHeight) * q->devicePixelRatio(), contentRect);
     p.end();
+
+    frame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
 }
 
 QRect FrameSvgPrivate::contentGeometry(const QSharedPointer<FrameData> &frame, const QSize &size) const
 {
-    const QSize contentSize(size.width() - frame->leftWidth - frame->rightWidth, size.height() - frame->topHeight - frame->bottomHeight);
+    const QSize contentSize(size.width() - frame->leftWidth * q->devicePixelRatio() - frame->rightWidth * q->devicePixelRatio(),
+                            size.height() - frame->topHeight * q->devicePixelRatio() - frame->bottomHeight * q->devicePixelRatio());
     QRect contentRect(QPoint(0, 0), contentSize);
     if (frame->enabledBorders & FrameSvg::LeftBorder && q->hasElement(frame->prefix % QLatin1String("left"))) {
-        contentRect.translate(frame->leftWidth, 0);
+        contentRect.translate(frame->leftWidth * q->devicePixelRatio(), 0);
     }
 
     // Corners
     if (frame->enabledBorders & FrameSvg::TopBorder && q->hasElement(frame->prefix % QLatin1String("top"))) {
-        contentRect.translate(0, frame->topHeight);
+        contentRect.translate(0, frame->topHeight * q->devicePixelRatio());
     }
     return contentRect;
 }
@@ -727,13 +733,13 @@ void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &
             if (frame->composeOverBorder) {
                 p.drawTiledPixmap(QRect(QPoint(0, 0), fullSize), center);
             } else {
-                p.drawTiledPixmap(FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize), center);
+                p.drawTiledPixmap(FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize * q->devicePixelRatio()), center);
             }
         } else {
             if (frame->composeOverBorder) {
                 q->paint(&p, QRect(QPoint(0, 0), fullSize), centerElementId);
             } else {
-                q->paint(&p, FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize), centerElementId);
+                q->paint(&p, FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize * q->devicePixelRatio()), centerElementId);
             }
         }
     }
@@ -754,7 +760,7 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
     QString side = frame->prefix % FrameSvgHelpers::borderToElementId(borders);
     if (frame->enabledBorders & borders && q->hasElement(side) && !size.isEmpty()) {
         if (frame->stretchBorders) {
-            q->paint(&p, FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize), side);
+            q->paint(&p, FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize * q->devicePixelRatio()), side);
         } else {
             QPixmap px(size);
             px.fill(Qt::transparent);
@@ -763,7 +769,7 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
             sidePainter.setCompositionMode(QPainter::CompositionMode_Source);
             q->paint(&sidePainter, QRect(QPoint(0, 0), size), side);
 
-            p.drawTiledPixmap(FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize), px);
+            p.drawTiledPixmap(FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize * q->devicePixelRatio()), px);
         }
     }
 }
@@ -776,7 +782,7 @@ void FrameSvgPrivate::paintCorner(QPainter &p, const QSharedPointer<FrameData> &
     }
     const QString corner = frame->prefix % FrameSvgHelpers::borderToElementId(border);
     if (q->hasElement(corner)) {
-        q->paint(&p, FrameSvgHelpers::sectionRect(border, contentRect, frame->frameSize), corner);
+        q->paint(&p, FrameSvgHelpers::sectionRect(border, contentRect, frame->frameSize * q->devicePixelRatio()), corner);
     }
 }
 
@@ -788,7 +794,7 @@ SvgPrivate::CacheId FrameSvgPrivate::cacheId(FrameData *frame, const QString &pr
                                frame->imagePath,
                                prefixToSave,
                                q->status(),
-                               q->scaleFactor(),
+                               q->devicePixelRatio(),
                                (uint)frame->enabledBorders,
                                q->Svg::d->lastModified};
 }

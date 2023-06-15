@@ -141,19 +141,19 @@ public:
     ~Svg() override;
 
     /**
-     * Setting a scale factor greater than one it will result in final images scaled by it.
-     * Every size and element rect will be scaled accordingly.
-     * @return how much to scale the rendered image.
+     * Set the device pixel ratio for the Svg. This is the ratio between
+     * image pixels and device-independent pixels.
+     * The Svg will produce pixmaps scaled by devicePixelRatio, but all the sizes and element
+     * rects will not be altered.
+     * The default value is 1.0 and the scale will be done rounded to the floor integer
+     * Setting it to something more, will make all the elements of this svg appear bigger.
      */
-    qreal scaleFactor() const;
+    void setDevicePixelRatio(qreal factor);
 
     /**
-     * Setting a scale factor greater than one it will result in final images scaled by it.
-     * Every size and element rect will be scaled accordingly.
-     * The default value is 1.0 and the scale will be done rounded to the floor integer.
-     * @param how much to scale the Svg
+     * @return the device pixel ratio for this Svg.
      */
-    void setScaleFactor(qreal factor);
+    qreal devicePixelRatio() const;
 
     /**
      * Returns a pixmap of the SVG represented by this object.

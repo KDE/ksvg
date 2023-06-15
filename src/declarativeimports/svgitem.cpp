@@ -66,6 +66,7 @@ void SvgItem::setImagePath(const QString &path)
         return;
     }
 
+    updateDevicePixelRatio();
     m_svg->setImagePath(path);
 
     Q_EMIT imagePathChanged();
@@ -229,6 +230,29 @@ void SvgItem::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometr
     }
 
     QQuickItem::geometryChange(newGeometry, oldGeometry);
+}
+
+void SvgItem::updateDevicePixelRatio()
+{
+    // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
+    //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
+    const auto newDevicePixelRatio = std::max<qreal>(1.0, floor(window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
+
+    if (newDevicePixelRatio != m_svg->devicePixelRatio()) {
+        m_svg->setDevicePixelRatio(newDevicePixelRatio);
+        m_textureChanged = true;
+    }
+}
+
+void SvgItem::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemChangeData &value)
+{
+    if (change == ItemSceneChange && value.window) {
+        updateDevicePixelRatio();
+    } else if (change == QQuickItem::ItemDevicePixelRatioHasChanged) {
+        updateDevicePixelRatio();
+    }
+
+    QQuickItem::itemChange(change, value);
 }
 
 } // KSvg namespace
