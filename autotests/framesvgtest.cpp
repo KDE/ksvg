@@ -62,17 +62,17 @@ void FrameSvgTest::setImageSet()
 
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", {}, this));
     frameSvg->framePixmap();
-    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", {}, this));
     frameSvg->framePixmap();
     delete frameSvg;
 
     frameSvg = new KSvg::FrameSvg;
     frameSvg->setImagePath("widgets/background");
-    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-light", {}, this));
     frameSvg->framePixmap();
-    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", this));
+    frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", {}, this));
     frameSvg->framePixmap();
     delete frameSvg;
 }

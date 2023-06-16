@@ -41,7 +41,7 @@ ImageSet::ImageSet(QObject *parent)
     connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
 }
 
-ImageSet::ImageSet(const QString &imageSetName, QObject *parent)
+ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject *parent)
     : QObject(parent)
 {
     auto &priv = ImageSetPrivate::themes[imageSetName];
@@ -58,6 +58,12 @@ ImageSet::ImageSet(const QString &imageSetName, QObject *parent)
     // turn off caching so we don't accidentally trigger unnecessary disk activity at this point
     bool useCache = d->cacheImageSet;
     d->cacheImageSet = false;
+    if (!basePath.isEmpty()) {
+        d->basePath = basePath;
+        if (!d->basePath.endsWith(QDir::separator())) {
+            d->basePath += QDir::separator();
+        }
+    }
     d->setImageSetName(imageSetName, false);
     d->cacheImageSet = useCache;
     d->fixedName = true;

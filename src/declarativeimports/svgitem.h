@@ -94,8 +94,9 @@ private:
     QPointer<KSvg::Svg> m_svg;
     Kirigami::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
-    bool m_textureChanged;
     QImage m_image;
+    bool m_usesSystemColors = false;
+    bool m_textureChanged;
 };
 }
 

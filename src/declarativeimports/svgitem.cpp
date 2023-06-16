@@ -42,8 +42,17 @@ void SvgItem::componentComplete()
 {
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
 
+    auto checkApplyTheme = [this]() {
+        if (!m_svg->imageSet()->filePath(QStringLiteral("colors")).isEmpty()) {
+            m_svg->clearColorOverrides();
+        }
+    };
     auto applyTheme = [this]() {
         if (!m_svg) {
+            return;
+        }
+        if (!m_svg->imageSet()->filePath(QStringLiteral("colors")).isEmpty()) {
+            m_svg->clearColorOverrides();
             return;
         }
         m_svg->setColor(Svg::Text, m_kirigamiTheme->textColor());
@@ -56,6 +65,7 @@ void SvgItem::componentComplete()
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
+    connect(m_svg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
 
     QQuickItem::componentComplete();
 }

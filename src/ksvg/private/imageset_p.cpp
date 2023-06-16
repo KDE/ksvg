@@ -51,7 +51,7 @@ KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &them
 {
     const QString packageBasePath = QSP::locate(QSP::GenericDataLocation, basePath % theme, QSP::LocateDirectory);
     if (packageBasePath.isEmpty()) {
-        qWarning(LOG_KSVG) << "Could not locate plasma theme" << theme << "in" << basePath << "using search path"
+        qWarning(LOG_KSVG) << "Could not locate KSvg image set" << theme << "in" << basePath << "using search path"
                            << QSP::standardLocations(QSP::GenericDataLocation);
         return {};
     }

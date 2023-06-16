@@ -1071,6 +1071,7 @@ QString Svg::imagePath() const
 void Svg::setUsingRenderingCache(bool useCache)
 {
     d->cacheRendering = useCache;
+    Q_EMIT repaintNeeded();
 }
 
 bool Svg::isUsingRenderingCache() const
@@ -1109,7 +1110,7 @@ void Svg::setImageSet(KSvg::ImageSet *theme)
     }
 
     d->theme = theme;
-    connect(theme, SIGNAL(imageSetChanged()), this, SLOT(imageSetChanged()));
+    connect(theme, SIGNAL(imageSetChanged(QString)), this, SLOT(imageSetChanged()));
     d->imageSetChanged();
 }
 
@@ -1159,7 +1160,7 @@ QColor Svg::color(StyleSheetColor colorName) const
     if (it != d->colorOverrides.constEnd()) {
         return *it;
     }
-    return d->cacheAndColorsImageSet()->d->namedColor(colorName, this);
+    return d->actualImageSet()->d->namedColor(colorName, this);
 }
 
 void Svg::setColor(StyleSheetColor colorName, const QColor &color)

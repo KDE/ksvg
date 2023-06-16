@@ -55,9 +55,10 @@ public:
     /**
      * Construct a theme. It will be a custom theme instance of imageSetName.
      * @param imageSetName the name of the theme to create
+     * @param basePath base path for the theme to look for svgs. if empty, the default will be used.
      * @param parent the parent object
      */
-    explicit ImageSet(const QString &imageSetName, QObject *parent = nullptr);
+    explicit ImageSet(const QString &imageSetName, const QString &basePath = {}, QObject *parent = nullptr);
 
     ~ImageSet() override;
 
