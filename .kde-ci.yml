@@ -7,6 +7,7 @@ Dependencies:
     'frameworks/kcoreaddons' : '@same'
     'frameworks/kguiaddons' : '@same'
     'frameworks/kirigami' : '@same'
+    'frameworks/colorscheme' : '@same'
 
 Options:
   test-before-installing: True
