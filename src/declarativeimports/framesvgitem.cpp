@@ -685,12 +685,15 @@ void FrameSvgItem::componentComplete()
 
     auto checkApplyTheme = [this]() {
         if (!m_frameSvg->imageSet()->filePath(QStringLiteral("colors")).isEmpty()) {
+            m_frameSvg->clearCache();
             m_frameSvg->clearColorOverrides();
-            // m_frameSvg->clearCache();
         }
     };
     auto applyTheme = [this]() {
         if (!m_frameSvg->imageSet()->filePath(QStringLiteral("colors")).isEmpty()) {
+            m_frameSvg->clearCache();
+            m_frameSvg->clearColorOverrides();
+
             return;
         }
         m_frameSvg->setColor(Svg::Text, m_kirigamiTheme->textColor());
@@ -704,6 +707,7 @@ void FrameSvgItem::componentComplete()
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_frameSvg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
+    connect(m_frameSvg, &Svg::imageSetChanged, this, checkApplyTheme);
 
     CheckMarginsChange checkMargins(m_oldMargins, m_margins);
     CheckMarginsChange checkFixedMargins(m_oldFixedMargins, m_fixedMargins);

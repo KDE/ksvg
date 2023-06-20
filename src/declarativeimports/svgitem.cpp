@@ -66,6 +66,7 @@ void SvgItem::componentComplete()
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_svg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
+    connect(m_svg, &Svg::imageSetChanged, this, checkApplyTheme);
 
     QQuickItem::componentComplete();
 }

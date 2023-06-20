@@ -542,6 +542,11 @@ Q_SIGNALS:
      */
     void colorSetChanged(KSvg::Svg::ColorSet colorSet);
 
+    /**
+     * Emitted when the image set of this svg has changed
+     */
+    void imageSetChanged(ImageSet *imageSet);
+
 private:
     SvgPrivate *const d;
     bool eventFilter(QObject *watched, QEvent *event) override;

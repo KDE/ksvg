@@ -95,7 +95,6 @@ private:
     Kirigami::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     QImage m_image;
-    bool m_usesSystemColors = false;
     bool m_textureChanged;
 };
 }

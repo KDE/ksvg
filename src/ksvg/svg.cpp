@@ -673,7 +673,7 @@ void SvgPrivate::createRenderer()
     }
 
     QString styleSheet;
-    if (colorOverrides.isEmpty()) {
+    if (!colorOverrides.isEmpty()) {
         if (stylesheetOverride.isEmpty()) {
             stylesheetOverride = cacheAndColorsImageSet()->d->svgStyleSheet(q);
         }
@@ -856,6 +856,7 @@ void SvgPrivate::imageSetChanged()
 
     // qCDebug(LOG_KSVG) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
     Q_EMIT q->repaintNeeded();
+    Q_EMIT q->imageSetChanged(q->imageSet());
 }
 
 void SvgPrivate::colorsChanged()
@@ -1160,7 +1161,7 @@ QColor Svg::color(StyleSheetColor colorName) const
     if (it != d->colorOverrides.constEnd()) {
         return *it;
     }
-    return d->actualImageSet()->d->namedColor(colorName, this);
+    return d->cacheAndColorsImageSet()->d->namedColor(colorName, this);
 }
 
 void Svg::setColor(StyleSheetColor colorName, const QColor &color)
