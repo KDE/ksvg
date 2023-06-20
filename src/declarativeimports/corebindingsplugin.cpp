@@ -20,6 +20,7 @@
 
 #include <QDebug>
 #include <QWindow>
+#include <qquickitem.h>
 
 void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
@@ -30,6 +31,7 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
 {
     Q_ASSERT(uri == QByteArray("org.kde.ksvg"));
 
+    qmlRegisterRevision<QQuickItem, 6>(uri, 1, 0);
     qmlRegisterType<KSvg::Svg>(uri, 1, 0, "Svg");
     qmlRegisterType<KSvg::FrameSvg>(uri, 1, 0, "FrameSvg");
     qmlRegisterType<KSvg::SvgItem>(uri, 1, 0, "SvgItem");
