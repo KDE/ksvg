@@ -789,14 +789,16 @@ void FrameSvgPrivate::paintCorner(QPainter &p, const QSharedPointer<FrameData> &
 SvgPrivate::CacheId FrameSvgPrivate::cacheId(FrameData *frame, const QString &prefixToSave) const
 {
     const QSize size = frameSize(frame).toSize();
-    return SvgPrivate::CacheId{double(size.width()),
-                               double(size.height()),
-                               frame->imagePath,
-                               prefixToSave,
-                               q->status(),
-                               q->devicePixelRatio(),
-                               (uint)frame->enabledBorders,
-                               q->Svg::d->lastModified};
+    return SvgPrivate::CacheId{
+        .width = double(size.width()),
+        .height = double(size.height()),
+        .filePath = frame->imagePath,
+        .elementName = prefixToSave,
+        .status = q->status(),
+        .scaleFactor = q->devicePixelRatio(),
+        .extraFlags = uint(frame->enabledBorders),
+        .lastModified = q->Svg::d->lastModified,
+    };
 }
 
 void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &background, const QPixmap &overlay)
