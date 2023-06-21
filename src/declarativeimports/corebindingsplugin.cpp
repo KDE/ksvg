@@ -14,6 +14,8 @@
 #include <ksvg/framesvg.h>
 #include <ksvg/svg.h>
 
+#include <Kirigami/PlatformTheme>
+
 #include "framesvgitem.h"
 #include "imageset.h"
 #include "svgitem.h"
@@ -32,6 +34,7 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
     Q_ASSERT(uri == QByteArray("org.kde.ksvg"));
 
     qmlRegisterRevision<QQuickItem, 6>(uri, 1, 0);
+    qmlRegisterAnonymousType<Kirigami::PlatformTheme>(uri, 1);
     qmlRegisterType<KSvg::Svg>(uri, 1, 0, "Svg");
     qmlRegisterType<KSvg::FrameSvg>(uri, 1, 0, "FrameSvg");
     qmlRegisterType<KSvg::SvgItem>(uri, 1, 0, "SvgItem");
