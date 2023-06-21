@@ -100,7 +100,7 @@ if(BUILD_QCH)
         ORG_DOMAIN org.kde
         SOURCES # using only public headers, to cover only public API
             ${KSvg_namespaced_HEADERS}
-            Mainpage.dox
+            ../../Mainpage.dox
         MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
         LINK_QCHS
             Qt6Gui_QCH
