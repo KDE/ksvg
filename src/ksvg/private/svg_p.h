@@ -53,7 +53,7 @@ public:
         int status;
         double scaleFactor;
         int colorSet;
-        uint styleSheet;
+        uint styleSheet; // TODO: use that
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
@@ -113,7 +113,6 @@ public:
 
     bool multipleImages : 1;
     bool themed : 1;
-    bool useSystemColors : 1;
     bool fromCurrentImageSet : 1;
     bool cacheRendering : 1;
     bool themeFailed : 1;

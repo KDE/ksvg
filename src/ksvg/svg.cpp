@@ -411,7 +411,6 @@ SvgPrivate::SvgPrivate(Svg *svg)
     , status(Svg::Status::Normal)
     , multipleImages(false)
     , themed(false)
-    , useSystemColors(false)
     , fromCurrentImageSet(false)
     , cacheRendering(true)
     , themeFailed(false)
@@ -564,7 +563,7 @@ ImageSet *SvgPrivate::actualImageSet()
 
 ImageSet *SvgPrivate::cacheAndColorsImageSet()
 {
-    if (themed || !useSystemColors) {
+    if (themed) {
         return actualImageSet();
     } else {
         // use a separate cache source for unthemed svg's
@@ -1083,21 +1082,6 @@ bool Svg::isUsingRenderingCache() const
 bool Svg::fromCurrentImageSet() const
 {
     return d->fromCurrentImageSet;
-}
-
-void Svg::setUseSystemColors(bool system)
-{
-    if (d->useSystemColors == system) {
-        return;
-    }
-
-    d->useSystemColors = system;
-    Q_EMIT repaintNeeded();
-}
-
-bool Svg::useSystemColors() const
-{
-    return d->useSystemColors;
 }
 
 void Svg::setImageSet(KSvg::ImageSet *theme)
