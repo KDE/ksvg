@@ -45,3 +45,5 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
         return new KSvg::ImageSet;
     });
 }
+
+#include "moc_corebindingsplugin.cpp"

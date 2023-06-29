@@ -1011,3 +1011,5 @@ void FrameSvg::setRepaintBlocked(bool blocked)
 }
 
 } // KSvg namespace
+
+#include "moc_framesvg.cpp"

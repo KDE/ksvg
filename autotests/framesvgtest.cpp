@@ -78,3 +78,5 @@ void FrameSvgTest::setImageSet()
 }
 
 QTEST_MAIN(FrameSvgTest)
+
+#include "moc_framesvgtest.cpp"

@@ -776,3 +776,5 @@ void FrameSvgItem::itemChange(QQuickItem::ItemChange change, const QQuickItem::I
 }
 
 } // KSvg namespace
+
+#include "moc_framesvgitem.cpp"

@@ -267,3 +267,5 @@ void SvgItem::itemChange(QQuickItem::ItemChange change, const QQuickItem::ItemCh
 }
 
 } // KSvg namespace
+
+#include "moc_svgitem.cpp"
