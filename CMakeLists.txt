@@ -65,6 +65,7 @@ ecm_set_disabled_deprecation_versions(
 
 #########################################################################
 
+option(BUILD_TOOLS "Build and install KSVG tools." OFF)
 
 option(BUILD_COVERAGE "Build Plasma Frameworks with gcov support" OFF)
 
