@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2006-2023 KDE Contributors
+#
+# SPDX-License-Identifier: LGPL-2.0-or-later
+
 @PACKAGE_INIT@
 
 # Any changes in this ".cmake" file will be overwritten by CMake, the source is the ".cmake.in" file.

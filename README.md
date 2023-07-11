@@ -1,3 +1,8 @@
+<!--
+SPDX-License-Identifier: LGPL-2.0-or-later
+SPDX-FileCopyrightText: 2006-2023 KDE Contributors
+-->
+
 # KSvg
 A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
 

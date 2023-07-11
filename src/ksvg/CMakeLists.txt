@@ -1,4 +1,5 @@
-
+# SPDX-License-Identifier: LGPL-2.0-or-later
+# SPDX-FileCopyrightText: 2006-2023 KDE Contributors
 
 # Consumer's include dir which has to be explicitly used to make headers of this lib visible to documented includes
 # Results in duplicate of prefix-dir & C++ namespace below, but part of different things, so by design:

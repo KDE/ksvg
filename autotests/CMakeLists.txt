@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2006-2023 KDE Contributors
+#
+# SPDX-License-Identifier: LGPL-2.0-or-later
+
 find_package(Qt6Test ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE)
 set_package_properties(Qt6Test PROPERTIES PURPOSE "Required for tests")
 

@@ -1,5 +1,9 @@
 #!/bin/sh
 
+# SPDX-FileCopyrightText: 2023 KDE Contributors
+#
+# SPDX-License-Identifier: BSD-3-Clause
+
 # Invoke the extractrc script on all .ui, .rc, and .kcfg files in the sources.
 # The results are stored in a pseudo .cpp file to be picked up by xgettext.
 lst=`find . -name \*.rc -o -name \*.ui -o -name \*.kcfg`
