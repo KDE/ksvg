@@ -1,4 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+SPDX-License-Identifier: LGPL-2.0-or-later
+SPDX-FileCopyrightText: 2006-2023 KDE Contributors
+-->
 <inkscape-extension xmlns="http://www.inkscape.org/namespace/inkscape/extension">>
     <_name>PlasmaRename</_name>
     <id>notmart.filter.plasmarename</id>

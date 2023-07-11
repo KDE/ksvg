@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# SPDX-License-Identifier: LGPL-2.0-or-later
+# SPDX-FileCopyrightText: 2006-2023 KDE Contributors
+
 PARSED_OPTIONS=$(getopt -n "$0"  -o hf: --long "file:,TextFrom:,TextTo:,BackgroundFrom:,BackgroundTo:,HighlightFrom:,HighlightTo:,ViewTextFrom:,ViewTextTo:,ViewBackgroundFrom:,ViewBackgroundTo:,ViewHoverFrom:,ViewHoverTo:,ViewFocusFrom:,ViewFocusTo:,ButtonTextFrom:,ButtonTextTo:,ButtonBackgroundFrom:,ButtonBackgroundTo:,ButtonHoverFrom:,ButtonHoverTo:,ButtonFocusFrom:,ButtonFocusTo:"  -- "$@")
 
 if [ $? -ne 0 ];

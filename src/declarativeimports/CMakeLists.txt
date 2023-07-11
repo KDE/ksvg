@@ -1,3 +1,7 @@
+# SPDX-FileCopyrightText: 2023 KDE Contributors
+#
+# SPDX-License-Identifier: LGPL-2.0-or-later
+
 ecm_add_qml_module(corebindingsplugin URI "org.kde.ksvg")
 
 target_sources(corebindingsplugin PRIVATE
