@@ -1,16 +1,18 @@
-# Copyright (C) YEAR This file is copyright:
+# Spanish translations for libksvg5.po package.
+# Copyright (C) 2023 This file is copyright:
 # This file is distributed under the same license as the ksvg package.
 #
-# Freek de Kruijf <freekdekruijf@kde.nl>, 2023.
+# Automatically generated, 2023.
+# Eloy Cuadra <ecuadra@eloihr.net>, 2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: ksvg\n"
+"Project-Id-Version: libksvg5\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2023-07-13 02:10+0000\n"
-"PO-Revision-Date: 2023-07-13 12:27+0200\n"
-"Last-Translator: Freek de Kruijf <freekdekruijf@kde.nl>\n"
-"Language-Team: \n"
-"Language: nl\n"
+"PO-Revision-Date: 2023-07-15 00:31+0200\n"
+"Last-Translator: Eloy Cuadra <ecuadra@eloihr.net>\n"
+"Language-Team: Spanish <kde-l10n-es@kde.org>\n"
+"Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -20,9 +22,9 @@ msgstr ""
 #, kde-format
 msgctxt "NAME OF TRANSLATORS"
 msgid "Your names"
-msgstr "Freek de Kruijf - 2023"
+msgstr "Eloy Cuadra"
 
 #, kde-format
 msgctxt "EMAIL OF TRANSLATORS"
 msgid "Your emails"
-msgstr "freekdekruijf@kde.nl"
+msgstr "ecuadra@eloihr.net"
