@@ -8,4 +8,4 @@ if [ -n "$lst" ] ; then
 fi
 
 # Run xgettext to extract strings from all source files.
-$XGETTEXT `find . -name \*.cpp -o -name \*.h -o -name \*.qml` -o $podir/libksvg5.pot
+$XGETTEXT `find . -name \*.cpp -o -name \*.h -o -name \*.qml` -o $podir/libksvg6.pot
