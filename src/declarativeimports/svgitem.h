@@ -38,13 +38,14 @@ class SvgItem : public QQuickItem
     Q_PROPERTY(QString elementId READ elementId WRITE setElementId NOTIFY elementIdChanged)
 
     /**
-     * The natural, unscaled size of the svg document or the element. useful if a pixel perfect rendering of outlines is needed.
+     * The natural, unscaled size of the svg document or the element. Useful if
+     * a pixel perfect rendering of outlines is needed.
      */
     Q_PROPERTY(QSizeF naturalSize READ naturalSize NOTIFY naturalSizeChanged)
 
     /**
      * The internal Svg instance.
-     * Usually specifying just the imagePAth is enough. use this only if you
+     * Usually specifying just the imagePath is enough. Use this only if you
      * have many items taking the same svg as source, to share the internal Svg
      */
     Q_PROPERTY(KSvg::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
