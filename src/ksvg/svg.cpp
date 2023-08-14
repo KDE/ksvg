@@ -82,12 +82,12 @@ Q_GLOBAL_STATIC(SvgRectsCacheSingleton, privateSvgRectsCacheSelf)
 const uint SvgRectsCache::s_seed = 0x9e3779b9;
 
 SharedSvgRenderer::SharedSvgRenderer(QObject *parent)
-    : QSvgRenderer(parent)
+    : QObject(parent)
 {
 }
 
 SharedSvgRenderer::SharedSvgRenderer(const QString &filename, const QString &styleSheet, QHash<QString, QRectF> &interestingElements, QObject *parent)
-    : QSvgRenderer(parent)
+    : QObject(parent)
 {
     KCompressionDevice file(filename, KCompressionDevice::GZip);
     if (!file.open(QIODevice::ReadOnly)) {
@@ -100,7 +100,7 @@ SharedSvgRenderer::SharedSvgRenderer(const QString &filename, const QString &sty
 }
 
 SharedSvgRenderer::SharedSvgRenderer(const QByteArray &contents, const QString &styleSheet, QHash<QString, QRectF> &interestingElements, QObject *parent)
-    : QSvgRenderer(parent)
+    : QObject(parent)
 {
     load(contents, styleSheet, interestingElements);
 }
@@ -141,10 +141,10 @@ bool SharedSvgRenderer::load(const QByteArray &contents, const QString &styleShe
             }
         }
         buffer.close();
-        if (!QSvgRenderer::load(processedContents)) {
+        if (!ResvgRenderer::load(processedContents)) {
             return false;
         }
-    } else if (!QSvgRenderer::load(contents)) {
+    } else if (!ResvgRenderer::load(contents)) {
         return false;
     }
 
@@ -630,20 +630,12 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
 
     QRectF finalRect = makeUniform(renderer->boundsOnElement(actualElementId), QRect(QPoint(0, 0), size));
 
-    // don't alter the pixmap size or it won't match up properly to, e.g., FrameSvg elements
-    // makeUniform should never change the size so much that it gains or loses a whole pixel
-    p = QPixmap(size);
-
-    p.fill(Qt::transparent);
-    QPainter renderPainter(&p);
-
     if (actualElementId.isEmpty()) {
-        renderer->render(&renderPainter, finalRect);
+        p = renderer->render(finalRect);
     } else {
-        renderer->render(&renderPainter, actualElementId, finalRect);
+        p = renderer->render(actualElementId, finalRect);
     }
 
-    renderPainter.end();
     p.setDevicePixelRatio(ratio);
 
     if (cacheRendering) {

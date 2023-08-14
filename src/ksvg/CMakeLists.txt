@@ -52,6 +52,7 @@ PRIVATE
     KF6::GuiAddons #kimagecache
     KF6::ConfigCore
     KF6::ColorScheme
+    resvg::resvg
 )
 
 set(KSvg_BUILD_INCLUDE_DIRS

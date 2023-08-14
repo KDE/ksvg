@@ -10,7 +10,7 @@ find_package(ECM 5.240.0  NO_MODULE)
 set_package_properties(ECM PROPERTIES TYPE REQUIRED DESCRIPTION "Extra CMake Modules." URL "https://commits.kde.org/extra-cmake-modules")
 feature_summary(WHAT REQUIRED_PACKAGES_NOT_FOUND FATAL_ON_MISSING_REQUIRED_PACKAGES)
 
-set(CMAKE_MODULE_PATH ${ECM_MODULE_PATH})
+set(CMAKE_MODULE_PATH ${CMAKE_CURRENT_SOURCE_DIR}/cmake ${ECM_MODULE_PATH})
 
 include(KDEInstallDirs)
 include(KDECMakeSettings)
@@ -53,6 +53,25 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
         GuiAddons      # KImageCache
         Kirigami2      # Kirigami.Theme
 )
+
+find_package(resvg)
+if(NOT resvg_FOUND)
+    include(ExternalProject)
+    ExternalProject_Add(resvg
+        GIT_REPOSITORY https://github.com/RazrFalcon/resvg
+
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND cargo build COMMAND cargo build --release
+        INSTALL_COMMAND ""
+        BUILD_BYPRODUCTS "${CMAKE_CURRENT_BINARY_DIR}/resvg-prefix/src/resvg/target/release/libresvg.a"
+        BINARY_DIR "${CMAKE_CURRENT_BINARY_DIR}/resvg-prefix/src/resvg/crates/c-api"
+    )
+    add_library(resvg::resvg SHARED IMPORTED)
+    set_target_properties(resvg::resvg PROPERTIES
+        IMPORTED_LOCATION "${CMAKE_CURRENT_BINARY_DIR}/resvg-prefix/src/resvg/target/release/libresvg.a"
+        INTERFACE_INCLUDE_DIRECTORIES "${CMAKE_CURRENT_BINARY_DIR}/resvg-prefix/src/resvg/crates/c-api"
+    )
+endif()
 
 #########################################################################
 

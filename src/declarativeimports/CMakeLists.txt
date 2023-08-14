@@ -16,6 +16,7 @@ target_link_libraries(corebindingsplugin
         KF6::Svg
         KF6::ColorScheme
         KF6::Kirigami2
+        resvg::resvg
 )
 
 ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})

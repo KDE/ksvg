@@ -19,9 +19,11 @@
 #include <QSharedData>
 #include <QSvgRenderer>
 
+#include "private/resvg_p.h"
+
 namespace KSvg
 {
-class SharedSvgRenderer : public QSvgRenderer, public QSharedData
+class SharedSvgRenderer : public QObject, public ResvgRenderer, public QSharedData
 {
     Q_OBJECT
 public:
