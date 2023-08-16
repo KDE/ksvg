@@ -129,14 +129,14 @@ class FrameSvgItem : public QQuickItem
      * The margins of the frame, read only
      * @see FrameSvgItemMargins
      */
-    Q_PROPERTY(QObject *margins READ margins CONSTANT)
+    Q_PROPERTY(FrameSvgItemMargins *margins READ margins CONSTANT)
 
     /**
      * The margins of the frame, regardless if they are enabled or not
      * read only
      * @see FrameSvgItemMargins
      */
-    Q_PROPERTY(QObject *fixedMargins READ fixedMargins CONSTANT)
+    Q_PROPERTY(FrameSvgItemMargins *fixedMargins READ fixedMargins CONSTANT)
 
     /**
      * The inset of the frame
@@ -144,7 +144,7 @@ class FrameSvgItem : public QQuickItem
      * @see FrameSvgItemMargins
      * @since 5.77
      */
-    Q_PROPERTY(QObject *inset READ inset CONSTANT)
+    Q_PROPERTY(FrameSvgItemMargins *inset READ inset CONSTANT)
 
     /**
      * The borders that will be rendered, it's a flag combination of:

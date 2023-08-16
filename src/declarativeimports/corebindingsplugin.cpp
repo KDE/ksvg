@@ -24,6 +24,8 @@
 #include <QWindow>
 #include <qquickitem.h>
 
+using namespace Qt::Literals::StringLiterals;
+
 void CoreBindingsPlugin::initializeEngine(QQmlEngine *engine, const char *uri)
 {
     QQmlExtensionPlugin::initializeEngine(engine, uri);
@@ -39,6 +41,7 @@ void CoreBindingsPlugin::registerTypes(const char *uri)
     qmlRegisterType<KSvg::FrameSvg>(uri, 1, 0, "FrameSvg");
     qmlRegisterType<KSvg::SvgItem>(uri, 1, 0, "SvgItem");
     qmlRegisterType<KSvg::FrameSvgItem>(uri, 1, 0, "FrameSvgItem");
+    qmlRegisterUncreatableType<KSvg::FrameSvgItemMargins>(uri, 1, 0, "FrameSvgItemMargins", u"FrameSvgItemMargins are read-only properties of FrameSvgItem"_s);
     qmlRegisterType<KSvg::ImageSet>(uri, 1, 0, "ImageSet");
 
     qmlRegisterSingletonType<KSvg::ImageSet>(uri, 1, 0, "ImageSet", [](QQmlEngine *, QJSEngine *) {
