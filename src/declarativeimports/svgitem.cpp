@@ -32,6 +32,8 @@ SvgItem::SvgItem(QQuickItem *parent)
     connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
     connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::naturalSizeChanged);
     connect(m_svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
+    connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::elementRectChanged);
+    connect(m_svg, &Svg::sizeChanged, this, &SvgItem::elementRectChanged);
 }
 
 SvgItem::~SvgItem()
@@ -108,6 +110,7 @@ void SvgItem::setElementId(const QString &elementID)
     m_elementID = elementID;
     Q_EMIT elementIdChanged();
     Q_EMIT naturalSizeChanged();
+    Q_EMIT elementRectChanged();
 
     scheduleImageUpdate();
 }
@@ -127,7 +130,9 @@ void SvgItem::setSvg(KSvg::Svg *svg)
     if (svg) {
         connect(svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
         connect(svg, &Svg::repaintNeeded, this, &SvgItem::naturalSizeChanged);
+        connect(svg, &Svg::repaintNeeded, this, &SvgItem::elementRectChanged);
         connect(svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
+        connect(svg, &Svg::sizeChanged, this, &SvgItem::elementRectChanged);
     }
 
     if (implicitWidth() <= 0) {
@@ -141,6 +146,7 @@ void SvgItem::setSvg(KSvg::Svg *svg)
 
     Q_EMIT svgChanged();
     Q_EMIT naturalSizeChanged();
+    Q_EMIT elementRectChanged();
     Q_EMIT imagePathChanged();
 }
 
@@ -158,6 +164,17 @@ QSizeF SvgItem::naturalSize() const
     }
 
     return m_svg->size();
+}
+
+QRectF SvgItem::elementRect() const
+{
+    if (!m_svg) {
+        return QRectF();
+    } else if (!m_elementID.isEmpty()) {
+        return m_svg->elementRect(m_elementID);
+    }
+
+    return QRectF(QPointF(0, 0), m_svg->size());
 }
 
 QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData)

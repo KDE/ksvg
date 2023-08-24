@@ -43,6 +43,12 @@ class SvgItem : public QQuickItem
     Q_PROPERTY(QSizeF naturalSize READ naturalSize NOTIFY naturalSizeChanged)
 
     /**
+     * The rectangle of the selected elementId (or the entire svg if element id not selected)
+     * relative to the unscaled size of the svg document
+     */
+    Q_PROPERTY(QRectF elementRect READ elementRect NOTIFY elementRectChanged)
+
+    /**
      * The internal Svg instance.
      * Usually specifying just the imagePAth is enough. use this only if you
      * have many items taking the same svg as source, to share the internal Svg
@@ -66,6 +72,8 @@ public:
 
     QSizeF naturalSize() const;
 
+    QRectF elementRect() const;
+
     QSGNode *updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updatePaintNodeData) override;
     /// @endcond
 
@@ -79,6 +87,7 @@ Q_SIGNALS:
     void elementIdChanged();
     void svgChanged();
     void naturalSizeChanged();
+    void elementRectChanged();
 
 protected Q_SLOTS:
     /// @cond INTERNAL_DOCS
