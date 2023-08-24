@@ -49,7 +49,11 @@ KSharedConfig::Ptr configForImageSet(const QString &basePath, const QString &the
 
 KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &theme)
 {
-    const QString packageBasePath = QSP::locate(QSP::GenericDataLocation, basePath % theme, QSP::LocateDirectory);
+    QString packageBasePath = basePath % theme;
+    QDir dir;
+    if (!dir.exists(packageBasePath)) {
+        packageBasePath = QSP::locate(QSP::GenericDataLocation, basePath % theme, QSP::LocateDirectory);
+    }
     if (packageBasePath.isEmpty()) {
         qWarning(LOG_KSVG) << "Could not locate KSvg image set" << theme << "in" << basePath << "using search path"
                            << QSP::standardLocations(QSP::GenericDataLocation);
@@ -215,7 +219,12 @@ void ImageSetPrivate::onAppExitCleanup()
 QString ImageSetPrivate::imagePath(const QString &theme, const QString &type, const QString &image)
 {
     QString subdir = basePath % theme % type % image;
-    return QStandardPaths::locate(QStandardPaths::GenericDataLocation, subdir);
+
+    if (QFileInfo::exists(subdir)) {
+        return subdir;
+    } else {
+        return QStandardPaths::locate(QStandardPaths::GenericDataLocation, subdir);
+    }
 }
 
 QString ImageSetPrivate::findInImageSet(const QString &image, const QString &theme, bool cache)
