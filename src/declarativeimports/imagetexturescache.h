@@ -20,9 +20,8 @@ class ImageTexturesCachePrivate;
  * @short Helps to manage textures by creating images and reference counts them.
  *
  * Use this class as a factory for textures, when creating them from a QImage
- * instance.
- * Keeps track of all the created textures in a map between the QImage::cacheKey() and
- * the cached texture until it gets de-referenced.
+ * instance. Keeps track of all the created textures in a map between the
+ * QImage::cacheKey() and the cached texture until it gets de-referenced.
  *
  * @see ManagedTextureNode
  */
@@ -35,8 +34,8 @@ public:
     /**
      * @returns the texture for a given @p window and @p image.
      *
-     * If an @p image id is the same as one already provided before, we won't create
-     * a new texture and return a shared pointer to the existing texture.
+     * If @p image id is the same as one already provided before, we will not
+     * create a new texture, and will instead return a shared pointer to the existing texture.
      */
     QSharedPointer<QSGTexture> loadTexture(QQuickWindow *window, const QImage &image, QQuickWindow::CreateTextureOptions options);
 

@@ -28,30 +28,52 @@ class SvgItem : public QQuickItem
     Q_OBJECT
 
     /**
-     * Theme relative path of the svg, like "widgets/background"
+     * @brief This property specifies the relative path of the Svg in the theme.
+     *
+     * Example: "widgets/background"
+     *
+     * @property QString imagePath
      */
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
 
     /**
-     * The sub element of the svg we want to render. If empty the whole svg document will be painted.
+     * @brief This property specifies the sub-element of the SVG to be
+     * rendered.
+     *
+     * If this is empty, the whole SVG document will be rendered.
+     *
+     * @property QString elementId
      */
     Q_PROPERTY(QString elementId READ elementId WRITE setElementId NOTIFY elementIdChanged)
 
     /**
-     * The natural, unscaled size of the svg document or the element. useful if a pixel perfect rendering of outlines is needed.
+     * @brief This property holds the SVG's natural, unscaled size.
+     *
+     * This is useful if a pixel-perfect rendering of outlines is needed.
+     *
+     * @property QSizeF naturalSize
      */
     Q_PROPERTY(QSizeF naturalSize READ naturalSize NOTIFY naturalSizeChanged)
 
     /**
-     * The rectangle of the selected elementId (or the entire svg if element id not selected)
-     * relative to the unscaled size of the svg document
+     * @brief This property holds the rectangle of the selected elementId
+     * relative to the unscaled size of the SVG document.
+     *
+     * Note that this property will holds the entire SVG if element id is not
+     * selected.
+     *
+     * @property QRectF elementRect
      */
     Q_PROPERTY(QRectF elementRect READ elementRect NOTIFY elementRectChanged)
 
     /**
-     * The internal Svg instance.
-     * Usually specifying just the imagePAth is enough. use this only if you
-     * have many items taking the same svg as source, to share the internal Svg
+     * @brief This property holds the internal SVG instance.
+     *
+     * Usually, specifying just the imagePath is enough. Use this if you have
+     * many items taking the same SVG as source, and you want to share the
+     * internal SVG object.
+     *
+     * @property KSvg::Svg svg
      */
     Q_PROPERTY(KSvg::Svg *svg READ svg WRITE setSvg NOTIFY svgChanged)
 

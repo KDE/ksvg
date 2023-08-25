@@ -31,32 +31,38 @@ class FrameSvgItemMargins : public QObject
     Q_OBJECT
 
     /**
-     * Width in pixels of the left margin.
+     * @brief This property holds the left margin's width in pixels.
+     * @property real left
      */
     Q_PROPERTY(qreal left READ left NOTIFY marginsChanged)
 
     /**
-     * Height in pixels of the top margin.
+     * @brief This property holds the top margin's width in pixels.
+     * @property real top
      */
     Q_PROPERTY(qreal top READ top NOTIFY marginsChanged)
 
     /**
-     * Width in pixels of the right margin.
+     * @brief This property holds the right margin's width in pixels.
+     * @property real right
      */
     Q_PROPERTY(qreal right READ right NOTIFY marginsChanged)
 
     /**
-     * Height in pixels of the bottom margin.
+     * @brief This property holds the bottom margin's width in pixels.
+     * @property real bottom
      */
     Q_PROPERTY(qreal bottom READ bottom NOTIFY marginsChanged)
 
     /**
-     * Width in pixels of the left and right margins combined.
+     * @brief This property holds the combined width of the left and right margins.
+     * @property real horizontal
      */
     Q_PROPERTY(qreal horizontal READ horizontal NOTIFY marginsChanged)
 
     /**
-     * Height in pixels of the top and bottom margins combined.
+     * @brief This property holds the combined width of the top and bottom margins.
+     * @property real vertical
      */
     Q_PROPERTY(qreal vertical READ vertical NOTIFY marginsChanged)
 
@@ -93,10 +99,8 @@ private:
 
 /**
  * @class FrameSvgItem
- *
- * @short Provides an SVG with borders.
- *
- * It is exposed as org.kde.ksvg.FrameSvgItem
+ * @short An SVG Item with borders.
+ * @import org.kde.ksvg
  */
 class FrameSvgItem : public QQuickItem
 {
@@ -104,12 +108,17 @@ class FrameSvgItem : public QQuickItem
     Q_INTERFACES(QQmlParserStatus)
 
     /**
-     * Theme relative path of the svg, like "widgets/background"
+     * @brief This property specifies the relative path of the SVG in the theme.
+     *
+     * Example: "widgets/background"
+     *
+     * @property QString imagePath
      */
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
 
     /**
-     * prefix for the 9 piece svg, like "pushed" or "normal" for the button
+     * This property holds the prefix for the SVG.
+     * prefix for the 9-piece SVG, like "pushed" or "normal" for a button.
      * see https://techbase.kde.org/Development/Tutorials/Plasma5/ThemeDetails
      * for a list of paths and prefixes
      * It can also be an array of strings, specifying a fallback chain in case
@@ -120,75 +129,91 @@ class FrameSvgItem : public QQuickItem
     Q_PROPERTY(QVariant prefix READ prefix WRITE setPrefix NOTIFY prefixChanged)
 
     /**
-     * the actual prefix that was used, if a fallback chain array was set as "prefix"
+     * @brief This property holds the actual prefix that was used, if a fallback
+     * chain array was set as "prefix".
+     *
      * @since 5.34
+     * @property QString usedPrefix
      */
     Q_PROPERTY(QString usedPrefix READ usedPrefix NOTIFY usedPrefixChanged)
 
     /**
-     * The margins of the frame, read only
+     * @brief This property holds the frame's margins.
      * @see FrameSvgItemMargins
+     * @property FrameSvgItemMargins margins
      */
     Q_PROPERTY(FrameSvgItemMargins *margins READ margins CONSTANT)
 
     /**
-     * The margins of the frame, regardless if they are enabled or not
-     * read only
+     * @brief This property holds the fixed margins of the frame which are used
+     * regardless of any margins being enabled or not.
+     *
      * @see FrameSvgItemMargins
+     * @property FrameSvgItemMargins margins
      */
     Q_PROPERTY(FrameSvgItemMargins *fixedMargins READ fixedMargins CONSTANT)
 
     /**
-     * The inset of the frame
-     * read only
+     * @brief This property holds the frame's inset.
+     *
      * @see FrameSvgItemMargins
+     *
      * @since 5.77
+     * @property FrameSvgItemMargins margins
      */
     Q_PROPERTY(FrameSvgItemMargins *inset READ inset CONSTANT)
 
     /**
-     * The borders that will be rendered, it's a flag combination of:
-     *  NoBorder
-     *  TopBorder
-     *  BottomBorder
-     *  LeftBorder
-     *  RightBorder
+     * @brief This property specifies which borders are shown.
+     * @see KSvg::FrameSvg::EnabledBorder
+     * @property flags<KSvg::FrameSvg::EnabledBorder> enabledBorders
      */
     Q_PROPERTY(KSvg::FrameSvg::EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders NOTIFY enabledBordersChanged)
 
     /**
-     * Holds whether the current svg is present in the current theme and NO fallback is involved
+     * @brief This property holds whether the current SVG is present in
+     * the currently-used theme and no fallback is involved.
      */
     Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
 
     /**
-     * Sets the image in a selected status.
-     * Svgs can be colored with system color themes, if the status is selected,
-     * the TextColor will become HighlightedText color and BackgroundColor
-     * will become HighlightColor, making the svg graphics (for instance an icon)
-     * will look correct together selected text
+     * @brief This property specifies the SVG's status.
+     *
+     * Depending on the specified status, the SVG will use different colors:
+     * * Normal: text's color is textColor, and background color is
+     * backgroundColor.
+     * * Selected: text color becomes highlightedText and background color is
+     * changed to highlightColor.
+     *
+     * @see Kirigami::PlatformTheme
      * @see KSvg::Svg::status
      * @since 5.23
+     * @property enum<KSvg::Svg::Status> status
      */
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
 
     /**
-     * The mask that tightly contains the painted areas
+     * @brief This property holds the mask that contains the SVG's painted areas.
      * @since 5.58
+     * @property QRegion mask
      */
     Q_PROPERTY(QRegion mask READ mask NOTIFY maskChanged)
 
     /**
-     * This will return the minimum height required to correctly draw this
-     * SVG.
+     * @brief This property holds the minimum height required to correctly draw
+     * this SVG.
+     *
      * @since 5.101
+     * @property int minimumDrawingHeight
      */
     Q_PROPERTY(int minimumDrawingHeight READ minimumDrawingHeight NOTIFY repaintNeeded)
 
     /**
-     * This will return the minimum width required to correctly draw this
-     * SVG.
+     * @brief This property holds the minimum width required to correctly draw
+     * this SVG.
+     *
      * @since 5.101
+     * @property int minimumDrawingWidth
      */
     Q_PROPERTY(int minimumDrawingWidth READ minimumDrawingWidth NOTIFY repaintNeeded)
 
@@ -197,18 +222,19 @@ class FrameSvgItem : public QQuickItem
 
 public:
     /**
-     * @return true if the svg has the necessary elements with the given prefix
-     * to draw a frame
+     * @return whether the svg has the necessary elements with the given prefix
+     * to draw a frame.
+     *
      * @param prefix the given prefix we want to check if drawable
      */
     Q_INVOKABLE bool hasElementPrefix(const QString &prefix) const;
 
     /**
-     * Check if the SVG has a certain element.
+     * @return whether the SVG includes the given element.
      *
-     * This is a convenience function that forwards to Svg::hasElement.
+     * This is a convenience function that forwards to hasElement().
      *
-     * @see Svg::hasElement
+     * @see KSvg::Svg::hasElement()
      */
     Q_INVOKABLE bool hasElement(const QString &elementName) const;
 

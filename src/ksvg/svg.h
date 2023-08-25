@@ -124,12 +124,13 @@ public:
     Q_ENUM(StyleSheetColor);
 
     /**
-     * Constructs an SVG object that implicitly shares and caches rendering.
+     * @brief This method constructs an SVG object that implicitly shares and
+     * caches rendering.
      *
      * Unlike QSvgRenderer, which this class uses internally,
-     * KSvg::Svg represents an image generated from an SVG. As such, it
-     * has a related size and transform matrix (the latter being provided
-     * by the painter used to paint the image).
+     * KSvg::Svg represents an image generated from an SVG. As such, it has a
+     * related size and transform matrix (the latter being provided by the
+     * painter used to paint the image).
      *
      * The size is initialized to be the SVG's native size.
      *
@@ -141,27 +142,30 @@ public:
     ~Svg() override;
 
     /**
-     * Set the device pixel ratio for the Svg. This is the ratio between
-     * image pixels and device-independent pixels.
-     * The Svg will produce pixmaps scaled by devicePixelRatio, but all the sizes and element
-     * rects will not be altered.
-     * The default value is 1.0 and the scale will be done rounded to the floor integer
-     * Setting it to something more, will make all the elements of this svg appear bigger.
+     * @brief This method sets the device pixel ratio for the Svg.
+     *
+     * This is the ratio between image pixels and device-independent pixels. The
+     * SVG will produce pixmaps scaled by devicePixelRatio, but all the sizes
+     * and element rects will not be altered. The default value is 1.0 and the
+     * scale will be done rounded to the floor integer.
+     *
+     * Setting it to something higher will make all the elements of this SVG
+     * appear bigger.
      */
     void setDevicePixelRatio(qreal factor);
 
     /**
-     * @return the device pixel ratio for this Svg.
+     * @brief This method returns the device pixel ratio for this Svg.
      */
     qreal devicePixelRatio() const;
 
     /**
-     * Returns a pixmap of the SVG represented by this object.
+     * @brief This method returns a pixmap of the SVG represented by this
+     * object.
      *
-     * The size of the pixmap will be the size of this Svg object (size())
-     * if containsMultipleImages is @c true; otherwise, it will be the
-     * size of the requested element after the whole SVG has been scaled
-     * to size().
+     * The size of the pixmap will be the size of this Svg object (size()) if
+     * containsMultipleImages is @c true; otherwise, it will be the size of the
+     * requested element after the whole SVG has been scaled to size().
      *
      * @param elementId  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
@@ -170,12 +174,12 @@ public:
     Q_INVOKABLE QPixmap pixmap(const QString &elementID = QString());
 
     /**
-     * Returns an image of the SVG represented by this object.
+     * @brief This method returns an image of the SVG represented by this
+     * object.
      *
-     * The size of the image will be the size of this Svg object (size())
-     * if containsMultipleImages is @c true; otherwise, it will be the
-     * size of the requested element after the whole SVG has been scaled
-     * to size().
+     * The size of the image will be the size of this Svg object (size()) if
+     * containsMultipleImages is @c true; otherwise, it will be the size of the
+     * requested element after the whole SVG has been scaled to size().
      *
      * @param elementId  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
@@ -184,12 +188,12 @@ public:
     Q_INVOKABLE QImage image(const QSize &size, const QString &elementID = QString());
 
     /**
-     * Paints all or part of the SVG represented by this object
+     * @brief This method paints all or part of the SVG represented by this
+     * object.
      *
-     * The size of the painted area will be the size of this Svg object
-     * (size()) if containsMultipleImages is @c true; otherwise, it will
-     * be the size of the requested element after the whole SVG has been
-     * scaled to size().
+     * The size of the painted area will be the size of this Svg object (size())
+     * if containsMultipleImages is @c true; otherwise, it will be the size of
+     * the requested element after the whole SVG has been scaled to size().
      *
      * @param painter    the QPainter to use
      * @param point      the position to start drawing; the entire svg will be
@@ -200,12 +204,12 @@ public:
     Q_INVOKABLE void paint(QPainter *painter, const QPointF &point, const QString &elementID = QString());
 
     /**
-     * Paints all or part of the SVG represented by this object
+     * @brief This method paints all or part of the SVG represented by this
+     * object.
      *
-     * The size of the painted area will be the size of this Svg object
-     * (size()) if containsMultipleImages is @c true; otherwise, it will
-     * be the size of the requested element after the whole SVG has been
-     * scaled to size().
+     * The size of the painted area will be the size of this Svg object (size())
+     * if containsMultipleImages is @c true; otherwise, it will be the size of
+     * the requested element after the whole SVG has been scaled to size().
      *
      * @param painter    the QPainter to use
      * @param x          the horizontal coordinate to start painting from
@@ -216,7 +220,8 @@ public:
     Q_INVOKABLE void paint(QPainter *painter, int x, int y, const QString &elementID = QString());
 
     /**
-     * Paints all or part of the SVG represented by this object
+     * @brief This method paints all or part of the SVG represented by this
+     * object.
      *
      * @param painter    the QPainter to use
      * @param rect       the rect to draw into; if smaller than the current size
@@ -227,7 +232,8 @@ public:
     Q_INVOKABLE void paint(QPainter *painter, const QRectF &rect, const QString &elementID = QString());
 
     /**
-     * Paints all or part of the SVG represented by this object
+     * @brief This method paints all or part of the SVG represented by this
+     * object.
      *
      * @param painter    the QPainter to use
      * @param x          the horizontal coordinate to start painting from
@@ -240,27 +246,26 @@ public:
     Q_INVOKABLE void paint(QPainter *painter, int x, int y, int width, int height, const QString &elementID = QString());
 
     /**
-     * The size of the SVG.
+     * @brief This method returns the size of the SVG.
      *
-     * If the SVG has been resized with resize(), that size will be
-     * returned; otherwise, the natural size of the SVG will be returned.
+     * If the SVG has been resized with resize(), that size will be returned;
+     * otherwise, the natural size of the SVG will be returned.
      *
-     * If containsMultipleImages is @c true, each element of the SVG
-     * will be rendered at this size by default.
+     * If containsMultipleImages is @c true, each element of the SVG will be
+     * rendered at this size by default.
      *
      * @return the current size of the SVG
      **/
     QSize size() const;
 
     /**
-     * Resizes the rendered image.
+     * @brief This method resizes the rendered image.
      *
      * Rendering will actually take place on the next call to paint.
      *
-     * If containsMultipleImages is @c true, each element of the SVG
-     * will be rendered at this size by default; otherwise, the entire
-     * image will be scaled to this size and each element will be
-     * scaled appropriately.
+     * If containsMultipleImages is @c true, each element of the SVG will be
+     * rendered at this size by default; otherwise, the entire image will be
+     * scaled to this size and each element will be scaled appropriately.
      *
      * @param width   the new width
      * @param height  the new height
@@ -268,28 +273,28 @@ public:
     Q_INVOKABLE void resize(qreal width, qreal height);
 
     /**
-     * Resizes the rendered image.
+     * @brief This method resizes the rendered image.
      *
      * Rendering will actually take place on the next call to paint.
      *
-     * If containsMultipleImages is @c true, each element of the SVG
-     * will be rendered at this size by default; otherwise, the entire
-     * image will be scaled to this size and each element will be
-     * scaled appropriately.
+     * If containsMultipleImages is @c true, each element of the SVG will be
+     * rendered at this size by default; otherwise, the entire image will be
+     * scaled to this size and each element will be scaled appropriately.
      *
      * @param size  the new size of the image
      **/
     Q_INVOKABLE void resize(const QSizeF &size);
 
     /**
-     * Resizes the rendered image to the natural size of the SVG.
+     * @brief This method resizes the rendered image to the natural size of the
+     * SVG.
      *
      * Rendering will actually take place on the next call to paint.
      **/
     Q_INVOKABLE void resize();
 
     /**
-     * Find the size of a given element.
+     * @brief This method returns the size of a given element.
      *
      * This is the size of the element with ID @p elementId after the SVG
      * has been scaled (see resize()).  Note that this is unaffected by
@@ -303,11 +308,11 @@ public:
     QSize elementSize(QStringView elementId) const;
 
     /**
-     * The bounding rect of a given element.
+     * @brief This method returns the bounding rect of a given element.
      *
-     * This is the bounding rect of the element with ID @p elementId after
-     * the SVG has been scaled (see resize()).  Note that this is
-     * unaffected by the containsMultipleImages property.
+     * This is the bounding rect of the element with ID @p elementId after the
+     * SVG has been scaled (see resize()).  Note that this is unaffected by the
+     * containsMultipleImages property.
      *
      * @param elementId  the id of the element to check
      * @return  the current rect of a given element, given the current size of the SVG
@@ -317,7 +322,7 @@ public:
     QRectF elementRect(QStringView elementId) const;
 
     /**
-     * Check whether an element exists in the loaded SVG.
+     * @brief This method checks whether an element exists in the loaded SVG.
      *
      * @param elementId  the id of the element to check for
      * @return @c true if the element is defined in the SVG, otherwise @c false
@@ -327,61 +332,65 @@ public:
     bool hasElement(QStringView elementId) const;
 
     /**
-     * Check whether this object is backed by a valid SVG file.
+     * @brief This method checks whether this object is backed by a valid SVG
+     * file.
      *
      * This method can be expensive as it causes disk access.
      *
      * @return @c true if the SVG file exists and the document is valid,
-     *         otherwise @c false.
+     * otherwise @c false.
      **/
     Q_INVOKABLE bool isValid() const;
 
     /**
-     * Set whether the SVG contains a single image or multiple ones.
+     * @brief This method sets whether the SVG contains a single image or
+     * multiple ones.
      *
-     * If this is set to @c true, the SVG will be treated as a
-     * collection of related images, rather than a consistent
-     * drawing.
+     * If this is set to @c true, the SVG will be treated as a collection of
+     * related images, rather than a consistent drawing.
      *
-     * In particular, when individual elements are rendered, this
-     * affects whether the elements are resized to size() by default.
-     * See paint() and pixmap().
+     * In particular, when individual elements are rendered, this affects
+     * whether the elements are resized to size() by default. See paint() and
+     * pixmap().
+     *
+     * @see ::paint()
+     * @see ::pixmap()
      *
      * @param multiple true if the svg contains multiple images
      */
     void setContainsMultipleImages(bool multiple);
 
     /**
-     * Whether the SVG contains multiple images.
+     * @brief This method returns whether the SVG contains multiple images.
      *
-     * If this is @c true, the SVG will be treated as a
-     * collection of related images, rather than a consistent
-     * drawing.
+     * If this is @c true, the SVG will be treated as a collection of related
+     * images, rather than a consistent drawing.
      *
-     * @return @c true if the SVG will be treated as containing
-     *         multiple images, @c false if it will be treated
-     *         as a coherent image.
+     * @return @c true if the SVG will be treated as containing multiple images,
+     * @c false if it will be treated as a coherent image.
      */
     bool containsMultipleImages() const;
 
     /**
-     * Set the SVG file to render.
+     * @brief This method sets the SVG file to render.
      *
-     * Relative paths are looked for in the current Svg theme,
-     * and should not include the file extension (.svg and .svgz
-     * files will be searched for).  See ImageSet::imagePath().
+     * Relative paths are looked for in the current Svg theme, and should not
+     * include the file extension (.svg and .svgz files will be searched for).
+     * include the file extension; files with the .svg and .svgz extensions will be
+     * found automatically.
+     * 
+     * @see ImageSet::imagePath()
      *
-     * If the parent object of this Svg is a KSvg::Applet,
-     * relative paths will be searched for in the applet's package
-     * first.
+     * If the parent object of this Svg is a KSvg::Applet, relative paths will
+     * be searched for in the applet's package first.
      *
-     * @param svgFilePath  either an absolute path to an SVG file, or
-     *                   an image name
+     * @param svgFilePath either an absolute path to an SVG file, or an image
+     * name.
      */
     virtual void setImagePath(const QString &svgFilePath);
 
     /**
-     * The SVG file to render.
+     * @brief This method returns the SVG file to render.
      *
      * If this SVG is themed, this will be a relative path, and will not
      * include a file extension.
@@ -392,7 +401,8 @@ public:
     QString imagePath() const;
 
     /**
-     * Sets whether or not to cache the results of rendering to pixmaps.
+     * @brief This method sets whether or not to cache the results of rendering
+     * to pixmaps.
      *
      * If the SVG is resized and re-rendered often (and does not keep using the
      * same small set of pixmap dimensions), then it may be less efficient to do
@@ -412,14 +422,16 @@ public:
     /**
      * Whether the rendering cache is being used.
      *
-     * @return @c true if the Svg object is using caching for rendering results
+     * @brief This method returns whether the Svg object is using caching for
+     * rendering results.
+     *
      * @since 4.3
      */
     bool isUsingRenderingCache() const;
 
     /**
-     * Whether the current theme has this Svg, without any fallback
-     * to the default theme involved
+     * @brief This method returns whether the current theme has this SVG,
+     * without having to fall back to the default theme.
      *
      * @return true if the svg is loaded from the current theme
      * @see ImageSet::currentImageSetHasImage
@@ -427,7 +439,7 @@ public:
     bool fromCurrentImageSet() const;
 
     /**
-     * Sets the KSvg::ImageSet to use with this Svg object.
+     * @brief This method sets the KSvg::ImageSet to use with this Svg object.
      *
      * By default, Svg objects use KSvg::ImageSet::default().
      *
@@ -439,7 +451,7 @@ public:
     void setImageSet(KSvg::ImageSet *theme);
 
     /**
-     * The KSvg::ImageSet used by this Svg object.
+     * @brief This method returns the KSvg::ImageSet used by this Svg object.
      *
      * This determines how relative image paths are interpreted.
      *
@@ -448,23 +460,25 @@ public:
     ImageSet *imageSet() const;
 
     /**
-     * Sets the image in a selected status.
-     * Svgs can be colored with system color themes, if the status is selected,
-     * the TextColor will become HighlightedText color and BackgroundColor
-     * will become HighlightColor, making the svg graphics (for instance an icon)
-     * will look correct together selected text
-     * Supported statuses as of 5.23 are Normal and Selected
+     * @brief This method sets the image in a selected status.
+     *
+     * SVGs can be colored with system color themes. If ``status`` is selected,
+     * TextColor will become HighlightedText color, and BackgroundColor will
+     * become HighlightColor. This can be used to make SVG-based graphics such
+     * as symbolic icons look correct together. Supported statuses are Normal
+     * and Selected.
      * @since 5.23
      */
     void setStatus(Svg::Status status);
 
     /**
-     * @return the status of the Svg
+     * @brief This method returns the Svg object's status.
      * @since 5.23
      */
     Svg::Status status() const;
 
     /**
+     * @brief This method sets a color set for the SVG.
      * Set a color set for the Svg.
      * if the Svg uses stylesheets and has elements
      * that are either TextColor or BackgroundColor class,
@@ -485,50 +499,55 @@ public:
 
 Q_SIGNALS:
     /**
-     * Emitted whenever the SVG data has changed in such a way that a repaint is required.
-     * Any usage of an Svg object that does the painting itself must connect to this signal
-     * and respond by updating the painting. Note that connected to ImageSet::imageSetChanged is
-     * incorrect in such a use case as the Svg itself may not be updated yet nor may theme
-     * change be the only case when a repaint is needed. Also note that classes or QML code
-     * which take Svg objects as parameters for their own painting all respond to this signal
-     * so that in those cases manually responding to the signal is unnecessary; ONLY when
-     * direct, manual painting with an Svg object is done in application code is this signal
-     * used.
+     * @brief This signal is emitted whenever the SVG data has changed in such a
+     * way that a repaint is required.
+     *
+     * Any usage of an SVG object that does the painting itself must connect to
+     * this signal and respond by updating the painting. Note that connecting to
+     * ImageSet::imageSetChanged is incorrect in such a use case as the SVG
+     * itself may not be updated yet nor may theme change be the only case when
+     * a repaint is needed. Also note that classes or QML code which take Svg
+     * objects as parameters for their own painting all respond to this signal
+     * so that in those cases manually responding to the signal is unnecessary;
+     * ONLY when direct, manual painting with an Svg object is done in
+     * application code is this signal used.
      */
     void repaintNeeded();
 
     /**
-     * Emitted whenever the size of the Svg is changed. @see resize()
+     * @brief This signal is emitted whenever the size has changed.
+     * @see ::resize()
      */
     void sizeChanged();
 
     /**
-     * Emitted whenever the image path of the Svg is changed.
+     * @brief This signal is emitted whenever the image path has changed.
      */
     void imagePathChanged();
 
     /**
-     * Emitted whenever the color hint has changed.
+     * @brief This signal is emitted whenever the color hint has changed.
      */
     void colorHintChanged();
 
     /**
-     * Emitted when fromCurrentImageSet() value has changed
+     * @brief This signal is emitted when the value of fromCurrentImageSet()
+     * has changed.
      */
     void fromCurrentImageSetChanged(bool fromCurrentImageSet);
 
     /**
-     * Emitted when the status changes
+     * @brief This signal is emitted when the status has changed.
      */
     void statusChanged(KSvg::Svg::Status status);
 
     /**
-     * Emitted when the color set changes
+     * @brief This signal is emitted when the color set has changed.
      */
     void colorSetChanged(KSvg::Svg::ColorSet colorSet);
 
     /**
-     * Emitted when the image set of this svg has changed
+     * @brief This signal is emitted when the image set has changed.
      */
     void imageSetChanged(ImageSet *imageSet);
 

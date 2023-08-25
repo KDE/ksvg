@@ -53,7 +53,9 @@ public:
     explicit ImageSet(QObject *parent = nullptr);
 
     /**
-     * Construct a theme. It will be a custom theme instance of imageSetName.
+     * @brief This method constructs a theme which will be a custom theme
+     * instance of imageSetName.
+     *
      * @param imageSetName the name of the theme to create
      * @param basePath base path for the theme to look for svgs. if empty, the default will be used.
      * @param parent the parent object
@@ -63,24 +65,27 @@ public:
     ~ImageSet() override;
 
     /**
-     * Sets a base path for the theme to look for svgs.
-     * It can be a path relative to QStandardPaths::GenericDataLocation
-     * or an absolute path
+     * @brief This method sets a base path for the theme to look for SVGs.
+     *
+     * It can be a path relative to QStandardPaths::GenericDataLocation or an
+     * absolute path.
      *
      * @param basePath the base path
      */
     void setBasePath(const QString &basePath);
 
     /**
-     * @returns the base path of the theme where the svgs will be looked for
+     * @brief This method returns the base path of the theme where the SVGs will
+     * be looked for.
      */
     QString basePath() const;
 
     /**
-     * Sets file selectors. The theme can have different svgs with the same name for
-     * different situations and platforms.
-     * The Plasma desktop for instance uses "opaque" or "translucent"
-     * based on presence of compositing and KWin blur effects.
+     * @brief This method sets the file selectors.
+     *
+     * The theme can have different svgs with the same name for different
+     * situations and platforms. The Plasma desktop for instance uses "opaque"
+     * or "translucent" based on presence of compositing and KWin blur effects.
      * Other uses may be platform, like android-specific graphics.
      *
      * @param selectors selectors in order of preference
@@ -88,90 +93,105 @@ public:
     void setSelectors(const QStringList &selectors);
 
     /**
-     * @returns the current selectors in order of preference.
+     * @brief This method returns the current selectors in order of preference.
      */
     QStringList selectors() const;
 
     /**
-     * Sets the current theme being used.
+     * @brief This method sets the current theme.
      */
     void setImageSetName(const QString &imageSetName);
 
     /**
-     * @return the name of the theme.
+     * @brief This method returns the name of the current theme.
      */
     QString imageSetName() const;
 
     /**
-     * Retrieve the path for an SVG image in the current theme.
+     * @brief This method returns the path for an SVG image in the current
+     * theme.
      *
      * @param name the name of the file in the theme directory (without the
-     *           ".svg" part or a leading slash)
+     * ".svg" part or a leading slash).
+     *
      * @return the full path to the requested file for the current theme
      */
     QString imagePath(const QString &name) const;
 
     /**
-     * Retrieve the path for a generic file in the current theme.
-     * The theme can also ship any generic file, such as configuration files
+     * @brief This method returns the path for a generic file in the current
+     * theme.
      *
-     * @param name the name of the file in the theme directory (without a leading slash)
+     * The theme can also ship any generic file, such as configuration files.
+     *
+     * @param name the name of the file in the theme directory (without a
+     * leading slash)
+     *
      * @return the full path to the requested file for the current theme
      */
     QString filePath(const QString &name) const;
 
     /**
-     * Checks if this theme has an image named in a certain way
+     * @brief This method checks whether this theme contains an image with the
+     * given name.
      *
      * @param name the name of the file in the theme directory (without the
-     *           ".svg" part or a leading slash)
+     * ".svg" part or a leading slash)
+     *
      * @return true if the image exists for this theme
      */
     bool currentImageSetHasImage(const QString &name) const;
 
     /**
-     * Tells the theme whether to follow the global settings or use application
-     * specific settings
+     * @brief This method sets whether the theme should follow the global
+     * settings or use application-specific settings.
      *
      * @param useGlobal pass in true to follow the global settings
      */
     void setUseGlobalSettings(bool useGlobal);
 
     /**
-     * @return true if the global settings are followed, false if application
-     * specific settings are used.
+     * @brief This method returns whether the global settings are followed.
+     *
+     * If application-specific settings are being used, it returns @c false.
      */
     bool useGlobalSettings() const;
 
     /**
-     * Sets the maximum size of the cache (in kilobytes). If cache gets bigger
-     * the limit then some entries are removed
+     * @brief This method sets the maximum size of the cache (in kilobytes).
+     *
+     * If cache gets bigger than the limit, then some entries are removed.
      * Setting cache limit to 0 disables automatic cache size limiting.
      *
      * Note that the cleanup might not be done immediately, so the cache might
-     *  temporarily (for a few seconds) grow bigger than the limit.
+     * temporarily (for a few seconds) grow bigger than the limit.
      **/
     void setCacheLimit(int kbytes);
 
     /**
-     * @return plugin metadata for this theme, with information such as
-     * name, description, author, website etc
+     * @brief This method returns the plugin metadata for this theme.
+     *
+     * Metadata contains information such as name, description, author, website,
+     * and url.
      */
     KPluginMetaData metadata() const;
 
 Q_SIGNALS:
     /**
-     * Emitted when the user changes the theme. Rendered images, colors, etc. should
-     * be updated at this point. However, SVGs should *not* be repainted in response
-     * to this signal; connect to Svg::repaintNeeded() instead for that, as Svg objects
-     * need repainting not only when imageSetChanged() is emitted; moreover Svg objects
-     * connect to and respond appropriately to imageSetChanged() internally, emitting
+     * @brif This signal is emitted when the user makes changes to the theme.
+     *
+     * Rendered images, colors, etc. should be updated at this point. However,
+     * SVGs should *not* be repainted in response to this signal; connect to
+     * Svg::repaintNeeded() instead for that, as SVG objects need repainting not
+     * only when imageSetChanged() is emitted; moreover SVG objects connect to
+     * and respond appropriately to imageSetChanged() internally, emitting
      * Svg::repaintNeeded() at an appropriate time.
      */
     void imageSetChanged(const QString &basePath);
 
     /**
-     * Emitted when the user changes the base path of the image set
+     * @brief This signal is emitted when the user changes the base path of the
+     * image set.
      */
     void basePathChanged(const QString &basePath);
 
