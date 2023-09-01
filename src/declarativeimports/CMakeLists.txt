@@ -9,7 +9,7 @@ target_sources(corebindingsplugin PRIVATE
     #quicktheme.cpp
 )
 
-target_link_libraries(corebindingsplugin
+target_link_libraries(corebindingsplugin PRIVATE
         Qt6::Quick
         Qt6::Qml
         Qt6::Svg
