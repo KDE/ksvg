@@ -478,7 +478,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     // then lets not schedule a repaint because we are just initializing!
     bool updateNeeded = true; //! path.isEmpty() || !themePath.isEmpty();
 
-    // QObject::disconnect(actualImageSet(), &ImageSet::imageSetChanged, this, &SvgPrivate::imageSetChanged);
+    QObject::disconnect(imageSetChangedConnection);
     if (isThemed && !themed && s_systemColorsCache) {
         // catch the case where we weren't themed, but now we are, and the colors cache was set up
         // ensure we are not connected to that theme previously
@@ -500,12 +500,11 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         themePath = actualPath;
         path = actualImageSet()->imagePath(themePath);
         themeFailed = path.isEmpty();
-        QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
+        imageSetChangedConnection = QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
             imageSetChanged();
         });
     } else if (QFileInfo::exists(actualPath)) {
-        // QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, this, &SvgPrivate::imageSetChanged, Qt::UniqueConnection);
-        QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
+        imageSetChangedConnection = QObject::connect(actualImageSet(), &ImageSet::imageSetChanged, q, [this]() {
             imageSetChanged();
         });
         path = actualPath;

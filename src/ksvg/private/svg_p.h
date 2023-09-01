@@ -110,6 +110,7 @@ public:
     unsigned int lastModified;
     qreal devicePixelRatio;
     Svg::Status status;
+    QMetaObject::Connection imageSetChangedConnection;
 
     bool multipleImages : 1;
     bool themed : 1;
