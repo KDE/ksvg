@@ -52,8 +52,6 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(KSvg::Svg::ColorSet colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged)
-    // FIXME: here only for compatibility, port away
-    Q_PROPERTY(KSvg::Svg::ColorSet colorGroup READ colorSet WRITE setColorSet NOTIFY colorSetChanged)
 
 public:
     enum Status {

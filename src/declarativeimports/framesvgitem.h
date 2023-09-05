@@ -217,9 +217,6 @@ class FrameSvgItem : public QQuickItem
      */
     Q_PROPERTY(int minimumDrawingWidth READ minimumDrawingWidth NOTIFY repaintNeeded)
 
-    // FIXME: here only for compatibility
-    Q_PROPERTY(KSvg::Svg::ColorSet colorGroup READ colorSet WRITE setColorSet NOTIFY repaintNeeded)
-
 public:
     /**
      * @return whether the svg has the necessary elements with the given prefix
@@ -291,7 +288,6 @@ Q_SIGNALS:
     void prefixChanged();
     void enabledBordersChanged();
     void fromCurrentImageSetChanged();
-    void colorGroupChanged();
     void repaintNeeded();
     void statusChanged();
     void usedPrefixChanged();
