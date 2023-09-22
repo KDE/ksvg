@@ -10,6 +10,8 @@
 #include <QImage>
 #include <QQuickItem>
 
+#include <qqmlregistration.h>
+
 namespace Kirigami
 {
 class PlatformTheme;
@@ -26,6 +28,7 @@ class Svg;
 class SvgItem : public QQuickItem
 {
     Q_OBJECT
+    QML_ELEMENT
 
     /**
      * @brief This property specifies the relative path of the Svg in the theme.

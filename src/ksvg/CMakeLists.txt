@@ -8,6 +8,8 @@ set(KSVG_INSTALL_INCLUDEDIR "${KDE_INSTALL_INCLUDEDIR_KF}/KSvg")
 add_library(KF6Svg)
 add_library(KF6::Svg ALIAS KF6Svg)
 
+qt_extract_metatypes(KF6Svg)
+
 set_target_properties(KF6Svg PROPERTIES
     VERSION     ${KSVG_VERSION}
     SOVERSION   ${KSVG_SOVERSION}
@@ -46,7 +48,6 @@ PUBLIC
     KF6::ConfigCore
 PRIVATE
     Qt6::Svg
-    Qt6::Quick
     KF6::Archive
     KF6::CoreAddons
     KF6::GuiAddons #kimagecache
