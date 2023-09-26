@@ -12,8 +12,6 @@
 
 #include <KSvg/FrameSvg>
 
-#include <qqmlregistration.h>
-
 namespace Kirigami
 {
 class PlatformTheme;
@@ -31,8 +29,6 @@ class FrameSvg;
 class FrameSvgItemMargins : public QObject
 {
     Q_OBJECT
-    QML_ELEMENT
-    QML_UNCREATABLE("FrameSvgItemMargins are read-only properties of FrameSvgItem")
 
     /**
      * @brief This property holds the left margin's width in pixels.
@@ -109,7 +105,6 @@ private:
 class FrameSvgItem : public QQuickItem
 {
     Q_OBJECT
-    QML_ELEMENT
     Q_INTERFACES(QQmlParserStatus)
 
     /**

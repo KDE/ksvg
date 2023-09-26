@@ -1,11 +1,12 @@
-ecm_add_qml_module(corebindingsplugin URI "org.kde.ksvg" VERSION 1.0 GENERATE_PLUGIN_SOURCE)
+ecm_add_qml_module(corebindingsplugin URI "org.kde.ksvg")
 
 target_sources(corebindingsplugin PRIVATE
+    corebindingsplugin.cpp
     svgitem.cpp
     framesvgitem.cpp
     managedtexturenode.cpp
     imagetexturescache.cpp
-    types.h
+    #quicktheme.cpp
 )
 
 target_link_libraries(corebindingsplugin PRIVATE
