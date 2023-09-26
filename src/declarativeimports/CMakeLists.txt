@@ -18,4 +18,11 @@ target_link_libraries(corebindingsplugin PRIVATE
         KF6::Kirigami2
 )
 
+ecm_qt_declare_logging_category(corebindingsplugin
+    HEADER debug_p.h
+    IDENTIFIER LOG_KSVGQML
+    CATEGORY_NAME kf.svg
+    DESCRIPTION "KSvg QML plugin"
+)
+
 ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})

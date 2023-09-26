@@ -23,6 +23,7 @@
 #include <cmath> //floor()
 
 #include <Kirigami/PlatformTheme>
+#include <debug_p.h>
 
 namespace KSvg
 {
@@ -682,6 +683,10 @@ void FrameSvgItem::classBegin()
 void FrameSvgItem::componentComplete()
 {
     m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+    if (!m_kirigamiTheme) {
+        qCWarning(LOG_KSVGQML) << "no theme!" << qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true) << this;
+        return;
+    }
 
     auto checkApplyTheme = [this]() {
         if (!m_frameSvg->imageSet()->filePath(QStringLiteral("colors")).isEmpty()) {
