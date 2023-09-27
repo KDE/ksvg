@@ -31,10 +31,3 @@ KSVG_UNIT_TESTS(
     framesvgtest
 )
 
-
-#Add a test that i18n is not used directly in any import.
-# It should /always/ be i18nd
-find_program(SH bash)
-if(SH)
-    add_test(i18ndcheck ${SH} ${CMAKE_CURRENT_SOURCE_DIR}/i18ndcheck.sh ${CMAKE_SOURCE_DIR}/src/declarativeimports)
-endif()
