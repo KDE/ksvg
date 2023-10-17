@@ -958,13 +958,13 @@ void Svg::paint(QPainter *painter, int x, int y, int width, int height, const QS
     painter->drawPixmap(x, y, pix, 0, 0, pix.size().width(), pix.size().height());
 }
 
-QSize Svg::size() const
+QSizeF Svg::size() const
 {
     if (d->size.isEmpty()) {
         d->size = d->naturalSize;
     }
 
-    return d->size.toSize();
+    return {std::round(d->size.width()), std::round(d->size.height())};
 }
 
 void Svg::resize(qreal width, qreal height)
@@ -992,14 +992,16 @@ void Svg::resize()
     Q_EMIT sizeChanged();
 }
 
-QSize Svg::elementSize(const QString &elementId) const
+QSizeF Svg::elementSize(const QString &elementId) const
 {
-    return d->elementRect(elementId).size().toSize();
+    const QSizeF s = d->elementRect(elementId).size();
+    return {std::round(s.width()), std::round(s.height())};
 }
 
-QSize Svg::elementSize(QStringView elementId) const
+QSizeF Svg::elementSize(QStringView elementId) const
 {
-    return d->elementRect(elementId).size().toSize();
+    const QSizeF s = d->elementRect(elementId).size();
+    return {std::round(s.width()), std::round(s.height())};
 }
 
 QRectF Svg::elementRect(const QString &elementId) const

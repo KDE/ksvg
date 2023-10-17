@@ -99,7 +99,7 @@ public:
 
         if (m_fitMode == Tile || m_fitMode == FastStretch) {
             QString elementId = m_frameSvg->frameSvg()->actualPrefix() + FrameSvgHelpers::borderToElementId(m_border);
-            m_elementNativeSize = m_frameSvg->frameSvg()->elementSize(elementId);
+            m_elementNativeSize = m_frameSvg->frameSvg()->elementSize(elementId).toSize();
 
             if (m_elementNativeSize.isEmpty()) {
                 // if the default element is empty, we can avoid the slower tiling path

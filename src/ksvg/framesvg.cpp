@@ -542,7 +542,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
     QSize overlaySize;
     QPoint actualOverlayPos = QPoint(0, 0);
     if (overlayAvailable && !overlayCached) {
-        overlaySize = q->elementSize(frame->prefix % QLatin1String("overlay"));
+        overlaySize = q->elementSize(frame->prefix % QLatin1String("overlay")).toSize();
 
         if (q->hasElement(frame->prefix % QLatin1String("hint-overlay-pos-right"))) {
             actualOverlayPos.setX(frame->frameSize.width() - overlaySize.width());
@@ -566,7 +566,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
         // Tiling?
         if (q->hasElement(frame->prefix % QLatin1String("hint-overlay-tile-horizontal"))
             || q->hasElement(frame->prefix % QLatin1String("hint-overlay-tile-vertical"))) {
-            QSize s = q->size();
+            QSize s = q->size().toSize();
             q->resize(q->elementSize(frame->prefix % QLatin1String("overlay")));
 
             overlayPainter.drawTiledPixmap(QRect(QPoint(0, 0), overlaySize), q->pixmap(frame->prefix % QLatin1String("overlay")));
@@ -722,7 +722,7 @@ void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &
     if (!contentRect.isEmpty()) {
         const QString centerElementId = frame->prefix % QLatin1String("center");
         if (frame->tileCenter) {
-            QSize centerTileSize = q->elementSize(centerElementId);
+            QSize centerTileSize = q->elementSize(centerElementId).toSize();
             QPixmap center(centerTileSize);
             center.fill(Qt::transparent);
 
@@ -830,7 +830,7 @@ void FrameSvgPrivate::updateSizes(FrameData *frame) const
     // qCDebug(LOG_KSVG) << "!!!!!!!!!!!!!!!!!!!!!! updating sizes" << prefix;
     Q_ASSERT(frame);
 
-    QSize s = q->size();
+    QSize s = q->size().toSize();
     q->resize();
     if (!frame->cachedBackground.isNull()) {
         frame->cachedBackground = QPixmap();
@@ -985,7 +985,7 @@ QSizeF FrameSvgPrivate::frameSize(FrameData *frame) const
 
     if (!frame->frameSize.isValid()) {
         updateSizes(frame);
-        frame->frameSize = q->size();
+        frame->frameSize = q->size().toSize();
     }
 
     return frame->frameSize;

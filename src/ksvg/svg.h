@@ -45,7 +45,7 @@ class SvgPrivate;
 class KSVG_EXPORT Svg : public QObject
 {
     Q_OBJECT
-    Q_PROPERTY(QSize size READ size WRITE resize NOTIFY sizeChanged)
+    Q_PROPERTY(QSizeF size READ size WRITE resize NOTIFY sizeChanged)
     Q_PROPERTY(bool multipleImages READ containsMultipleImages WRITE setContainsMultipleImages)
     Q_PROPERTY(QString imagePath READ imagePath WRITE setImagePath NOTIFY imagePathChanged)
     Q_PROPERTY(bool usingRenderingCache READ isUsingRenderingCache WRITE setUsingRenderingCache)
@@ -254,7 +254,7 @@ public:
      *
      * @return the current size of the SVG
      **/
-    QSize size() const;
+    QSizeF size() const;
 
     /**
      * @brief This method resizes the rendered image.
@@ -301,9 +301,9 @@ public:
      * @param elementId  the id of the element to check
      * @return the size of a given element, given the current size of the SVG
      **/
-    Q_INVOKABLE QSize elementSize(const QString &elementId) const;
+    Q_INVOKABLE QSizeF elementSize(const QString &elementId) const;
 
-    QSize elementSize(QStringView elementId) const;
+    QSizeF elementSize(QStringView elementId) const;
 
     /**
      * @brief This method returns the bounding rect of a given element.
