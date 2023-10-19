@@ -232,7 +232,7 @@ qreal FrameSvgItemMargins::vertical() const
     return top() + bottom();
 }
 
-QVector<qreal> FrameSvgItemMargins::margins() const
+QList<qreal> FrameSvgItemMargins::margins() const
 {
     qreal left;
     qreal top;
@@ -302,7 +302,7 @@ FrameSvgItem::~FrameSvgItem()
 class CheckMarginsChange
 {
 public:
-    CheckMarginsChange(QVector<qreal> &oldMargins, FrameSvgItemMargins *marginsObject)
+    CheckMarginsChange(QList<qreal> &oldMargins, FrameSvgItemMargins *marginsObject)
         : m_oldMargins(oldMargins)
         , m_marginsObject(marginsObject)
     {
@@ -310,8 +310,8 @@ public:
 
     ~CheckMarginsChange()
     {
-        const QVector<qreal> oldMarginsBefore = m_oldMargins;
-        m_oldMargins = m_marginsObject ? m_marginsObject->margins() : QVector<qreal>();
+        const QList<qreal> oldMarginsBefore = m_oldMargins;
+        m_oldMargins = m_marginsObject ? m_marginsObject->margins() : QList<qreal>();
 
         if (oldMarginsBefore != m_oldMargins) {
             m_marginsObject->update();
@@ -319,7 +319,7 @@ public:
     }
 
 private:
-    QVector<qreal> &m_oldMargins;
+    QList<qreal> &m_oldMargins;
     FrameSvgItemMargins *const m_marginsObject;
 };
 

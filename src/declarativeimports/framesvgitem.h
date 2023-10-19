@@ -77,7 +77,7 @@ public:
     qreal vertical() const;
 
     /// returns a vector with left, top, right, bottom
-    QVector<qreal> margins() const;
+    QList<qreal> margins() const;
 
     void setFixed(bool fixed);
     bool isFixed() const;
@@ -306,9 +306,9 @@ private:
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;
     // logged margins to check for changes
-    QVector<qreal> m_oldMargins;
-    QVector<qreal> m_oldFixedMargins;
-    QVector<qreal> m_oldInsetMargins;
+    QList<qreal> m_oldMargins;
+    QList<qreal> m_oldFixedMargins;
+    QList<qreal> m_oldInsetMargins;
     QStringList m_prefixes;
     bool m_textureChanged;
     bool m_sizeChanged;
