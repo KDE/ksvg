@@ -51,7 +51,7 @@ find_package(KF6 ${KF_DEP_VERSION} REQUIRED
         ColorScheme
         CoreAddons
         GuiAddons      # KImageCache
-        Kirigami2      # Kirigami.Theme
+        KirigamiPlatform      # Kirigami.Theme
 )
 
 #########################################################################

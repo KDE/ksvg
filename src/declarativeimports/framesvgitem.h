@@ -14,7 +14,10 @@
 
 namespace Kirigami
 {
+namespace Platform
+{
 class PlatformTheme;
+}
 };
 
 namespace KSvg
@@ -301,7 +304,7 @@ private:
     void applyPrefixes();
 
     KSvg::FrameSvg *m_frameSvg;
-    Kirigami::PlatformTheme *m_kirigamiTheme;
+    Kirigami::Platform::PlatformTheme *m_kirigamiTheme;
     FrameSvgItemMargins *m_margins;
     FrameSvgItemMargins *m_fixedMargins;
     FrameSvgItemMargins *m_insetMargins;

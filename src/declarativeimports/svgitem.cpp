@@ -18,7 +18,7 @@
 
 #include <cmath> //floor()
 
-#include <Kirigami/PlatformTheme>
+#include <Kirigami/Platform/PlatformTheme>
 #include <debug_p.h>
 
 namespace KSvg
@@ -43,9 +43,9 @@ SvgItem::~SvgItem()
 
 void SvgItem::componentComplete()
 {
-    m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+    m_kirigamiTheme = qobject_cast<Kirigami::Platform::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::Platform::PlatformTheme>(this, true));
     if (!m_kirigamiTheme) {
-        qCWarning(LOG_KSVGQML) << "No theme!" << qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true) << this;
+        qCWarning(LOG_KSVGQML) << "No theme!" << qmlAttachedPropertiesObject<Kirigami::Platform::PlatformTheme>(this, true) << this;
         return;
     }
 
@@ -71,7 +71,7 @@ void SvgItem::componentComplete()
         m_svg->setColor(Svg::NegativeText, m_kirigamiTheme->negativeTextColor());
     };
     applyTheme();
-    connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
+    connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_svg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
     connect(m_svg, &Svg::imageSetChanged, this, checkApplyTheme);
 

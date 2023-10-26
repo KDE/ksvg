@@ -22,7 +22,7 @@
 
 #include <cmath> //floor()
 
-#include <Kirigami/PlatformTheme>
+#include <Kirigami/Platform/PlatformTheme>
 #include <debug_p.h>
 
 namespace KSvg
@@ -682,9 +682,9 @@ void FrameSvgItem::classBegin()
 
 void FrameSvgItem::componentComplete()
 {
-    m_kirigamiTheme = qobject_cast<Kirigami::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true));
+    m_kirigamiTheme = qobject_cast<Kirigami::Platform::PlatformTheme *>(qmlAttachedPropertiesObject<Kirigami::Platform::PlatformTheme>(this, true));
     if (!m_kirigamiTheme) {
-        qCWarning(LOG_KSVGQML) << "no theme!" << qmlAttachedPropertiesObject<Kirigami::PlatformTheme>(this, true) << this;
+        qCWarning(LOG_KSVGQML) << "no theme!" << qmlAttachedPropertiesObject<Kirigami::Platform::PlatformTheme>(this, true) << this;
         return;
     }
 
@@ -710,7 +710,7 @@ void FrameSvgItem::componentComplete()
         m_frameSvg->setColor(Svg::NegativeText, m_kirigamiTheme->negativeTextColor());
     };
     applyTheme();
-    connect(m_kirigamiTheme, &Kirigami::PlatformTheme::colorsChanged, this, applyTheme);
+    connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_frameSvg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
     connect(m_frameSvg, &Svg::imageSetChanged, this, checkApplyTheme);
 

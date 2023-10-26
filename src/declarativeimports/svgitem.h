@@ -12,7 +12,10 @@
 
 namespace Kirigami
 {
+namespace Platform
+{
 class PlatformTheme;
+}
 };
 
 namespace KSvg
@@ -123,7 +126,7 @@ private:
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
 
     QPointer<KSvg::Svg> m_svg;
-    Kirigami::PlatformTheme *m_kirigamiTheme;
+    Kirigami::Platform::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     QImage m_image;
     bool m_textureChanged;
