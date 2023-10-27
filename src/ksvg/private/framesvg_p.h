@@ -16,6 +16,7 @@
 
 #include <KSvg/ImageSet>
 
+#include "framesvg.h"
 #include "svg_p.h"
 
 namespace KSvg
