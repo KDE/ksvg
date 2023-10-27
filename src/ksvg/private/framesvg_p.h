@@ -45,7 +45,7 @@ public:
     {
     }
 
-    FrameData(const FrameData &other, FrameSvg *svg)
+    FrameData(const FrameData &other)
         : imagePath(other.imagePath)
         , prefix(other.prefix)
         , enabledBorders(other.enabledBorders)

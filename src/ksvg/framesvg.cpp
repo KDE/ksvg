@@ -498,7 +498,7 @@ FrameSvgPrivate::lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame,
         return mask;
     }
 
-    mask.reset(new FrameData(*frame.data(), q));
+    mask.reset(new FrameData(*frame.data()));
     mask->prefix = maskPrefix;
     mask->requestedPrefix = maskRequestedPrefix;
     mask->imageSet = q->imageSet()->d;
@@ -688,7 +688,7 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
             return;
         }
 
-        fd.reset(new FrameData(*fd, q));
+        fd.reset(new FrameData(*fd));
     } else {
         fd.reset(new FrameData(q, QString()));
     }
