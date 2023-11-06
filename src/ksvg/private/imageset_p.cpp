@@ -700,7 +700,7 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
         pluginMetaData = metaDataForImageSet(basePath, theme);
         KSharedConfigPtr metadata = configForImageSet(basePath, theme);
 
-        KConfigGroup cg(metadata, "Settings");
+        KConfigGroup cg(metadata, QStringLiteral("Settings"));
         QString fallback = cg.readEntry("FallbackImageSet", QString());
 
         fallbackImageSets.clear();
@@ -708,7 +708,7 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
             fallbackImageSets.append(fallback);
 
             KSharedConfigPtr metadata = configForImageSet(basePath, fallback);
-            KConfigGroup cg(metadata, "Settings");
+            KConfigGroup cg(metadata, QStringLiteral("Settings"));
             fallback = cg.readEntry("FallbackImageSet", QString());
         }
 
