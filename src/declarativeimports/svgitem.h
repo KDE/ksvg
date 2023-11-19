@@ -121,6 +121,7 @@ protected Q_SLOTS:
 
 private:
     void updateDevicePixelRatio();
+    void updateImplicitSize();
     void scheduleImageUpdate();
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;

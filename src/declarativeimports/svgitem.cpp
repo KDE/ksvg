@@ -105,19 +105,13 @@ void SvgItem::setElementId(const QString &elementID)
         return;
     }
 
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(naturalSize().width());
-    }
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(naturalSize().height());
-    }
-
     m_elementID = elementID;
+
+    updateNeeded();
+
     Q_EMIT elementIdChanged();
     Q_EMIT naturalSizeChanged();
     Q_EMIT elementRectChanged();
-
-    scheduleImageUpdate();
 }
 
 QString SvgItem::elementId() const
@@ -140,14 +134,7 @@ void SvgItem::setSvg(KSvg::Svg *svg)
         connect(svg, &Svg::sizeChanged, this, &SvgItem::elementRectChanged);
     }
 
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(naturalSize().width());
-    }
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(naturalSize().height());
-    }
-
-    scheduleImageUpdate();
+    updateNeeded();
 
     Q_EMIT svgChanged();
     Q_EMIT naturalSizeChanged();
@@ -229,12 +216,7 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
 
 void SvgItem::updateNeeded()
 {
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(naturalSize().width());
-    }
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(naturalSize().height());
-    }
+    updateImplicitSize();
     scheduleImageUpdate();
 }
 
@@ -274,6 +256,19 @@ void SvgItem::updateDevicePixelRatio()
     if (newDevicePixelRatio != m_svg->devicePixelRatio()) {
         m_svg->setDevicePixelRatio(newDevicePixelRatio);
         m_textureChanged = true;
+    }
+}
+
+void SvgItem::updateImplicitSize()
+{
+    // TODO: Implement a check whether this object is managing implicit size
+    // itself, or it was set externally, e.g. via QML bindings.
+
+    if (implicitWidth() <= 0) {
+        setImplicitWidth(naturalSize().width());
+    }
+    if (implicitHeight() <= 0) {
+        setImplicitHeight(naturalSize().height());
     }
 }
 
