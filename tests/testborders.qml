@@ -5,18 +5,36 @@
 */
 
 
-import QtQuick 2.0
-import QtQuick.Layouts 1.1
-import QtQuick.Controls 2.15
+import QtQuick
+import QtQuick.Layouts
+import QtQuick.Controls as QQC2
 
+import org.kde.ksvg as KSvg
+
+// This import is required to initialize Plasma Theme
 import org.kde.plasma.core as PlasmaCore
 
-Item
-{
+Item {
     width: 500
     height: 500
 
-    PlasmaCore.FrameSvgItem {
+    component EnabledBorderCheckBox : QQC2.CheckBox {
+        required property int /*KSvg.FrameSvg.EnabledBorder*/ border
+
+        anchors.centerIn: parent
+
+        checked: (theItem.enabledBorders & border) !== KSvg.FrameSvg.NoBorder
+
+        onToggled: {
+            if (checked) {
+                theItem.enabledBorders |= border;
+            } else {
+                theItem.enabledBorders &= ~border;
+            }
+        }
+    }
+
+    KSvg.FrameSvgItem {
         id: theItem
 
         imagePath: "widgets/background"
@@ -25,69 +43,28 @@ Item
             margins: 10
         }
 
-        Button {
-            text: "left"
-            checkable: true
-            checked: true
-            anchors {
-                horizontalCenterOffset: -50
-                centerIn: parent
-            }
-            onClicked: {
-                if (checked)
-                    theItem.enabledBorders |= PlasmaCore.FrameSvg.LeftBorder;
-                else
-                    theItem.enabledBorders &=~PlasmaCore.FrameSvg.LeftBorder;
-            }
+        EnabledBorderCheckBox {
+            text: "Left"
+            border: KSvg.FrameSvg.LeftBorder
+            anchors.horizontalCenterOffset: -50
         }
-        Button {
-            text: "right"
-            checkable: true
-            checked: true
 
-            anchors {
-                horizontalCenterOffset: 50
-                centerIn: parent
-            }
-            onClicked: {
-                if (checked)
-                    theItem.enabledBorders |= PlasmaCore.FrameSvg.RightBorder;
-                else
-                    theItem.enabledBorders &=~PlasmaCore.FrameSvg.RightBorder;
-            }
+        EnabledBorderCheckBox {
+            text: "Right"
+            border: KSvg.FrameSvg.RightBorder
+            anchors.horizontalCenterOffset: 50
         }
-        Button {
-            text: "top"
-            checkable: true
-            checked: true
 
-            anchors {
-                verticalCenterOffset: -50
-                centerIn: parent
-            }
-            onClicked: {
-                if (checked)
-                    theItem.enabledBorders |= PlasmaCore.FrameSvg.TopBorder;
-                else
-                    theItem.enabledBorders &=~PlasmaCore.FrameSvg.TopBorder;
-            }
+        EnabledBorderCheckBox {
+            text: "Top"
+            border: KSvg.FrameSvg.TopBorder
+            anchors.verticalCenterOffset: -50
         }
-        Button {
-            text: "bottom"
-            checkable: true
-            checked: true
 
-            anchors {
-                verticalCenterOffset: 50
-                centerIn: parent
-            }
-            onClicked: {
-                if (checked)
-                    theItem.enabledBorders |= PlasmaCore.FrameSvg.BottomBorder;
-                else
-                    theItem.enabledBorders &=~PlasmaCore.FrameSvg.BottomBorder;
-            }
+        EnabledBorderCheckBox {
+            text: "Bottom"
+            border: KSvg.FrameSvg.BottomBorder
+            anchors.verticalCenterOffset: 50
         }
     }
 }
-
