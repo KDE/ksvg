@@ -306,6 +306,7 @@ private Q_SLOTS:
 
 private:
     void updateDevicePixelRatio();
+    void updateImplicitSize();
     void applyPrefixes();
 
     KSvg::FrameSvg *m_frameSvg;

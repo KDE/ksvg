@@ -336,13 +336,7 @@ void FrameSvgItem::setImagePath(const QString &path)
     updateDevicePixelRatio();
     m_frameSvg->setImagePath(path);
 
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
-    }
-
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
-    }
+    updateImplicitSize();
 
     Q_EMIT imagePathChanged();
 
@@ -381,13 +375,7 @@ void FrameSvgItem::setPrefix(const QVariant &prefixes)
     m_prefixes = prefixList;
     applyPrefixes();
 
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
-    }
-
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
-    }
+    updateImplicitSize();
 
     Q_EMIT prefixChanged();
 
@@ -540,13 +528,7 @@ void FrameSvgItem::doUpdate()
     // if the theme changed, the available prefix may have changed as well
     applyPrefixes();
 
-    if (implicitWidth() <= 0) {
-        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
-    }
-
-    if (implicitHeight() <= 0) {
-        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
-    }
+    updateImplicitSize();
 
     QString prefix = m_frameSvg->actualPrefix();
     bool hasOverlay = (!prefix.startsWith(QLatin1String("mask-")) //
@@ -730,6 +712,20 @@ void FrameSvgItem::updateDevicePixelRatio()
     if (newDevicePixelRatio != m_frameSvg->devicePixelRatio()) {
         m_frameSvg->setDevicePixelRatio(newDevicePixelRatio);
         m_textureChanged = true;
+    }
+}
+
+void FrameSvgItem::updateImplicitSize()
+{
+    // TODO: Implement a check whether this object is managing implicit size
+    // itself, or it was set externally, e.g. via QML bindings.
+
+    if (implicitWidth() <= 0) {
+        setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
+    }
+
+    if (implicitHeight() <= 0) {
+        setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
     }
 }
 
