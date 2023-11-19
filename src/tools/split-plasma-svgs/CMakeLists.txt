@@ -5,12 +5,11 @@ target_sources(split-plasma-svgs PRIVATE
 )
 
 target_link_libraries(split-plasma-svgs
-PRIVATE
-    Qt6::Core
-    Qt6::Gui
-    Qt6::Svg
-    KF6::Archive
-    KF6::CoreAddons
-    KF6::Svg
+    PRIVATE
+        Qt6::Core
+        Qt6::Gui
+        Qt6::Svg
+        KF6::Archive
+        KF6::CoreAddons
+        KF6::Svg
 )
-

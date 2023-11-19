@@ -2,20 +2,19 @@ ecm_add_qml_module(corebindingsplugin URI "org.kde.ksvg")
 
 target_sources(corebindingsplugin PRIVATE
     corebindingsplugin.cpp
-    svgitem.cpp
     framesvgitem.cpp
-    managedtexturenode.cpp
     imagetexturescache.cpp
-    #quicktheme.cpp
+    managedtexturenode.cpp
+    svgitem.cpp
 )
 
 target_link_libraries(corebindingsplugin PRIVATE
-        Qt6::Quick
-        Qt6::Qml
-        Qt6::Svg
-        KF6::Svg
-        KF6::ColorScheme
-        KF6::KirigamiPlatform
+    Qt6::Quick
+    Qt6::Qml
+    Qt6::Svg
+    KF6::Svg
+    KF6::ColorScheme
+    KF6::KirigamiPlatform
 )
 
 ecm_qt_declare_logging_category(corebindingsplugin
