@@ -311,6 +311,7 @@ void ImageSetPrivate::colorsChanged()
     complementaryColorScheme = KColorScheme(QPalette::Active, KColorScheme::Complementary, colors);
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
+    scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
     Q_EMIT applicationPaletteChange();
 }
 
