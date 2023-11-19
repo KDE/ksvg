@@ -119,10 +119,17 @@ Q_SIGNALS:
 
 protected Q_SLOTS:
     /// @cond INTERNAL_DOCS
+    void validateImplicitWidthChange();
+    void validateImplicitHeightChange();
     void updateNeeded();
     /// @endcond
 
 private:
+    enum SourceOfTruthForImplicitSize : bool {
+        SourceOfTruthIsInternalNatualSize = false,
+        SourceOfTruthIsExternal = true,
+    };
+
     void updateDevicePixelRatio();
     void updateImplicitSize();
     void scheduleImageUpdate();
@@ -133,7 +140,13 @@ private:
     Kirigami::Platform::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     QImage m_image;
-    bool m_textureChanged;
+    bool m_textureChanged : 1;
+    // Whether implicit size should be managed internally, or is overridden via binding
+    SourceOfTruthForImplicitSize m_implicitWidthSourceOfTruth : 1;
+    SourceOfTruthForImplicitSize m_implicitHeightSourceOfTruth : 1;
+    // Don't change source of truth when a corresponding guard is up
+    bool m_implicitWidthGuard : 1;
+    bool m_implicitHeightGuard : 1;
 };
 }
 

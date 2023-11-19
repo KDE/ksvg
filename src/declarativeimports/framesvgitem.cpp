@@ -279,12 +279,17 @@ bool FrameSvgItemMargins::isInset() const
 
 FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     : QQuickItem(parent)
+    , m_kirigamiTheme(nullptr)
     , m_margins(nullptr)
     , m_fixedMargins(nullptr)
     , m_insetMargins(nullptr)
     , m_textureChanged(false)
     , m_sizeChanged(false)
     , m_fastPath(true)
+    , m_implicitWidthSourceOfTruth(SourceOfTruthIsInternalMargins)
+    , m_implicitHeightSourceOfTruth(SourceOfTruthIsInternalMargins)
+    , m_implicitWidthGuard(false)
+    , m_implicitHeightGuard(false)
 {
     m_frameSvg = new KSvg::FrameSvg(this);
 
@@ -293,6 +298,9 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
     connect(m_frameSvg, &Svg::fromCurrentImageSetChanged, this, &FrameSvgItem::fromCurrentImageSetChanged);
     connect(m_frameSvg, &Svg::statusChanged, this, &FrameSvgItem::statusChanged);
+
+    connect(this, &QQuickItem::implicitWidthChanged, this, &FrameSvgItem::validateImplicitWidthChange);
+    connect(this, &QQuickItem::implicitHeightChanged, this, &FrameSvgItem::validateImplicitHeightChange);
 }
 
 FrameSvgItem::~FrameSvgItem()
@@ -552,6 +560,24 @@ void FrameSvgItem::doUpdate()
     Q_EMIT repaintNeeded();
 }
 
+void FrameSvgItem::validateImplicitWidthChange()
+{
+    // NOTE: There is no RESET method for implicitWidth to flip the source of truth back to Internal.
+    // We may add `0` as a special case in future, if deemed useful.
+    if (!m_implicitWidthGuard) {
+        m_implicitWidthSourceOfTruth = SourceOfTruthIsExternal;
+    }
+}
+
+void FrameSvgItem::validateImplicitHeightChange()
+{
+    // NOTE: There is no RESET method for implicitWidth to flip the source of truth back to Internal.
+    // We may add `0` as a special case in future, if deemed useful.
+    if (!m_implicitHeightGuard) {
+        m_implicitHeightSourceOfTruth = SourceOfTruthIsExternal;
+    }
+}
+
 KSvg::FrameSvg *FrameSvgItem::frameSvg() const
 {
     return m_frameSvg;
@@ -717,15 +743,15 @@ void FrameSvgItem::updateDevicePixelRatio()
 
 void FrameSvgItem::updateImplicitSize()
 {
-    // TODO: Implement a check whether this object is managing implicit size
-    // itself, or it was set externally, e.g. via QML bindings.
-
-    if (implicitWidth() <= 0) {
+    if (m_implicitWidthSourceOfTruth == SourceOfTruthIsInternalMargins) {
+        m_implicitWidthGuard = true;
         setImplicitWidth(m_frameSvg->marginSize(KSvg::FrameSvg::LeftMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::RightMargin));
+        m_implicitWidthGuard = false;
     }
-
-    if (implicitHeight() <= 0) {
+    if (m_implicitHeightSourceOfTruth == SourceOfTruthIsInternalMargins) {
+        m_implicitHeightGuard = true;
         setImplicitHeight(m_frameSvg->marginSize(KSvg::FrameSvg::TopMargin) + m_frameSvg->marginSize(KSvg::FrameSvg::BottomMargin));
+        m_implicitHeightGuard = false;
     }
 }
 

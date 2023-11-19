@@ -303,8 +303,15 @@ Q_SIGNALS:
 
 private Q_SLOTS:
     void doUpdate();
+    void validateImplicitWidthChange();
+    void validateImplicitHeightChange();
 
 private:
+    enum SourceOfTruthForImplicitSize : bool {
+        SourceOfTruthIsInternalMargins = false,
+        SourceOfTruthIsExternal = true,
+    };
+
     void updateDevicePixelRatio();
     void updateImplicitSize();
     void applyPrefixes();
@@ -319,9 +326,15 @@ private:
     QList<qreal> m_oldFixedMargins;
     QList<qreal> m_oldInsetMargins;
     QStringList m_prefixes;
-    bool m_textureChanged;
-    bool m_sizeChanged;
-    bool m_fastPath;
+    bool m_textureChanged : 1;
+    bool m_sizeChanged : 1;
+    bool m_fastPath : 1;
+    // Whether implicit size should be managed internally, or is overridden via binding
+    SourceOfTruthForImplicitSize m_implicitWidthSourceOfTruth : 1;
+    SourceOfTruthForImplicitSize m_implicitHeightSourceOfTruth : 1;
+    // Don't change source of truth when a corresponding guard is up
+    bool m_implicitWidthGuard : 1;
+    bool m_implicitHeightGuard : 1;
 };
 
 }

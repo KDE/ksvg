@@ -24,6 +24,10 @@ namespace KSvg
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
+    , m_implicitWidthSourceOfTruth(SourceOfTruthIsInternalNatualSize)
+    , m_implicitHeightSourceOfTruth(SourceOfTruthIsInternalNatualSize)
+    , m_implicitWidthGuard(false)
+    , m_implicitHeightGuard(false)
 {
     m_svg = new KSvg::Svg(this);
     setFlag(QQuickItem::ItemHasContents, true);
@@ -33,6 +37,9 @@ SvgItem::SvgItem(QQuickItem *parent)
     connect(m_svg, &Svg::sizeChanged, this, &SvgItem::naturalSizeChanged);
     connect(m_svg, &Svg::repaintNeeded, this, &SvgItem::elementRectChanged);
     connect(m_svg, &Svg::sizeChanged, this, &SvgItem::elementRectChanged);
+
+    connect(this, &QQuickItem::implicitWidthChanged, this, &SvgItem::validateImplicitWidthChange);
+    connect(this, &QQuickItem::implicitHeightChanged, this, &SvgItem::validateImplicitHeightChange);
 }
 
 SvgItem::~SvgItem()
@@ -212,6 +219,24 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
     return textureNode;
 }
 
+void SvgItem::validateImplicitWidthChange()
+{
+    // NOTE: There is no RESET method for implicitWidth to flip the source of truth back to Internal.
+    // We may add `0` as a special case in future, if deemed useful.
+    if (!m_implicitWidthGuard) {
+        m_implicitWidthSourceOfTruth = SourceOfTruthIsExternal;
+    }
+}
+
+void SvgItem::validateImplicitHeightChange()
+{
+    // NOTE: There is no RESET method for implicitWidth to flip the source of truth back to Internal.
+    // We may add `0` as a special case in future, if deemed useful.
+    if (!m_implicitHeightGuard) {
+        m_implicitHeightSourceOfTruth = SourceOfTruthIsExternal;
+    }
+}
+
 void SvgItem::updateNeeded()
 {
     updateImplicitSize();
@@ -256,16 +281,17 @@ void SvgItem::updateDevicePixelRatio()
 
 void SvgItem::updateImplicitSize()
 {
-    // TODO: Implement a check whether this object is managing implicit size
-    // itself, or it was set externally, e.g. via QML bindings.
-
     const auto size = naturalSize();
 
-    if (implicitWidth() <= 0) {
+    if (m_implicitWidthSourceOfTruth == SourceOfTruthIsInternalNatualSize) {
+        m_implicitWidthGuard = true;
         setImplicitWidth(size.width());
+        m_implicitWidthGuard = false;
     }
-    if (implicitHeight() <= 0) {
+    if (m_implicitHeightSourceOfTruth == SourceOfTruthIsInternalNatualSize) {
+        m_implicitHeightGuard = true;
         setImplicitHeight(size.height());
+        m_implicitHeightGuard = false;
     }
 }
 
