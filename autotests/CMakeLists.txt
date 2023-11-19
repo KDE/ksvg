@@ -20,6 +20,7 @@ macro(ksvg_unit_tests)
     foreach(_testname ${ARGN})
         set(libs
             Qt6::Qml
+            Qt6::Quick
             Qt6::Test
             KF6::Svg
             KF6::Archive
@@ -38,4 +39,6 @@ endmacro()
 
 ksvg_unit_tests(
     framesvgtest
+    framesvgitemtest
+    svgitemtest
 )
