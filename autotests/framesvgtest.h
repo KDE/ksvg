@@ -21,8 +21,8 @@ public Q_SLOTS:
 private Q_SLOTS:
     void margins();
     void contentsRect();
-    void setImageSet();
     void repaintBlocked();
+    void setImageSet();
 
 private:
     KSvg::FrameSvg *m_frameSvg;
