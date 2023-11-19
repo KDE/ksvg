@@ -14,7 +14,7 @@ void FrameSvgTest::initTestCase()
     m_cacheDir.removeRecursively();
 
     m_frameSvg = new KSvg::FrameSvg;
-    m_frameSvg->setImagePath(QFINDTESTDATA("data/background.svgz"));
+    m_frameSvg->setImagePath(QFINDTESTDATA("data/background.svg"));
     QVERIFY(m_frameSvg->isValid());
 }
 
