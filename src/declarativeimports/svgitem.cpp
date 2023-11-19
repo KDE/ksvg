@@ -259,11 +259,13 @@ void SvgItem::updateImplicitSize()
     // TODO: Implement a check whether this object is managing implicit size
     // itself, or it was set externally, e.g. via QML bindings.
 
+    const auto size = naturalSize();
+
     if (implicitWidth() <= 0) {
-        setImplicitWidth(naturalSize().width());
+        setImplicitWidth(size.width());
     }
     if (implicitHeight() <= 0) {
-        setImplicitHeight(naturalSize().height());
+        setImplicitHeight(size.height());
     }
 }
 
