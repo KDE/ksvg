@@ -606,6 +606,7 @@ void FrameSvgPrivate::generateFrameBackground(const QSharedPointer<FrameData> &f
     }
 
     frame->cachedBackground = QPixmap(size);
+    frame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
     frame->cachedBackground.fill(Qt::transparent);
     QPainter p(&frame->cachedBackground);
     p.setCompositionMode(QPainter::CompositionMode_Source);
@@ -724,6 +725,7 @@ void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &
         if (frame->tileCenter) {
             QSize centerTileSize = q->elementSize(centerElementId).toSize();
             QPixmap center(centerTileSize);
+            center.setDevicePixelRatio(q->devicePixelRatio());
             center.fill(Qt::transparent);
 
             QPainter centerPainter(&center);
@@ -763,6 +765,7 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
             q->paint(&p, FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize * q->devicePixelRatio()), side);
         } else {
             QPixmap px(size);
+            px.setDevicePixelRatio(q->devicePixelRatio());
             px.fill(Qt::transparent);
 
             QPainter sidePainter(&px);
@@ -834,6 +837,7 @@ void FrameSvgPrivate::updateSizes(FrameData *frame) const
     q->resize();
     if (!frame->cachedBackground.isNull()) {
         frame->cachedBackground = QPixmap();
+        frame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
     }
 
     // This function needs to do a lot of string creation, since we have four

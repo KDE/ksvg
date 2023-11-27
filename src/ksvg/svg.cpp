@@ -283,7 +283,7 @@ void SvgRectsCache::dropImageFromCache(const QString &path)
     QMetaObject::invokeMethod(m_configSyncTimer, qOverload<>(&QTimer::start));
 }
 
-QList<QSize> SvgRectsCache::sizeHintsForId(const QString &path, const QString &id)
+QList<QSizeF> SvgRectsCache::sizeHintsForId(const QString &path, const QString &id)
 {
     const QString pathId = path % id;
 
@@ -291,7 +291,7 @@ QList<QSize> SvgRectsCache::sizeHintsForId(const QString &path, const QString &i
     if (it == m_sizeHintsForId.constEnd()) {
         KConfigGroup imageGroup(m_svgElementsCache, path);
         const QStringList &encoded = imageGroup.readEntry(id, QStringList());
-        QList<QSize> sizes;
+        QList<QSizeF> sizes;
         for (const auto &token : encoded) {
             const auto &parts = token.split(QLatin1Char('x'));
             if (parts.size() != 2) {
@@ -309,10 +309,10 @@ QList<QSize> SvgRectsCache::sizeHintsForId(const QString &path, const QString &i
     return *it;
 }
 
-void SvgRectsCache::insertSizeHintForId(const QString &path, const QString &id, const QSize &size)
+void SvgRectsCache::insertSizeHintForId(const QString &path, const QString &id, const QSizeF &size)
 {
     // TODO: need to make this more efficient
-    auto sizeListToString = [](const QList<QSize> &list) {
+    auto sizeListToString = [](const QList<QSizeF> &list) {
         QString ret;
         for (const auto &s : list) {
             ret += QString::number(s.width()) % QLatin1Char('x') % QString::number(s.height()) % QLatin1Char(',');
@@ -583,7 +583,7 @@ QPixmap SvgPrivate::findInCache(const QString &elementId, qreal ratio, const QSi
     // Look at the size hinted elements and try to find the smallest one with an
     // identical aspect ratio.
     if (s.isValid() && !elementId.isEmpty()) {
-        const QList<QSize> elementSizeHints = SvgRectsCache::instance()->sizeHintsForId(path, elementId);
+        const QList<QSizeF> elementSizeHints = SvgRectsCache::instance()->sizeHintsForId(path, elementId);
 
         if (!elementSizeHints.isEmpty()) {
             QSizeF bestFit(-1, -1);
@@ -890,7 +890,7 @@ void Svg::setDevicePixelRatio(qreal ratio)
     // be completely integer for now
     // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
     //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
-    if (floor(d->devicePixelRatio) == floor(ratio)) {
+    if (false && floor(d->devicePixelRatio) == floor(ratio)) {
         return;
     }
 
@@ -898,7 +898,7 @@ void Svg::setDevicePixelRatio(qreal ratio)
         f->clearCache();
     }
 
-    d->devicePixelRatio = floor(ratio);
+    d->devicePixelRatio = (ratio);
 
     Q_EMIT repaintNeeded();
 }
@@ -926,7 +926,7 @@ QImage Svg::image(const QSize &size, const QString &elementID)
 void Svg::paint(QPainter *painter, const QPointF &point, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    const int ratio = painter->device()->devicePixelRatio();
+    const qreal ratio = painter->device()->devicePixelRatio();
     QPixmap pix((elementID.isNull() || d->multipleImages) ? d->findInCache(elementID, ratio, size()) : d->findInCache(elementID, ratio));
 
     if (pix.isNull()) {
@@ -944,7 +944,7 @@ void Svg::paint(QPainter *painter, int x, int y, const QString &elementID)
 void Svg::paint(QPainter *painter, const QRectF &rect, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    const int ratio = painter->device()->devicePixelRatio();
+    const qreal ratio = painter->device()->devicePixelRatio();
     QPixmap pix(d->findInCache(elementID, ratio, rect.size()));
 
     painter->drawPixmap(QRectF(rect.topLeft(), rect.size()), pix, QRectF(QPointF(0, 0), pix.size()));
@@ -953,7 +953,7 @@ void Svg::paint(QPainter *painter, const QRectF &rect, const QString &elementID)
 void Svg::paint(QPainter *painter, int x, int y, int width, int height, const QString &elementID)
 {
     Q_ASSERT(painter->device());
-    const int ratio = painter->device()->devicePixelRatio();
+    const qreal ratio = painter->device()->devicePixelRatio();
     QPixmap pix(d->findInCache(elementID, ratio, QSizeF(width, height)));
     painter->drawPixmap(x, y, pix, 0, 0, pix.size().width(), pix.size().height());
 }
