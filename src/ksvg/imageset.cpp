@@ -97,8 +97,14 @@ void ImageSet::setBasePath(const QString &basePath)
         d->basePath += QDir::separator();
     }
 
-    d->scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
+    // Don't use scheduleImageSetChangeNotification as we want things happening immediately there,
+    // we don't want in the client code to be setting things like the svg size right after thing just to
+    // be reset right after in an async fashion
+    d->discardCache(PixmapCache | SvgElementsCache);
+    d->cachesToDiscard = NoCache;
+
     Q_EMIT basePathChanged(basePath);
+    Q_EMIT imageSetChanged(d->imageSetName);
 }
 
 QString ImageSet::basePath() const
