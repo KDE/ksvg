@@ -7,6 +7,7 @@
 #include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQuickItem>
+#include <QQuickView>
 #include <QSignalSpy>
 #include <QStandardPaths>
 #include <QTest>
@@ -77,20 +78,22 @@ void FrameSvgItemTest::tst_implicitSize()
     QString pathToBackground = QStringLiteral("file://") + QFINDTESTDATA("data/background.svg");
     QString pathToSlider = QStringLiteral("file://") + QFINDTESTDATA("data/slider.svg");
 
-    QQmlApplicationEngine app;
-    app.setInitialProperties({{QStringLiteral("imagePath"), pathToBackground}});
-    app.loadData(QByteArrayLiteral(R"(
+    QQmlEngine engine;
+    QQmlComponent component(&engine, nullptr);
+    component.setData(QByteArrayLiteral(R"(
         import org.kde.ksvg as KSvg
 
         KSvg.FrameSvgItem {
             prefix: "prefix"
         }
     )"),
-                 QUrl(__FILE__));
-    QVERIFY(!app.hasError());
-    QCOMPARE(app.rootObjects().count(), 1);
+                      QUrl(__FILE__));
+    auto obj = component.createWithInitialProperties({{QStringLiteral("imagePath"), pathToBackground}});
 
-    QQuickItem *frameSvgItem = qobject_cast<QQuickItem *>(app.rootObjects().first());
+    QVERIFY(!component.isError());
+    QVERIFY(obj);
+
+    QQuickItem *frameSvgItem = qobject_cast<QQuickItem *>(obj);
     QVERIFY(frameSvgItem);
 
     const QObject *margins = frameSvgItem->property("margins").value<QObject *>();
