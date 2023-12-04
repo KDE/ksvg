@@ -17,7 +17,8 @@ if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
 endif()
 
 macro(ksvg_unit_tests)
-    foreach(_testname ${ARGN})
+    foreach(_targetname ${ARGN})
+        set(_testname "plasmasvg-${_targetname}")
         set(libs
             Qt6::Qml
             Qt6::Quick
@@ -30,9 +31,21 @@ macro(ksvg_unit_tests)
         if(QT_QTOPENGL_FOUND)
             list(APPEND libs Qt6::OpenGL)
         endif()
-        ecm_add_test(${_testname}.cpp
-            LINK_LIBRARIES ${libs}
-            NAME_PREFIX "plasmasvg-"
+
+        set(_extra_target_args WIN32 MACOSX_BUNDLE)
+        set(_extra_run_args)
+        if (WIN32)
+            set(_extra_run_args -platform offscreen)
+        endif()
+
+        add_executable(${_targetname} ${_extra_target_args} ${_targetname}.cpp)
+        target_link_libraries(${_targetname} PRIVATE ${libs})
+        add_test(
+            NAME ${_testname}
+            COMMAND
+                ${_targetname}
+                ${_extra_args}
+            WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
         )
     endforeach()
 endmacro()
