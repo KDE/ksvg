@@ -53,7 +53,7 @@ public:
         int status;
         double scaleFactor;
         int colorSet;
-        uint styleSheet; // TODO: use that
+        size_t styleSheet; // TODO: use that
         uint extraFlags; // Not used here, used for enabledborders in FrameSvg
         uint lastModified;
     };
@@ -61,7 +61,7 @@ public:
     SvgPrivate(Svg *svg);
     ~SvgPrivate();
 
-    qint64 paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const;
+    size_t paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const;
 
     // This function is meant for the rects cache
     CacheId cacheId(QStringView elementId) const;
@@ -128,10 +128,10 @@ public:
     static SvgRectsCache *instance();
 
     void insert(SvgPrivate::CacheId cacheId, const QRectF &rect, unsigned int lastModified);
-    void insert(uint id, const QString &filePath, const QRectF &rect, unsigned int lastModified);
+    void insert(size_t id, const QString &filePath, const QRectF &rect, unsigned int lastModified);
     // Those 2 methods are the same, the second uses the integer id produced by hashed CacheId
     bool findElementRect(SvgPrivate::CacheId cacheId, QRectF &rect);
-    bool findElementRect(uint id, QStringView filePath, QRectF &rect);
+    bool findElementRect(size_t id, QStringView filePath, QRectF &rect);
 
     bool loadImageFromCache(const QString &path, uint lastModified);
     void dropImageFromCache(const QString &path);
@@ -151,7 +151,7 @@ public:
 
     void updateLastModified(const QString &filePath, unsigned int lastModified);
 
-    static const uint s_seed;
+    static const size_t s_seed;
 
 Q_SIGNALS:
     void lastModifiedChanged(const QString &filePath, unsigned int lastModified);
@@ -161,17 +161,17 @@ private:
     QString m_iconThemePath;
     KSharedConfigPtr m_svgElementsCache;
     /*
-     * We are indexing in the hash cache ids by their "digested" uint out of qHash(CacheId)
+     * We are indexing in the hash cache ids by their "digested" size_t out of qHash(CacheId)
      * because we need to serialize it and unserialize it to a config file,
-     * which is more efficient to do that with the uint directly rather than a CacheId struct serialization
+     * which is more efficient to do that with the size_t directly rather than a CacheId struct serialization
      */
-    QHash<uint, QRectF> m_localRectCache;
+    QHash<size_t, QRectF> m_localRectCache;
     QHash<QString, QSet<unsigned int>> m_invalidElements;
     QHash<QString, QList<QSize>> m_sizeHintsForId;
     QHash<QString, unsigned int> m_lastModifiedTimes;
 };
 }
 
-uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed = 0);
+size_t qHash(const KSvg::SvgPrivate::CacheId &id, size_t seed = 0);
 
 #endif

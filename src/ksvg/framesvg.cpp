@@ -334,7 +334,7 @@ QRegion FrameSvg::mask() const
         return result;
     }
 
-    uint id = qHash(d->cacheId(d->frame.data(), QString()), SvgRectsCache::s_seed);
+    size_t id = qHash(d->cacheId(d->frame.data(), QString()), SvgRectsCache::s_seed);
 
     QRegion *obj = d->frame->cachedMasks.object(id);
 
@@ -489,7 +489,7 @@ QPixmap FrameSvgPrivate::alphaMask()
 QSharedPointer<FrameData>
 FrameSvgPrivate::lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame, const QString &maskPrefix, const QString &maskRequestedPrefix)
 {
-    const uint key = qHash(cacheId(frame.data(), maskPrefix));
+    const size_t key = qHash(cacheId(frame.data(), maskPrefix));
     QSharedPointer<FrameData> mask = s_sharedFrames[q->imageSet()->d].value(key);
 
     // See if we can find a suitable candidate in the shared frames.
@@ -518,7 +518,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
         return;
     }
 
-    const uint id = qHash(cacheId(frame.data(), frame->prefix));
+    const size_t id = qHash(cacheId(frame.data(), frame->prefix));
 
     bool frameCached = !frame->cachedBackground.isNull();
     bool overlayCached = false;
@@ -529,7 +529,7 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
         frameCached = q->imageSet()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
 
         if (overlayAvailable) {
-            const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
+            const size_t overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
             overlayCached = q->imageSet()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
         }
     }
@@ -812,7 +812,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
         return;
     }
 
-    const uint id = qHash(cacheId(frame.data(), prefixToSave));
+    const size_t id = qHash(cacheId(frame.data(), prefixToSave));
 
     // qCDebug(LOG_KSVG)<<"Saving to cache frame"<<id;
 
@@ -820,7 +820,7 @@ void FrameSvgPrivate::cacheFrame(const QString &prefixToSave, const QPixmap &bac
 
     if (!overlay.isNull()) {
         // insert overlay
-        const uint overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
+        const size_t overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
         q->imageSet()->d->insertIntoCache(QString::number(overlayId), overlay, QString::number((qint64)q, 16) % prefixToSave % QLatin1String("overlay"));
     }
 }

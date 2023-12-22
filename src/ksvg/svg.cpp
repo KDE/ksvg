@@ -29,7 +29,7 @@
 #include "debug_p.h"
 #include "imageset.h"
 
-uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
+size_t qHash(const KSvg::SvgPrivate::CacheId &id, size_t seed)
 {
     std::array<size_t, 10> parts = {
         ::qHash(id.width),
@@ -46,18 +46,7 @@ uint qHash(const KSvg::SvgPrivate::CacheId &id, uint seed)
     return qHashRange(parts.begin(), parts.end(), seed);
 }
 
-uint qHash(const QColor &color, uint seed)
-{
-    std::array<size_t, 10> parts = {
-        ::qHash(color.red()),
-        ::qHash(color.green()),
-        ::qHash(color.blue()),
-        ::qHash(color.alpha()),
-    };
-    return qHashRange(parts.begin(), parts.end(), seed);
-}
-
-uint qHash(const QList<QColor> &colors, uint seed)
+size_t qHash(const QList<QColor> &colors, size_t seed)
 {
     std::vector<size_t> parts;
     for (const QColor &c : std::as_const(colors)) {
@@ -79,7 +68,7 @@ public:
 
 Q_GLOBAL_STATIC(SvgRectsCacheSingleton, privateSvgRectsCacheSelf)
 
-const uint SvgRectsCache::s_seed = 0x9e3779b9;
+const size_t SvgRectsCache::s_seed = 0x9e3779b9;
 
 SharedSvgRenderer::SharedSvgRenderer(QObject *parent)
     : QSvgRenderer(parent)
@@ -191,7 +180,7 @@ void SvgRectsCache::insert(KSvg::SvgPrivate::CacheId cacheId, const QRectF &rect
     insert(qHash(cacheId, SvgRectsCache::s_seed), cacheId.filePath, rect, lastModified);
 }
 
-void SvgRectsCache::insert(uint id, const QString &filePath, const QRectF &rect, unsigned int lastModified)
+void SvgRectsCache::insert(size_t id, const QString &filePath, const QRectF &rect, unsigned int lastModified)
 {
     const unsigned int savedTime = lastModifiedTimeFromCache(filePath);
 
@@ -224,7 +213,7 @@ bool SvgRectsCache::findElementRect(KSvg::SvgPrivate::CacheId cacheId, QRectF &r
     return findElementRect(qHash(cacheId, SvgRectsCache::s_seed), cacheId.filePath, rect);
 }
 
-bool SvgRectsCache::findElementRect(uint id, QStringView filePath, QRectF &rect)
+bool SvgRectsCache::findElementRect(size_t id, QStringView filePath, QRectF &rect)
 {
     auto it = m_localRectCache.find(id);
 
@@ -422,7 +411,7 @@ SvgPrivate::~SvgPrivate()
     eraseRenderer();
 }
 
-qint64 SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const
+size_t SvgPrivate::paletteId(const QPalette &palette, const QColor &positive, const QColor &neutral, const QColor &negative) const
 {
     std::array<size_t, 4> parts = {
         ::qHash(palette.cacheKey()),
@@ -451,7 +440,7 @@ QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
         parts.push_back(::qHash(c.blue()));
         parts.push_back(::qHash(c.alpha()));
     }
-    const uint colorsHash = qHashRange(parts.begin(), parts.end(), SvgRectsCache::s_seed);
+    const size_t colorsHash = qHashRange(parts.begin(), parts.end(), SvgRectsCache::s_seed);
 
     auto cacheId = CacheId{double(size.width()), double(size.height()), path, id, status, devicePixelRatio, colorSet, colorsHash, 0, lastModified};
     return QString::number(qHash(cacheId, SvgRectsCache::s_seed));
