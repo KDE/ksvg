@@ -635,6 +635,10 @@ void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix)
 void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix, const QString &id)
 {
     if (useCache()) {
+        // Remove old key -> id mapping first
+        if (auto key = idsToCache.find(id); key != idsToCache.end()) {
+            keysToCache.remove(*key);
+        }
         pixmapsToCache[id] = pix;
         keysToCache[key] = id;
         idsToCache[id] = key;
