@@ -77,6 +77,16 @@ void FrameSvgTest::setImageSet()
     delete frameSvg;
 }
 
+void FrameSvgTest::resizeMask()
+{
+    m_frameSvg->resizeFrame(QSize(100, 100));
+    QCOMPARE(m_frameSvg->alphaMask().size(), QSize(100, 100));
+    m_frameSvg->resizeFrame(QSize(50, 50));
+    QCOMPARE(m_frameSvg->alphaMask().size(), QSize(50, 50));
+    m_frameSvg->resizeFrame(QSize(100, 100));
+    QCOMPARE(m_frameSvg->alphaMask().size(), QSize(100, 100));
+}
+
 QTEST_MAIN(FrameSvgTest)
 
 #include "moc_framesvgtest.cpp"
