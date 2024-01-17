@@ -696,7 +696,16 @@ void SvgPrivate::createRenderer()
                 originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
                 SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
 
-                const CacheId cacheId({-1.0, -1.0, path, elementId, status, devicePixelRatio, -1, 0, 0, lastModified});
+                const CacheId cacheId{.width = -1.0,
+                                      .height = -1.0,
+                                      .filePath = path,
+                                      .elementName = elementId,
+                                      .status = status,
+                                      .scaleFactor = devicePixelRatio,
+                                      .colorSet = -1,
+                                      .styleSheet = 0,
+                                      .extraFlags = 0,
+                                      .lastModified = lastModified};
                 SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
             }
         }
