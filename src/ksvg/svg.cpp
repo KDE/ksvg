@@ -449,12 +449,21 @@ QString SvgPrivate::cachePath(const QString &id, const QSize &size) const
 bool SvgPrivate::setImagePath(const QString &imagePath)
 {
     QString actualPath = imagePath;
+    bool isAbsoluteFile = QDir::isAbsolutePath(actualPath);
     if (imagePath.startsWith(QLatin1String("file://"))) {
         // length of file://
         actualPath.remove(0, 7);
+        isAbsoluteFile = true;
+    }
+    // If someone using the QML API uses Qt.resolvedUrl to get the absolute path inside of a QRC,
+    // the URI will look something like qrc:/artwork/file.svg
+    // In order for file IO to work it needs to be reformatted it needs to be :/artwork/file.svg
+    if (imagePath.startsWith(QLatin1String("qrc:/"))) {
+        actualPath.replace(QLatin1String("qrc:/"), QLatin1String(":/"));
+        isAbsoluteFile = true;
     }
 
-    bool isThemed = !actualPath.isEmpty() && !QDir::isAbsolutePath(actualPath);
+    bool isThemed = !actualPath.isEmpty() && !isAbsoluteFile;
 
     // lets check to see if we're already set to this file
     if (isThemed == themed && ((themed && themePath == actualPath) || (!themed && path == actualPath))) {
