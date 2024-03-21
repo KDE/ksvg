@@ -87,6 +87,14 @@ void FrameSvgTest::resizeMask()
     QCOMPARE(m_frameSvg->alphaMask().size(), QSize(100, 100));
 }
 
+void FrameSvgTest::loadQrc()
+{
+    KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
+    frameSvg->setImagePath(QStringLiteral("qrc:/data/background.svgz"));
+    QVERIFY(frameSvg->isValid());
+    delete frameSvg;
+}
+
 QTEST_MAIN(FrameSvgTest)
 
 #include "moc_framesvgtest.cpp"

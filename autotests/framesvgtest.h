@@ -24,6 +24,7 @@ private Q_SLOTS:
     void setImageSet();
     void repaintBlocked();
     void resizeMask();
+    void loadQrc();
 
 private:
     KSvg::FrameSvg *m_frameSvg;
