@@ -145,7 +145,7 @@ class FrameSvgItem : public QQuickItem
      * @see FrameSvgItemMargins
      * @property FrameSvgItemMargins margins
      */
-    Q_PROPERTY(FrameSvgItemMargins *margins READ margins CONSTANT)
+    Q_PROPERTY(KSvg::FrameSvgItemMargins *margins READ margins CONSTANT)
 
     /**
      * @brief This property holds the fixed margins of the frame which are used
@@ -154,7 +154,7 @@ class FrameSvgItem : public QQuickItem
      * @see FrameSvgItemMargins
      * @property FrameSvgItemMargins margins
      */
-    Q_PROPERTY(FrameSvgItemMargins *fixedMargins READ fixedMargins CONSTANT)
+    Q_PROPERTY(KSvg::FrameSvgItemMargins *fixedMargins READ fixedMargins CONSTANT)
 
     /**
      * @brief This property holds the frame's inset.
@@ -164,7 +164,7 @@ class FrameSvgItem : public QQuickItem
      * @since 5.77
      * @property FrameSvgItemMargins margins
      */
-    Q_PROPERTY(FrameSvgItemMargins *inset READ inset CONSTANT)
+    Q_PROPERTY(KSvg::FrameSvgItemMargins *inset READ inset CONSTANT)
 
     /**
      * @brief This property specifies which borders are shown.
