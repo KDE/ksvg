@@ -33,10 +33,11 @@ option(BUILD_QCH "Build API documentation in QCH format (for e.g. Qt Assistant, 
 add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)")
 
 ecm_setup_version(PROJECT
-                  VARIABLE_PREFIX KSVG
-                  VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h"
-                  PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfigVersion.cmake"
-                  SOVERSION 6)
+    VARIABLE_PREFIX KSVG
+    VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h"
+    PACKAGE_VERSION_FILE "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfigVersion.cmake"
+    SOVERSION 6
+)
 
 ################# now find all used packages #################
 
@@ -103,8 +104,8 @@ endif()
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KF6SvgConfig.cmake.in"
   "${CMAKE_CURRENT_BINARY_DIR}/KF6SvgConfig.cmake"
-  INSTALL_DESTINATION  ${CMAKECONFIG_INSTALL_DIR}
-  PATH_VARS  CMAKE_INSTALL_PREFIX
+  INSTALL_DESTINATION ${CMAKECONFIG_INSTALL_DIR}
+  PATH_VARS CMAKE_INSTALL_PREFIX
 )
 
 install(FILES
@@ -115,13 +116,17 @@ install(FILES
 )
 
 install(EXPORT KF6SvgTargets
-        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        FILE KF6SvgTargets.cmake
-        NAMESPACE KF6::
-        COMPONENT Devel)
+    DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
+    FILE KF6SvgTargets.cmake
+    NAMESPACE KF6::
+    COMPONENT Devel
+)
 
-install(FILES ${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h
-        DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg COMPONENT Devel )
+install(FILES
+    ${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h
+    DESTINATION ${KDE_INSTALL_INCLUDEDIR_KF}/KSvg
+    COMPONENT Devel
+)
 
 include(ECMFeatureSummary)
 ecm_feature_summary(WHAT ALL FATAL_ON_MISSING_REQUIRED_PACKAGES)
