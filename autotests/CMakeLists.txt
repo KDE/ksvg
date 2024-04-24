@@ -35,7 +35,7 @@ macro(ksvg_unit_tests)
         )
         qt_add_resources(${_testname} "images"
             FILES
-                "data/background.svgz"
+                "data/background.svg"
         )
         target_include_directories(${_testname} PRIVATE)
     endforeach()

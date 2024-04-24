@@ -37,7 +37,7 @@ void FrameSvgTest::initTestCase()
     m_cacheDir.removeRecursively();
 
     m_frameSvg = new KSvg::FrameSvg;
-    m_frameSvg->setImagePath(QFINDTESTDATA("data/background.svgz"));
+    m_frameSvg->setImagePath(QFINDTESTDATA("data/background.svg"));
     QVERIFY(m_frameSvg->isValid());
 }
 
@@ -119,7 +119,7 @@ void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
     frameSvg->setImageSet(new KSvg::ImageSet("testtheme", "plasma/desktoptheme", this));
-    frameSvg->setImagePath(QStringLiteral("qrc:/data/background.svgz"));
+    frameSvg->setImagePath(QStringLiteral("qrc:/data/background.svg"));
     QVERIFY(frameSvg->isValid());
     // An external image is colored as well
     QCOMPARE(frameSvg->color(KSvg::Svg::Text), QColor(255, 54, 59));
