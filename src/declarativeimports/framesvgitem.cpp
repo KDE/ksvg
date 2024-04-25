@@ -313,7 +313,7 @@ public:
         const QList<qreal> oldMarginsBefore = m_oldMargins;
         m_oldMargins = m_marginsObject ? m_marginsObject->margins() : QList<qreal>();
 
-        if (oldMarginsBefore != m_oldMargins) {
+        if (m_marginsObject && oldMarginsBefore != m_oldMargins) {
             m_marginsObject->update();
         }
     }
