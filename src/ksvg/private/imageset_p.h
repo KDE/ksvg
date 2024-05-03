@@ -52,18 +52,24 @@ public:
     const QString svgStyleSheet(KSvg::Svg *svg);
 
     /**
+     * Check if a pixmap already exists in the cache and compare the last modified
+     * timestamp of the file with the last modified date of the one in the cache to make sure
+     * the cache is still valid.
+     *
+     * On Linux systems only, if lastModified is not provided or set to 0, then this function
+     * uses the boot time as a reference instead. This is notably the case on ostree based
+     * systems such as Fedora Kinoite.
+     *
      * TODO: timestamp shouldn't be user-provided
-     * Check with file timestamp
-     * where cache is still valid.
      *
      * @param key the name to use in the cache for this image
      * @param pix the pixmap object to populate with the resulting data if found
-     * @param lastModified if non-zero, the time stamp is also checked on the file,
-     *                     and must be newer than the timestamp to be loaded
+     * @param lastModified the timestamp of the file which will be compared with the last
+     *                                           modified time of the entry in the cache
      *
-     * @note Since KF 5.75, a lastModified value of 0 is deprecated. If used, it
-     *       will now always return false. Use a proper file timestamp instead
-     *       so modification can be properly tracked.
+     * @note Since KF 5.75, a lastModified value of 0 is deprecated on non-Linux systems. If
+     *              used, it will now always return false. Use a proper file timestamp instead
+     *              so modification can be properly tracked.
      *
      * @return true when pixmap was found and loaded from cache, false otherwise
      **/
@@ -148,6 +154,12 @@ public:
     QString themeVersion;
     QString themeMetadataPath;
     QString iconImageSetMetadataPath;
+
+    #if defined(Q_OS_LINUX)
+    // Store boot time to be able to compare it to the lastModifiedTime when the timestamp
+    // of files is the UNIX epoch.
+    time_t bootTime = 0;
+    #endif
 
     bool isDefault : 1;
     bool useGlobal : 1;

@@ -23,6 +23,10 @@
 #include <KSharedConfig>
 #include <kpluginmetadata.h>
 
+#if defined(Q_OS_LINUX)
+#include <sys/sysinfo.h>
+#endif
+
 #define DEFAULT_CACHE_SIZE 16384 // value is from the old kconfigxt default value
 
 namespace KSvg
@@ -117,6 +121,18 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ImageSetPrivate::notifyOfChanged);
 
     QCoreApplication::instance()->installEventFilter(this);
+
+    #if defined(Q_OS_LINUX)
+    struct sysinfo x;
+    if (sysinfo(&x) == 0)  {
+        bootTime = QDateTime::currentSecsSinceEpoch() - x.uptime;
+        qCDebug(LOG_KSVG) << "ImageSetPrivate: Using boot time value" << bootTime;
+    } else {
+        // Should never happen, but just in case, fallback to a sane value
+        bootTime = QDateTime::currentSecsSinceEpoch();
+        qCWarning(LOG_KSVG) << "ImageSetPrivate: Failed to get uptime from sysinfo. Using current time as boot time" << bootTime;
+    }
+    #endif
 }
 
 ImageSetPrivate::~ImageSetPrivate()
@@ -591,19 +607,30 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
 
 bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
 {
-    if (lastModified == 0) {
-        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
-        return false;
-    }
-
     if (!useCache()) {
         return false;
     }
 
-    if (lastModified > uint(pixmapCache->lastModifiedTime().toSecsSinceEpoch())) {
+    qint64 cacheLastModifiedTime = uint(pixmapCache->lastModifiedTime().toSecsSinceEpoch());
+    if (lastModified > cacheLastModifiedTime) {
+        qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified > cacheLastModifiedTime for" << key;
         return false;
     }
+    #if defined(Q_OS_LINUX)
+    // If the timestamp is the UNIX epoch (0)  then we compare against the boot time instead.
+    // This is notably the case on ostree based systems such as Fedora Kinoite.
+    if (lastModified == 0 && bootTime > cacheLastModifiedTime) {
+        qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified == 0 && bootTime > cacheLastModifiedTime for" << key;
+        return false;
+    }
+    #else
+    if (lastModified == 0) {
+        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
+        return false;
+    }
+    #endif
 
+    qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: using cache for" << key;
     const QString id = keysToCache.value(key);
     const auto it = pixmapsToCache.constFind(id);
     if (it != pixmapsToCache.constEnd()) {
