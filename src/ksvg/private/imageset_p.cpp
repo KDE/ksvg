@@ -28,9 +28,6 @@
 namespace KSvg
 {
 const char ImageSetPrivate::defaultImageSet[] = "default";
-// the system colors theme is used to cache unthemed svgs with colorization needs
-// these svgs do not follow the theme's colors, but rather the system colors
-const char ImageSetPrivate::systemColorsImageSet[] = "internal-system-colors";
 
 ImageSetPrivate *ImageSetPrivate::globalImageSet = nullptr;
 QHash<QString, ImageSetPrivate *> ImageSetPrivate::themes = QHash<QString, ImageSetPrivate *>();
@@ -136,7 +133,6 @@ bool ImageSetPrivate::useCache()
         if (cacheSize == 0) {
             cacheSize = DEFAULT_CACHE_SIZE;
         }
-        const bool isRegularImageSet = imageSetName != QLatin1String(systemColorsImageSet);
         QString cacheFile = QLatin1String("plasma_theme_") + imageSetName;
 
         // clear any cached values from the previous theme cache
@@ -145,38 +141,37 @@ bool ImageSetPrivate::useCache()
         if (!themeMetadataPath.isEmpty()) {
             KDirWatch::self()->removeFile(themeMetadataPath);
         }
+
         themeMetadataPath = configForImageSet(basePath, imageSetName)->name();
-        if (isRegularImageSet) {
-            const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
+        const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
 
-            QString currentCacheFileName;
-            if (!themeMetadataPath.isEmpty()) {
-                // now we record the theme version, if we can
-                const KPluginMetaData data = metaDataForImageSet(basePath, imageSetName);
-                if (data.isValid()) {
-                    themeVersion = data.version();
-                }
-                if (!themeVersion.isEmpty()) {
-                    cacheFile += QLatin1String("_v") + themeVersion;
-                    currentCacheFileName = cacheFile + QLatin1String(".kcache");
-                }
+        QString currentCacheFileName;
+        if (!themeMetadataPath.isEmpty()) {
+            // now we record the theme version, if we can
+            const KPluginMetaData data = metaDataForImageSet(basePath, imageSetName);
+            if (data.isValid()) {
+                themeVersion = data.version();
             }
+            if (!themeVersion.isEmpty()) {
+                cacheFile += QLatin1String("_v") + themeVersion;
+                currentCacheFileName = cacheFile + QLatin1String(".kcache");
+            }
+        }
 
-            // now we check for, and remove if necessary, old caches
-            QDir cacheDir(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation));
-            cacheDir.setNameFilters(QStringList({cacheFileBase}));
+        // now we check for, and remove if necessary, old caches
+        QDir cacheDir(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation));
+        cacheDir.setNameFilters(QStringList({cacheFileBase}));
 
-            const auto files = cacheDir.entryInfoList();
-            for (const QFileInfo &file : files) {
-                if (currentCacheFileName.isEmpty() //
-                    || !file.absoluteFilePath().endsWith(currentCacheFileName)) {
-                    QFile::remove(file.absoluteFilePath());
-                }
+        const auto files = cacheDir.entryInfoList();
+        for (const QFileInfo &file : files) {
+            if (currentCacheFileName.isEmpty() //
+                || !file.absoluteFilePath().endsWith(currentCacheFileName)) {
+                QFile::remove(file.absoluteFilePath());
             }
         }
 
         // now we do a sanity check: if the metadata.desktop file is newer than the cache, drop the cache
-        if (isRegularImageSet && !themeMetadataPath.isEmpty()) {
+        if (!themeMetadataPath.isEmpty()) {
             // now we check to see if the theme metadata file itself is newer than the pixmap cache
             // this is done before creating the pixmapCache object since that can change the mtime
             // on the cache file
@@ -660,19 +655,14 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
         }
     }
 
-    // we have one special theme: essentially a dummy theme used to cache things with
-    // the system colors.
-    bool realImageSet = theme != QLatin1String(systemColorsImageSet);
-    if (realImageSet) {
-        KPluginMetaData data = metaDataForImageSet(basePath, theme);
+    KPluginMetaData data = metaDataForImageSet(basePath, theme);
+    if (!data.isValid()) {
+        data = metaDataForImageSet(basePath, QStringLiteral("default"));
         if (!data.isValid()) {
-            data = metaDataForImageSet(basePath, QStringLiteral("default"));
-            if (!data.isValid()) {
-                return;
-            }
-
-            theme = QLatin1String(ImageSetPrivate::defaultImageSet);
+            return;
         }
+
+        theme = QLatin1String(ImageSetPrivate::defaultImageSet);
     }
 
     // check again as ImageSetPrivate::defaultImageSet might be empty
@@ -683,8 +673,7 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     imageSetName = theme;
 
     // load the color scheme config
-    const QString colorsFile =
-        realImageSet ? QStandardPaths::locate(QStandardPaths::GenericDataLocation, basePath % theme % QLatin1String("/colors")) : QString();
+    const QString colorsFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, basePath % theme % QLatin1String("/colors"));
     // qCDebug(LOG_KSVG) << "we're going for..." << colorsFile << "*******************";
 
     if (colorsFile.isEmpty()) {
@@ -701,43 +690,41 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
 
-    if (realImageSet) {
-        pluginMetaData = metaDataForImageSet(basePath, theme);
-        KSharedConfigPtr metadata = configForImageSet(basePath, theme);
+    pluginMetaData = metaDataForImageSet(basePath, theme);
+    KSharedConfigPtr metadata = configForImageSet(basePath, theme);
 
+    KConfigGroup cg(metadata, QStringLiteral("Settings"));
+    QString fallback = cg.readEntry("FallbackImageSet", QString());
+
+    fallbackImageSets.clear();
+    while (!fallback.isEmpty() && !fallbackImageSets.contains(fallback)) {
+        fallbackImageSets.append(fallback);
+
+        KSharedConfigPtr metadata = configForImageSet(basePath, fallback);
         KConfigGroup cg(metadata, QStringLiteral("Settings"));
-        QString fallback = cg.readEntry("FallbackImageSet", QString());
+        fallback = cg.readEntry("FallbackImageSet", QString());
+    }
 
-        fallbackImageSets.clear();
-        while (!fallback.isEmpty() && !fallbackImageSets.contains(fallback)) {
-            fallbackImageSets.append(fallback);
+    if (!fallbackImageSets.contains(QLatin1String(ImageSetPrivate::defaultImageSet))) {
+        fallbackImageSets.append(QLatin1String(ImageSetPrivate::defaultImageSet));
+    }
 
-            KSharedConfigPtr metadata = configForImageSet(basePath, fallback);
-            KConfigGroup cg(metadata, QStringLiteral("Settings"));
-            fallback = cg.readEntry("FallbackImageSet", QString());
+    // Check for what Plasma version the theme has been done
+    // There are some behavioral differences between KDE4 Plasma and Plasma 5
+    const QString apiVersion = pluginMetaData.value(QStringLiteral("X-Plasma-API"));
+    apiMajor = 1;
+    apiMinor = 0;
+    apiRevision = 0;
+    if (!apiVersion.isEmpty()) {
+        const QList<QStringView> parts = QStringView(apiVersion).split(QLatin1Char('.'));
+        if (!parts.isEmpty()) {
+            apiMajor = parts.value(0).toInt();
         }
-
-        if (!fallbackImageSets.contains(QLatin1String(ImageSetPrivate::defaultImageSet))) {
-            fallbackImageSets.append(QLatin1String(ImageSetPrivate::defaultImageSet));
+        if (parts.count() > 1) {
+            apiMinor = parts.value(1).toInt();
         }
-
-        // Check for what Plasma version the theme has been done
-        // There are some behavioral differences between KDE4 Plasma and Plasma 5
-        const QString apiVersion = pluginMetaData.value(QStringLiteral("X-Plasma-API"));
-        apiMajor = 1;
-        apiMinor = 0;
-        apiRevision = 0;
-        if (!apiVersion.isEmpty()) {
-            const QList<QStringView> parts = QStringView(apiVersion).split(QLatin1Char('.'));
-            if (!parts.isEmpty()) {
-                apiMajor = parts.value(0).toInt();
-            }
-            if (parts.count() > 1) {
-                apiMinor = parts.value(1).toInt();
-            }
-            if (parts.count() > 2) {
-                apiRevision = parts.value(2).toInt();
-            }
+        if (parts.count() > 2) {
+            apiRevision = parts.value(2).toInt();
         }
     }
 

@@ -113,7 +113,6 @@ public:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     static const char defaultImageSet[];
-    static const char systemColorsImageSet[];
     static const char themeRcFile[];
 
     // Ref counting of ImageSetPrivate instances

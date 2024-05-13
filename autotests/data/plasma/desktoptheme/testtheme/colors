@@ -84,7 +84,8 @@ ForegroundInactive=175,176,179
 ForegroundLink=61,174,230
 ForegroundNegative=237,21,21
 ForegroundNeutral=201,206,59
-ForegroundNormal=49,54,59
+#A very glaring red to check those colors are actually applied
+ForegroundNormal=255,54,59
 ForegroundPositive=17,209,22
 ForegroundVisited=61,174,230
 

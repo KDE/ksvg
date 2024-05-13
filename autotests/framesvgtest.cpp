@@ -5,11 +5,34 @@
 */
 
 #include "framesvgtest.h"
+#include <QDirIterator>
 #include <QStandardPaths>
+
+void copyDirectory(const QString &srcDir, const QString &dstDir)
+{
+    QDir targetDir(dstDir);
+    QDirIterator it(srcDir, QDir::Filters(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot | QDir::Name), QDirIterator::Subdirectories);
+    while (it.hasNext()) {
+        it.next();
+        QString path = it.filePath();
+        QString relDestPath = path.last(it.filePath().length() - srcDir.length() - 1);
+        if (it.fileInfo().isDir()) {
+            QVERIFY(targetDir.mkpath(relDestPath));
+        } else {
+            QVERIFY(QFile::copy(path, dstDir % '/' % relDestPath));
+        }
+    }
+}
 
 void FrameSvgTest::initTestCase()
 {
     QStandardPaths::setTestModeEnabled(true);
+
+    m_themeDir = QDir(QStandardPaths::writableLocation(QStandardPaths::GenericDataLocation) % '/' % "plasma");
+    m_themeDir.removeRecursively();
+
+    copyDirectory(QFINDTESTDATA("data/plasma"), m_themeDir.absolutePath());
+
     m_cacheDir = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     m_cacheDir.removeRecursively();
 
@@ -22,6 +45,7 @@ void FrameSvgTest::cleanupTestCase()
 {
     delete m_frameSvg;
 
+    m_themeDir.removeRecursively();
     m_cacheDir.removeRecursively();
 }
 
@@ -74,6 +98,10 @@ void FrameSvgTest::setImageSet()
     frameSvg->framePixmap();
     frameSvg->setImageSet(new KSvg::ImageSet("breeze-dark", {}, this));
     frameSvg->framePixmap();
+
+    frameSvg->setImageSet(new KSvg::ImageSet("testtheme", "plasma/desktoptheme", this));
+    QCOMPARE(frameSvg->color(KSvg::Svg::Text), QColor(255, 54, 59));
+
     delete frameSvg;
 }
 
@@ -90,8 +118,11 @@ void FrameSvgTest::resizeMask()
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
+    frameSvg->setImageSet(new KSvg::ImageSet("testtheme", "plasma/desktoptheme", this));
     frameSvg->setImagePath(QStringLiteral("qrc:/data/background.svgz"));
     QVERIFY(frameSvg->isValid());
+    // An external image is colored as well
+    QCOMPARE(frameSvg->color(KSvg::Svg::Text), QColor(255, 54, 59));
     delete frameSvg;
 }
 

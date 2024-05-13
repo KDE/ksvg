@@ -28,6 +28,7 @@ private Q_SLOTS:
 
 private:
     KSvg::FrameSvg *m_frameSvg;
+    QDir m_themeDir;
     QDir m_cacheDir;
 };
 

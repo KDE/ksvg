@@ -72,7 +72,6 @@ public:
     bool setImagePath(const QString &imagePath);
 
     ImageSet *actualImageSet();
-    ImageSet *cacheAndColorsImageSet();
 
     QPixmap findInCache(const QString &elementId, qreal ratio, const QSizeF &s = QSizeF());
 
