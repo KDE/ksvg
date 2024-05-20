@@ -122,7 +122,7 @@ public:
 
     void reposition(const QRect &frameGeometry, QSize &fullSize)
     {
-        QRect nodeRect = FrameSvgHelpers::sectionRect(m_border, frameGeometry, fullSize);
+        QRectF nodeRect = FrameSvgHelpers::sectionRect(m_border, frameGeometry, fullSize);
 
         // ensure we're not passing a weird rectangle to updateTexturedRectGeometry
         if (!nodeRect.isValid() || nodeRect.isEmpty()) {
@@ -152,7 +152,7 @@ public:
             QString elementId = prefix + FrameSvgHelpers::borderToElementId(m_border);
 
             // re-render the SVG at new size
-            updateTexture(nodeRect.size(), elementId);
+            updateTexture(nodeRect.size().toSize(), elementId);
             textureRect = texture()->normalizedTextureSubRect();
         } else if (texture()) { // for fast stretch.
             textureRect = texture()->normalizedTextureSubRect();
@@ -726,10 +726,7 @@ void FrameSvgItem::componentComplete()
 
 void FrameSvgItem::updateDevicePixelRatio()
 {
-    // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
-    //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
-    const auto newDevicePixelRatio = std::max<qreal>(1.0, floor(window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
-
+    const auto newDevicePixelRatio = std::max<qreal>(1.0, (window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
     if (newDevicePixelRatio != m_frameSvg->devicePixelRatio()) {
         m_frameSvg->setDevicePixelRatio(newDevicePixelRatio);
         m_textureChanged = true;

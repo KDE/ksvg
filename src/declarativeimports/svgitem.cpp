@@ -16,8 +16,6 @@
 
 #include "managedtexturenode.h"
 
-#include <cmath> //floor()
-
 #include <Kirigami/Platform/PlatformTheme>
 #include <debug_p.h>
 
@@ -267,10 +265,7 @@ void SvgItem::geometryChange(const QRectF &newGeometry, const QRectF &oldGeometr
 
 void SvgItem::updateDevicePixelRatio()
 {
-    // devicepixelratio is always set integer in the svg, so needs at least 192dpi to double up.
-    //(it needs to be integer to have lines contained inside a svg piece to keep being pixel aligned)
-    const auto newDevicePixelRatio = std::max<qreal>(1.0, floor(window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
-
+    const auto newDevicePixelRatio = std::max<qreal>(1.0, (window() ? window()->devicePixelRatio() : qApp->devicePixelRatio()));
     if (newDevicePixelRatio != m_svg->devicePixelRatio()) {
         m_svg->setDevicePixelRatio(newDevicePixelRatio);
         m_textureChanged = true;

@@ -138,8 +138,8 @@ public:
     void setNaturalSize(const QString &path, const QSizeF &size);
     QSizeF naturalSize(const QString &path);
 
-    QList<QSize> sizeHintsForId(const QString &path, const QString &id);
-    void insertSizeHintForId(const QString &path, const QString &id, const QSize &size);
+    QList<QSizeF> sizeHintsForId(const QString &path, const QString &id);
+    void insertSizeHintForId(const QString &path, const QString &id, const QSizeF &size);
 
     QString iconThemePath();
     void setIconThemePath(const QString &path);
@@ -166,7 +166,7 @@ private:
      */
     QHash<size_t, QRectF> m_localRectCache;
     QHash<QString, QSet<unsigned int>> m_invalidElements;
-    QHash<QString, QList<QSize>> m_sizeHintsForId;
+    QHash<QString, QList<QSizeF>> m_sizeHintsForId;
     QHash<QString, unsigned int> m_lastModifiedTimes;
 };
 }

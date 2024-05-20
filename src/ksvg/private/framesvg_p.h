@@ -78,38 +78,39 @@ public:
     static const int MAX_CACHED_MASKS = 10;
     uint lastModified = 0;
 
-    QSize frameSize;
+    // Those sizes are in logical pixels
+    QSizeF frameSize;
     uint cacheId;
 
     // measures
-    int topHeight;
-    int leftWidth;
-    int rightWidth;
-    int bottomHeight;
+    qreal topHeight;
+    qreal leftWidth;
+    qreal rightWidth;
+    qreal bottomHeight;
 
     // margins, are equal to the measures by default
-    int topMargin;
-    int leftMargin;
-    int rightMargin;
-    int bottomMargin;
+    qreal topMargin;
+    qreal leftMargin;
+    qreal rightMargin;
+    qreal bottomMargin;
 
     // measures
-    int fixedTopHeight;
-    int fixedLeftWidth;
-    int fixedRightWidth;
-    int fixedBottomHeight;
+    qreal fixedTopHeight;
+    qreal fixedLeftWidth;
+    qreal fixedRightWidth;
+    qreal fixedBottomHeight;
 
     // margins, are equal to the measures by default
-    int fixedTopMargin;
-    int fixedLeftMargin;
-    int fixedRightMargin;
-    int fixedBottomMargin;
+    qreal fixedTopMargin;
+    qreal fixedLeftMargin;
+    qreal fixedRightMargin;
+    qreal fixedBottomMargin;
 
-    // margins, we only have the hint for insets
-    int insetTopMargin;
-    int insetLeftMargin;
-    int insetRightMargin;
-    int insetBottomMargin;
+    // margins, we only have the hqreal for insets
+    qreal insetTopMargin;
+    qreal insetLeftMargin;
+    qreal insetRightMargin;
+    qreal insetBottomMargin;
 
     // size of the svg where the size of the "center"
     // element is contentWidth x contentHeight
@@ -158,14 +159,17 @@ public:
         return frameSize(frame.data());
     }
     QSizeF frameSize(FrameData *frame) const;
+
+    // paintBorder, paintCorder and paintCenter sizes are in device pixels
     void paintBorder(QPainter &p,
                      const QSharedPointer<FrameData> &frame,
                      KSvg::FrameSvg::EnabledBorders border,
-                     const QSize &originalSize,
-                     const QRect &output) const;
-    void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border, const QRect &output) const;
-    void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRect &contentRect, const QSize &fullSize);
-    QRect contentGeometry(const QSharedPointer<FrameData> &frame, const QSize &size) const;
+                     const QSizeF &originalSize,
+                     const QRectF &output) const;
+    void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border, const QRectF &output) const;
+    void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRectF &contentRect, const QSizeF &fullSize);
+
+    QRectF contentGeometry(const QSharedPointer<FrameData> &frame, const QSizeF &size) const;
     void updateFrameData(uint lastModified, UpdateType updateType = UpdateFrameAndMargins);
     QSharedPointer<FrameData> lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame, const QString &maskPrefix, const QString &maskRequestedPrefix);
 
@@ -177,7 +181,7 @@ public:
 
     FrameSvg *const q;
 
-    QPoint overlayPos;
+    QPointF overlayPos;
 
     QSharedPointer<FrameData> frame;
     QSharedPointer<FrameData> maskFrame;
@@ -185,7 +189,7 @@ public:
     // those can differ from frame->enabledBorders if we are in a transition
     FrameSvg::EnabledBorders enabledBorders;
     // this can differ from frame->frameSize if we are in a transition
-    QSize pendingFrameSize;
+    QSizeF pendingFrameSize;
 
     static QHash<ImageSetPrivate *, QHash<uint, QWeakPointer<FrameData>>> s_sharedFrames;
 

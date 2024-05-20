@@ -45,7 +45,7 @@ QString borderToElementId(FrameSvg::EnabledBorders borders)
 /**
  * @returns the suggested geometry for the @p borders given a @p fullSize frame size and a @p contentRect
  */
-QRect sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRect &contentRect, const QSize &fullSize)
+QRectF sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRectF &contentRect, const QSizeF &fullSize)
 {
     // don't use QRect corner methods here, they have semantics that might come as unexpected.
     // prefer constructing the points explicitly. e.g. from QRect::topRight docs:
@@ -54,26 +54,26 @@ QRect sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRect &contentRe
     if (borders == FrameSvg::NoBorder) {
         return contentRect;
     } else if (borders == FrameSvg::TopBorder) {
-        return QRect(QPoint(contentRect.left(), 0), QSize(contentRect.width(), contentRect.top()));
+        return QRectF(QPointF(contentRect.left(), 0), QSizeF(contentRect.width(), contentRect.top()));
     } else if (borders == FrameSvg::BottomBorder) {
-        return QRect(QPoint(contentRect.left(), contentRect.bottom() + 1), QSize(contentRect.width(), fullSize.height() - contentRect.bottom() - 1));
+        return QRectF(QPointF(contentRect.left(), contentRect.bottom()), QSizeF(contentRect.width(), fullSize.height() - contentRect.bottom()));
     } else if (borders == FrameSvg::LeftBorder) {
-        return QRect(QPoint(0, contentRect.top()), QSize(contentRect.left(), contentRect.height()));
+        return QRectF(QPointF(0, contentRect.top()), QSizeF(contentRect.left(), contentRect.height()));
     } else if (borders == FrameSvg::RightBorder) {
-        return QRect(QPoint(contentRect.right() + 1, contentRect.top()), QSize(fullSize.width() - contentRect.right() - 1, contentRect.height()));
+        return QRectF(QPointF(contentRect.right(), contentRect.top()), QSizeF(fullSize.width() - contentRect.right(), contentRect.height()));
     } else if (borders == (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
-        return QRect(QPoint(0, 0), QSize(contentRect.left(), contentRect.top()));
+        return QRectF(QPointF(0, 0), QSizeF(contentRect.left(), contentRect.top()));
     } else if (borders == (FrameSvg::TopBorder | FrameSvg::RightBorder)) {
-        return QRect(QPoint(contentRect.right() + 1, 0), QSize(fullSize.width() - contentRect.right() - 1, contentRect.top()));
+        return QRectF(QPointF(contentRect.right(), 0), QSizeF(fullSize.width() - contentRect.right(), contentRect.top()));
     } else if (borders == (FrameSvg::BottomBorder | FrameSvg::LeftBorder)) {
-        return QRect(QPoint(0, contentRect.bottom() + 1), QSize(contentRect.left(), fullSize.height() - contentRect.bottom() - 1));
+        return QRectF(QPointF(0, contentRect.bottom()), QSizeF(contentRect.left(), fullSize.height() - contentRect.bottom()));
     } else if (borders == (FrameSvg::BottomBorder | FrameSvg::RightBorder)) {
-        return QRect(QPoint(contentRect.right() + 1, contentRect.bottom() + 1),
-                     QSize(fullSize.width() - contentRect.right() - 1, fullSize.height() - contentRect.bottom() - 1));
+        return QRectF(QPointF(contentRect.right(), contentRect.bottom()),
+                      QSizeF(fullSize.width() - contentRect.right(), fullSize.height() - contentRect.bottom()));
     } else {
         qWarning() << "unrecognized border" << borders;
     }
-    return QRect();
+    return QRectF();
 }
 
 }
