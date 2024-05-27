@@ -11,6 +11,8 @@
 #include <QStandardPaths>
 #include <QTest>
 
+#include "windowscheck.h"
+
 class SvgItemTest : public QObject
 {
     Q_OBJECT
@@ -29,6 +31,10 @@ private:
 
 void SvgItemTest::initTestCase()
 {
+    if (isWindowsCI()) {
+        QSKIP("GUI Tests on Windows CI are not supported");
+    }
+
     QStandardPaths::setTestModeEnabled(true);
     m_cacheDir = QDir(QStandardPaths::writableLocation(QStandardPaths::CacheLocation));
     m_cacheDir.removeRecursively();
