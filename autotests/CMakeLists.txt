@@ -16,6 +16,14 @@ if (KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
     set(KSVG_NO_PACKAGE_EXTRADATA TRUE)
 endif()
 
+add_library(ksvg_test_resources STATIC)
+set_property(TARGET ksvg_test_resources PROPERTY POSITION_INDEPENDENT_CODE ON)
+qt_add_resources(ksvg_test_resources "images"
+    FILES
+        "data/background.svg"
+        "data/slider.svg"
+)
+
 macro(ksvg_unit_tests)
     foreach(_testname ${ARGN})
         set(libs
@@ -26,6 +34,7 @@ macro(ksvg_unit_tests)
             KF6::Archive
             KF6::CoreAddons
             KF6::ConfigGui
+            ksvg_test_resources
         )
         if (QT_QTOPENGL_FOUND)
             list(APPEND libs Qt6::OpenGL)
@@ -33,11 +42,6 @@ macro(ksvg_unit_tests)
         ecm_add_test(${_testname}.cpp
             LINK_LIBRARIES ${libs}
             NAME_PREFIX "plasmasvg-"
-        )
-        qt_add_resources(${_testname} "images"
-            FILES
-                "data/background.svg"
-                "data/slider.svg"
         )
         target_include_directories(${_testname} PRIVATE)
     endforeach()
