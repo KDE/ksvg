@@ -1,4 +1,4 @@
-description: Plugin based UI runtime used to write primary user interfaces
+description: A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching
 tier: 3
 type: solution
 platforms:
