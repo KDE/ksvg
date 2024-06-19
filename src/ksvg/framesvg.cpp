@@ -524,10 +524,16 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
     QPixmap overlay;
     if (q->isUsingRenderingCache()) {
         frameCached = q->imageSet()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
+        if (frameCached) {
+            frame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
+        }
 
         if (overlayAvailable) {
             const size_t overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
             overlayCached = q->imageSet()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
+            if (overlayCached) {
+                overlay.setDevicePixelRatio(q->devicePixelRatio());
+            }
         }
     }
 
