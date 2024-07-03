@@ -347,7 +347,13 @@ QRegion FrameSvg::mask() const
             alphaMask = alphaMask.scaled(alphaMask.width() / dpr, alphaMask.height() / dpr);
         }
 
-        obj = new QRegion(QBitmap(alphaMask.mask()));
+        // mask() of a QPixmap without alpha Channel will be null
+        // but if our mask has no lpha at all, we want instead consider the entire area as the mask
+        if (alphaMask.hasAlphaChannel()) {
+            obj = new QRegion(QBitmap(alphaMask.mask()));
+        } else {
+            obj = new QRegion(alphaMask.rect());
+        }
 
         result = *obj;
         d->frame->cachedMasks.insert(id, obj);
