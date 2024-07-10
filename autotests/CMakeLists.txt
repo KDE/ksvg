@@ -7,12 +7,6 @@ remove_definitions(-DQT_NO_CAST_FROM_ASCII -DQT_STRICT_ITERATORS -DQT_NO_CAST_FR
 include(ECMMarkAsTest)
 include(ECMAddTests)
 
-# add_definitions( -DKDESRCDIR=${CMAKE_CURRENT_SOURCE_DIR} )
-
-if(KDE_PLATFORM_FEATURE_BINARY_COMPATIBLE_FEATURE_REDUCTION)
-    set(KSVG_NO_PACKAGE_EXTRADATA TRUE)
-endif()
-
 MACRO(KSVG_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
                set(libs Qt6::Qml Qt6::Test KF6::Svg
