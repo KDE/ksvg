@@ -9,6 +9,7 @@
 
 #include <QObject>
 #include <QPixmap>
+#include <QPointer>
 
 #include <ksvg/imageset.h>
 #include <ksvg/ksvg_export.h>
@@ -28,7 +29,67 @@ class QMatrix;
 namespace KSvg
 {
 class FrameSvgPrivate;
+class Svg;
 class SvgPrivate;
+
+/**
+ * @class Elements ksvg/svg.h <KSvg/Svg>
+ *
+ * @short A helper class to provide declarative API to the elements of an SVG image.
+ *
+ * KSvg::Elements provides a set of methods to query the elements of an SVG image,
+ * but unlike their KSvg counterparts the Elements gadget is meant to be used in
+ * declarative bindings in QML.
+ *
+ * @see KSvg::Svg
+ **/
+class KSVG_EXPORT SvgElements
+{
+    Q_GADGET
+public:
+    // Useless, but gadgets need to have a public default constructor.
+    explicit SvgElements();
+
+    /**
+     * @brief This method returns the size of a given element.
+     *
+     * This is the size of the element with ID @p elementId after the SVG
+     * has been scaled (see resize()).  Note that this is unaffected by
+     * the containsMultipleImages property.
+     *
+     * @param elementId  the id of the element to check
+     * @return the size of a given element, given the current size of the SVG
+     **/
+    Q_INVOKABLE QSizeF size(const QString &elementId) const;
+
+    /**
+     * @brief This method returns the bounding rect of a given element.
+     *
+     * This is the bounding rect of the element with ID @p elementId after the
+     * SVG has been scaled (see resize()).  Note that this is unaffected by the
+     * containsMultipleImages property.
+     *
+     * @param elementId  the id of the element to check
+     * @return  the current rect of a given element, given the current size of the SVG
+     **/
+    Q_INVOKABLE QRectF rect(const QString &elementId) const;
+
+    /**
+     * @brief This method checks whether an element exists in the loaded SVG.
+     *
+     * @param elementId  the id of the element to check for
+     * @return @c true if the element is defined in the SVG, otherwise @c false
+     **/
+    Q_INVOKABLE bool has(const QString &elementId) const;
+
+protected:
+    explicit SvgElements(Svg *svg);
+
+    QPointer<Svg> svg;
+
+private:
+    friend class Svg;
+};
 
 /**
  * @class Svg ksvg/svg.h <KSvg/Svg>
@@ -52,6 +113,7 @@ class KSVG_EXPORT Svg : public QObject
     Q_PROPERTY(bool fromCurrentImageSet READ fromCurrentImageSet NOTIFY fromCurrentImageSetChanged)
     Q_PROPERTY(KSvg::Svg::Status status READ status WRITE setStatus NOTIFY statusChanged)
     Q_PROPERTY(KSvg::Svg::ColorSet colorSet READ colorSet WRITE setColorSet NOTIFY colorSetChanged)
+    Q_PROPERTY(SvgElements elements READ elements NOTIFY elementsChanged)
 
 public:
     enum Status {
@@ -376,7 +438,7 @@ public:
      * include the file extension (.svg and .svgz files will be searched for).
      * include the file extension; files with the .svg and .svgz extensions will be
      * found automatically.
-     * 
+     *
      * @see ImageSet::imagePath()
      *
      * If the parent object of this Svg is a KSvg::Applet, relative paths will
@@ -490,6 +552,12 @@ public:
      */
     KSvg::Svg::ColorSet colorSet() const;
 
+    /**
+     * @brief This method returns the Svg object's elements helper.
+     * @since 6.5
+     */
+    SvgElements elements() const;
+
     QColor color(StyleSheetColor colorName) const;
     void setColor(StyleSheetColor colorName, const QColor &color);
 
@@ -548,6 +616,12 @@ Q_SIGNALS:
      * @brief This signal is emitted when the image set has changed.
      */
     void imageSetChanged(ImageSet *imageSet);
+
+    /**
+     * @brief This signal is emitted when a new SVG is loaded,
+     * such that all the elements have changed.
+     */
+    void elementsChanged();
 
 private:
     SvgPrivate *const d;

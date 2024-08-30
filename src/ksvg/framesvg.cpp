@@ -40,6 +40,24 @@ FrameData::~FrameData()
     FrameSvgPrivate::s_sharedFrames[imageSet].remove(cacheId);
 }
 
+FrameSvgElements::FrameSvgElements() = default;
+
+FrameSvgElements::FrameSvgElements(FrameSvg *frameSvg)
+    : SvgElements(frameSvg)
+{
+}
+
+const FrameSvg *FrameSvgElements::d() const noexcept
+{
+    return svg ? static_cast<FrameSvg *>(svg.get()) : nullptr;
+}
+
+bool FrameSvgElements::hasPrefix(const QString &prefix) const
+{
+    const auto *frameSvg = d();
+    return frameSvg ? frameSvg->hasElementPrefix(prefix) : false;
+}
+
 FrameSvg::FrameSvg(QObject *parent)
     : Svg(parent)
     , d(new FrameSvgPrivate(this))
@@ -65,6 +83,7 @@ void FrameSvg::setImagePath(const QString &path)
     if (!d->repaintBlocked) {
         d->updateFrameData(Svg::d->lastModified);
     }
+    Q_EMIT elementsChanged();
 }
 
 void FrameSvg::setEnabledBorders(const EnabledBorders borders)
@@ -83,6 +102,11 @@ void FrameSvg::setEnabledBorders(const EnabledBorders borders)
 FrameSvg::EnabledBorders FrameSvg::enabledBorders() const
 {
     return d->enabledBorders;
+}
+
+FrameSvgElements FrameSvg::elements() const
+{
+    return FrameSvgElements(const_cast<FrameSvg *>(this));
 }
 
 void FrameSvg::setElementPrefix(KSvg::FrameSvg::LocationPrefix location)

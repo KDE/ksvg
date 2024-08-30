@@ -26,7 +26,46 @@ class QMatrix;
 
 namespace KSvg
 {
+class FrameSvg;
 class FrameSvgPrivate;
+
+/**
+ * @class FrameSvgElements ksvg/framesvg.h <KSvg/FrameSvg>
+ *
+ * @short A helper class to provide declarative API to the elements of an SVG image.
+ *
+ * FrameSvgElements class is an extension of SvgElements to also allow
+ * querying prefixes of a FrameSvg object.
+ *
+ * @since 6.5
+ * @see KSvg::Svg
+ **/
+class KSVG_EXPORT FrameSvgElements : SvgElements
+{
+    Q_GADGET
+public:
+    // Useless, but gadgets need to have a public default constructor.
+    explicit FrameSvgElements();
+
+public:
+    /**
+     * @brief This method returns whether the SVG has the necessary elements
+     * with the given prefix to draw a frame.
+     *
+     * @param prefix the given prefix we want to check if drawable (can have trailing '-' since 5.59)
+     *
+     * @since 6.5
+     */
+    Q_INVOKABLE bool hasPrefix(const QString &prefix) const;
+
+protected:
+    explicit FrameSvgElements(FrameSvg *frameSvg);
+
+private:
+    const FrameSvg *d() const noexcept;
+
+    friend class FrameSvg;
+};
 
 /**
  * @class FrameSvg ksvg/framesvg.h <KSvg/FrameSvg>
@@ -62,6 +101,7 @@ class KSVG_EXPORT FrameSvg : public Svg
     Q_OBJECT
 
     Q_PROPERTY(EnabledBorders enabledBorders READ enabledBorders WRITE setEnabledBorders)
+    Q_PROPERTY(KSvg::FrameSvgElements elements READ elements NOTIFY elementsChanged)
 
 public:
     /**
@@ -128,6 +168,12 @@ public:
      * @return what borders are painted
      */
     EnabledBorders enabledBorders() const;
+
+    /**
+     * @brief This method returns the FrameSvg object's elements helper.
+     * @since 6.5
+     */
+    FrameSvgElements elements() const;
 
     /**
      * @brief This method resizes the frame, maintaining the same border size.

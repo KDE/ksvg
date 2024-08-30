@@ -391,6 +391,28 @@ void SvgRectsCache::updateLastModified(const QString &filePath, unsigned int las
     }
 }
 
+SvgElements::SvgElements() = default;
+
+SvgElements::SvgElements(Svg *svg)
+    : svg(svg)
+{
+}
+
+QSizeF SvgElements::size(const QString &elementId) const
+{
+    return svg ? svg->elementSize(elementId) : QSizeF();
+}
+
+QRectF SvgElements::rect(const QString &elementId) const
+{
+    return svg ? svg->elementRect(elementId) : QRectF();
+}
+
+bool SvgElements::has(const QString &elementId) const
+{
+    return svg ? svg->hasElement(elementId) : false;
+}
+
 SvgPrivate::SvgPrivate(Svg *svg)
     : q(svg)
     , renderer(nullptr)
@@ -839,6 +861,7 @@ void SvgPrivate::imageSetChanged()
     q->resize();
 
     // qCDebug(LOG_KSVG) << themePath << ">>>>>>>>>>>>>>>>>> theme changed";
+    Q_EMIT q->elementsChanged();
     Q_EMIT q->repaintNeeded();
     Q_EMIT q->imageSetChanged(q->imageSet());
 }
@@ -861,6 +884,7 @@ Svg::Svg(QObject *parent)
     connect(SvgRectsCache::instance(), &SvgRectsCache::lastModifiedChanged, this, [this](const QString &filePath, unsigned int lastModified) {
         if (d->lastModified != lastModified && filePath == d->path) {
             d->lastModified = lastModified;
+            Q_EMIT elementsChanged();
             Q_EMIT repaintNeeded();
         }
     });
@@ -1039,6 +1063,7 @@ bool Svg::containsMultipleImages() const
 void Svg::setImagePath(const QString &svgFilePath)
 {
     if (d->setImagePath(svgFilePath)) {
+        Q_EMIT elementsChanged();
         Q_EMIT repaintNeeded();
     }
 }
@@ -1117,6 +1142,11 @@ void Svg::setColorSet(KSvg::Svg::ColorSet colorSet)
 Svg::ColorSet Svg::colorSet() const
 {
     return Svg::ColorSet(d->colorSet);
+}
+
+SvgElements Svg::elements() const
+{
+    return SvgElements(const_cast<Svg *>(this));
 }
 
 QColor Svg::color(StyleSheetColor colorName) const
