@@ -326,7 +326,7 @@ public:
      * @brief This method returns a pixmap of the SVG represented by this
      * object.
      *
-     * @param elelementId the ID string of the element to render, or an empty
+     * @param elementId the ID string of the element to render, or an empty
      * string for the whole SVG (the default).
      *
      * @return a QPixmap of the rendered SVG
