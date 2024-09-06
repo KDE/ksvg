@@ -6,7 +6,7 @@
 # Automatically generated, 2023.
 msgid ""
 msgstr ""
-"Project-Id-Version: ksvg\n"
+"Project-Id-Version: libksvg6\n"
 "Report-Msgid-Bugs-To: https://bugs.kde.org\n"
 "POT-Creation-Date: 2023-07-13 02:10+0000\n"
 "PO-Revision-Date: 2023-07-24 21:19+0200\n"
