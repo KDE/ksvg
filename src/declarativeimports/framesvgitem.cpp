@@ -293,7 +293,6 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     connect(m_frameSvg, &FrameSvg::repaintNeeded, this, &FrameSvgItem::doUpdate);
     connect(m_frameSvg, &Svg::fromCurrentImageSetChanged, this, &FrameSvgItem::fromCurrentImageSetChanged);
     connect(m_frameSvg, &Svg::statusChanged, this, &FrameSvgItem::statusChanged);
-    connect(m_frameSvg, &Svg::elementsChanged, this, &FrameSvgItem::elementsChanged);
 }
 
 FrameSvgItem::~FrameSvgItem()
@@ -433,11 +432,6 @@ FrameSvgItemMargins *FrameSvgItem::inset()
         m_insetMargins->setInset(true);
     }
     return m_insetMargins;
-}
-
-FrameSvgElements FrameSvgItem::elements() const
-{
-    return m_frameSvg->elements();
 }
 
 bool FrameSvgItem::fromCurrentImageSet() const

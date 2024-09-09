@@ -27,25 +27,11 @@ struct SvgForeign {
     QML_FOREIGN(KSvg::Svg)
 };
 
-struct SvgElementsForeign {
-    Q_GADGET
-    QML_ELEMENT
-    QML_NAMED_ELEMENT(svgElements)
-    QML_FOREIGN(KSvg::SvgElements)
-};
-
 struct FrameSvgForeign {
     Q_GADGET
     QML_ELEMENT
     QML_NAMED_ELEMENT(FrameSvg)
     QML_FOREIGN(KSvg::FrameSvg)
-};
-
-struct FrameSvgElementsForeign {
-    Q_GADGET
-    QML_ELEMENT
-    QML_NAMED_ELEMENT(frameSvgElements)
-    QML_FOREIGN(KSvg::FrameSvgElements)
 };
 
 struct ImageSetForeign {

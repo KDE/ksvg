@@ -11,7 +11,6 @@
 #include <QQuickItem>
 
 #include <KSvg/FrameSvg>
-#include <KSvg/Svg>
 
 #include <qqmlregistration.h>
 
@@ -173,16 +172,6 @@ class FrameSvgItem : public QQuickItem
     Q_PROPERTY(KSvg::FrameSvgItemMargins *inset READ inset CONSTANT)
 
     /**
-     * @brief This property holds the FrameSvg object's elements helper.
-     *
-     * @see KSvg::Elements
-     *
-     * @since 6.5
-     * @property FrameSvgElements elements
-     */
-    Q_PROPERTY(KSvg::FrameSvgElements elements READ elements NOTIFY elementsChanged FINAL)
-
-    /**
      * @brief This property specifies which borders are shown.
      * @see KSvg::FrameSvg::EnabledBorder
      * @property flags<KSvg::FrameSvg::EnabledBorder> enabledBorders
@@ -276,8 +265,6 @@ public:
     FrameSvgItemMargins *fixedMargins();
     FrameSvgItemMargins *inset();
 
-    FrameSvgElements elements() const;
-
     bool fromCurrentImageSet() const;
 
     void setStatus(KSvg::Svg::Status status);
@@ -313,7 +300,6 @@ Q_SIGNALS:
     void statusChanged();
     void usedPrefixChanged();
     void maskChanged();
-    void elementsChanged();
 
 private Q_SLOTS:
     void doUpdate();
