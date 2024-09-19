@@ -1,0 +1,21 @@
+/*!
+    \page ksvg-index.html
+    \title KSvg
+
+    A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+
+    \section1 Using the Module
+
+    \include {module-use.qdocinc} {using the c++ api}
+
+    \section2 Building with CMake
+
+    \include {module-use.qdocinc} {building with cmake} {KF6} {Svg} {KF6::Svg}
+
+    \section1 API Reference
+
+    \list
+        \li \l{KSvg C++ Classes}
+        \li \l{KSvg QML Types}
+    \endlist
+*/

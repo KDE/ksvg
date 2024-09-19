@@ -14,16 +14,14 @@ class QImage;
 class QSGTexture;
 class ImageTexturesCachePrivate;
 
-/**
- * @class ImageTexturesCache imagetexturescache.h KQuickAddons/ImageTexturesCache
- *
- * @short Helps to manage textures by creating images and reference counts them.
+/*
+ * Helps to manage textures by creating images and reference counts them.
  *
  * Use this class as a factory for textures, when creating them from a QImage
  * instance. Keeps track of all the created textures in a map between the
  * QImage::cacheKey() and the cached texture until it gets de-referenced.
  *
- * @see ManagedTextureNode
+ * \sa ManagedTextureNode
  */
 class ImageTexturesCache
 {
@@ -31,10 +29,10 @@ public:
     ImageTexturesCache();
     ~ImageTexturesCache();
 
-    /**
-     * @returns the texture for a given @p window and @p image.
+    /*!
+     * Returns the texture for a given window and image.
      *
-     * If @p image id is the same as one already provided before, we will not
+     * If image id is the same as one already provided before, we will not
      * create a new texture, and will instead return a shared pointer to the existing texture.
      */
     QSharedPointer<QSGTexture> loadTexture(QQuickWindow *window, const QImage &image, QQuickWindow::CreateTextureOptions options);

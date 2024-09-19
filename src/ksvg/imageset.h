@@ -23,11 +23,12 @@ class SvgPrivate;
 
 // TODO: move in the plasma part the watching and regeneration of icon themes
 
-/**
- * @class ImageSet ksvg/imageset.h <KSvg/ImageSet>
+/*!
+ * \class KSvg::ImageSet
+ * \inheaderfile KSvg/ImageSet
+ * \inmodule KSvg
  *
- * @short Interface to the Svg image set
- *
+ * \brief Interface to the Svg image set.
  *
  * KSvg::ImageSet provides access to a common and standardized set of graphic
  * elements stored in SVG format. This allows artists to create single packages
@@ -41,124 +42,136 @@ class KSVG_EXPORT ImageSet : public QObject
 {
     Q_OBJECT
 
+    /*!
+     * \property KSvg::ImageSet::imageSetName
+     */
     Q_PROPERTY(QString imageSetName READ imageSetName WRITE setImageSetName NOTIFY imageSetChanged)
+
+    /*!
+     * \property KSvg::ImageSet::basePath
+     */
     Q_PROPERTY(QString basePath READ basePath WRITE setBasePath NOTIFY imageSetChanged)
+
+    /*!
+     * \property KSvg::ImageSet::useGlobalSettings
+     */
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY imageSetChanged)
 
 public:
-    /**
+    /*!
      * Default constructor.
-     * @param parent the parent object
+     *
+     * \a parent the parent object
      */
     explicit ImageSet(QObject *parent = nullptr);
 
-    /**
-     * @brief This method constructs a theme which will be a custom theme
+    /*!
+     * \brief This method constructs a theme which will be a custom theme
      * instance of imageSetName.
      *
-     * @param imageSetName the name of the theme to create
-     * @param basePath base path for the theme to look for svgs. if empty, the default will be used.
-     * @param parent the parent object
+     * \a imageSetName the name of the theme to create
+     * \a basePath base path for the theme to look for svgs. if empty, the default will be used.
+     * \a parent the parent object
      */
     explicit ImageSet(const QString &imageSetName, const QString &basePath = {}, QObject *parent = nullptr);
 
     ~ImageSet() override;
 
-    /**
-     * @brief This method sets a base path for the theme to look for SVGs.
+    /*!
+     * \brief This method sets a base path for the theme to look for SVGs.
      *
      * It can be a path relative to QStandardPaths::GenericDataLocation or an
      * absolute path.
      *
-     * @param basePath the base path
+     * \a basePath the base path
      */
     void setBasePath(const QString &basePath);
 
-    /**
-     * @brief This method returns the base path of the theme where the SVGs will
+    /*!
+     * \brief This method returns the base path of the theme where the SVGs will
      * be looked for.
      */
     QString basePath() const;
 
-    /**
-     * @brief This method sets the file selectors.
+    /*!
+     * \brief This method sets the file selectors.
      *
      * The theme can have different svgs with the same name for different
      * situations and platforms. The Plasma desktop for instance uses "opaque"
      * or "translucent" based on presence of compositing and KWin blur effects.
      * Other uses may be platform, like android-specific graphics.
      *
-     * @param selectors selectors in order of preference
+     * \a selectors selectors in order of preference
      */
     void setSelectors(const QStringList &selectors);
 
-    /**
-     * @brief This method returns the current selectors in order of preference.
+    /*!
+     * \brief This method returns the current selectors in order of preference.
      */
     QStringList selectors() const;
 
-    /**
-     * @brief This method sets the current theme.
+    /*!
+     * \brief This method sets the current theme.
      */
     void setImageSetName(const QString &imageSetName);
 
-    /**
-     * @brief This method returns the name of the current theme.
+    /*!
+     * \brief This method returns the name of the current theme.
      */
     QString imageSetName() const;
 
-    /**
-     * @brief This method returns the path for an SVG image in the current
+    /*!
+     * \brief This method returns the path for an SVG image in the current
      * theme.
      *
-     * @param name the name of the file in the theme directory (without the
+     * \a name the name of the file in the theme directory (without the
      * ".svg" part or a leading slash).
      *
-     * @return the full path to the requested file for the current theme
+     * Returns the full path to the requested file for the current theme
      */
     QString imagePath(const QString &name) const;
 
-    /**
-     * @brief This method returns the path for a generic file in the current
+    /*!
+     * \brief This method returns the path for a generic file in the current
      * theme.
      *
      * The theme can also ship any generic file, such as configuration files.
      *
-     * @param name the name of the file in the theme directory (without a
+     * \a name the name of the file in the theme directory (without a
      * leading slash)
      *
-     * @return the full path to the requested file for the current theme
+     * Returns the full path to the requested file for the current theme
      */
     QString filePath(const QString &name) const;
 
-    /**
-     * @brief This method checks whether this theme contains an image with the
+    /*!
+     * \brief This method checks whether this theme contains an image with the
      * given name.
      *
-     * @param name the name of the file in the theme directory (without the
+     * \a name the name of the file in the theme directory (without the
      * ".svg" part or a leading slash)
      *
-     * @return true if the image exists for this theme
+     * Returns true if the image exists for this theme
      */
     bool currentImageSetHasImage(const QString &name) const;
 
-    /**
-     * @brief This method sets whether the theme should follow the global
+    /*!
+     * \brief This method sets whether the theme should follow the global
      * settings or use application-specific settings.
      *
-     * @param useGlobal pass in true to follow the global settings
+     * \a useGlobal pass in true to follow the global settings
      */
     void setUseGlobalSettings(bool useGlobal);
 
-    /**
-     * @brief This method returns whether the global settings are followed.
+    /*!
+     * \brief This method returns whether the global settings are followed.
      *
-     * If application-specific settings are being used, it returns @c false.
+     * If application-specific settings are being used, it returns \c false.
      */
     bool useGlobalSettings() const;
 
-    /**
-     * @brief This method sets the maximum size of the cache (in kilobytes).
+    /*!
+     * \brief This method sets the maximum size of the cache (in kilobytes).
      *
      * If cache gets bigger than the limit, then some entries are removed.
      * Setting cache limit to 0 disables automatic cache size limiting.
@@ -168,8 +181,8 @@ public:
      **/
     void setCacheLimit(int kbytes);
 
-    /**
-     * @brief This method returns the plugin metadata for this theme.
+    /*!
+     * \brief This method returns the plugin metadata for this theme.
      *
      * Metadata contains information such as name, description, author, website,
      * and url.
@@ -177,8 +190,8 @@ public:
     KPluginMetaData metadata() const;
 
 Q_SIGNALS:
-    /**
-     * @brif This signal is emitted when the user makes changes to the theme.
+    /*!
+     * \brief This signal is emitted when the user makes changes to the theme.
      *
      * Rendered images, colors, etc. should be updated at this point. However,
      * SVGs should *not* be repainted in response to this signal; connect to
@@ -189,8 +202,8 @@ Q_SIGNALS:
      */
     void imageSetChanged(const QString &basePath);
 
-    /**
-     * @brief This signal is emitted when the user changes the base path of the
+    /*!
+     * \brief This signal is emitted when the user changes the base path of the
      * image set.
      */
     void basePathChanged(const QString &basePath);
