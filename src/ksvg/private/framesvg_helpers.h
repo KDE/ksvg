@@ -13,8 +13,8 @@ namespace KSvg
 {
 namespace FrameSvgHelpers
 {
-/**
- * @returns the element id name for said @p borders
+/*
+ * Returns the element id name for said borders
  */
 QString borderToElementId(FrameSvg::EnabledBorders borders)
 {
@@ -42,8 +42,8 @@ QString borderToElementId(FrameSvg::EnabledBorders borders)
     return QString();
 }
 
-/**
- * @returns the suggested geometry for the @p borders given a @p fullSize frame size and a @p contentRect
+/*
+ * Returns the suggested geometry for the borders given a fullSize frame size and a contentRect
  */
 QRectF sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRectF &contentRect, const QSizeF &fullSize)
 {

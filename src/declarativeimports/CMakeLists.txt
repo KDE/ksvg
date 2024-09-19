@@ -25,3 +25,5 @@ ecm_qt_declare_logging_category(corebindingsplugin
 )
 
 ecm_finalize_qml_module(corebindingsplugin DESTINATION ${KDE_INSTALL_QMLDIR})
+
+ecm_generate_qdoc(corebindingsplugin ksvgqml.qdocconf)

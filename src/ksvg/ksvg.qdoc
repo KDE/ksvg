@@ -1,0 +1,9 @@
+/*!
+    \module KSvg
+    \title KSvg C++ Classes
+    \ingroup modules
+    \cmakepackage KF6
+    \cmakecomponent Svg
+
+    \brief A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+*/

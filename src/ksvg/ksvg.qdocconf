@@ -1,0 +1,17 @@
+include($KDE_DOCS/global/qt-module-defaults.qdocconf)
+
+project = KSvg
+description = A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+
+documentationinheaders = true
+
+headerdirs += .
+sourcedirs += .
+
+outputformats = HTML
+
+depends += \
+    kde \
+    qtcore \
+    qtgui \
+    ksvgqml

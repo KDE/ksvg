@@ -92,28 +92,4 @@ install(
 
 install(TARGETS KF6Svg EXPORT KF6SvgTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
-if(BUILD_QCH)
-    ecm_add_qch(
-        KF6Svg_QCH
-        NAME KSvg
-        BASE_NAME KF6Svg
-        VERSION ${KF_VERSION}
-        ORG_DOMAIN org.kde
-        SOURCES # using only public headers, to cover only public API
-            ${KSvg_namespaced_HEADERS}
-            ../../Mainpage.dox
-        MD_MAINPAGE "${CMAKE_SOURCE_DIR}/README.md"
-        LINK_QCHS
-            Qt6Gui_QCH
-        INCLUDE_DIRS
-            ${KSvg_BUILD_INCLUDE_DIRS}
-        BLANK_MACROS
-            KSVG_EXPORT
-            KSVG_DEPRECATED
-            KSVG_DEPRECATED_EXPORT
-            "KSVG_DEPRECATED_VERSION(x, y, t)"
-        TAGFILE_INSTALL_DESTINATION ${KDE_INSTALL_QTQCHDIR}
-        QCH_INSTALL_DESTINATION ${KDE_INSTALL_QTQCHDIR}
-        COMPONENT Devel
-    )
-endif()
+ecm_generate_qdoc(KF6Svg ksvg.qdocconf)

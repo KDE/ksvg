@@ -20,6 +20,11 @@ struct PlatformThemeForeign {
     QML_FOREIGN(Kirigami::Platform::PlatformTheme)
 };
 
+/*!
+ * \qmltype Svg
+ * \inqmlmodule org.kde.ksvg
+ * \nativetype KSvg::Svg
+ */
 struct SvgForeign {
     Q_GADGET
     QML_ELEMENT
@@ -27,6 +32,11 @@ struct SvgForeign {
     QML_FOREIGN(KSvg::Svg)
 };
 
+/*!
+ * \qmltype FrameSvg
+ * \inqmlmodule org.kde.ksvg
+ * \nativetype KSvg::FrameSvg
+ */
 struct FrameSvgForeign {
     Q_GADGET
     QML_ELEMENT
@@ -34,6 +44,11 @@ struct FrameSvgForeign {
     QML_FOREIGN(KSvg::FrameSvg)
 };
 
+/*!
+ * \qmltype ImageSet
+ * \inqmlmodule org.kde.ksvg
+ * \nativetype KSvg::ImageSet
+ */
 struct ImageSetForeign {
     Q_GADGET
     QML_ELEMENT

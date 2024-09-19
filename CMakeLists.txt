@@ -22,15 +22,12 @@ include(ECMGenerateHeaders)
 include(CMakePackageConfigHelpers)
 include(ECMSetupVersion)
 include(ECMQtDeclareLoggingCategory)
-include(ECMAddQch)
 include(KDEPackageAppTemplates)
 include(ECMGenerateQmlTypes)
 include(ECMMarkNonGuiExecutable)
 include(ECMDeprecationSettings)
 include(ECMQmlModule)
-
-option(BUILD_QCH "Build API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)" OFF)
-add_feature_info(QCH ${BUILD_QCH} "API documentation in QCH format (for e.g. Qt Assistant, Qt Creator & KDevelop)")
+include(ECMGenerateQDoc)
 
 ecm_setup_version(PROJECT
                   VARIABLE_PREFIX KSVG
@@ -89,16 +86,6 @@ endif()
 # create a Config.cmake and a ConfigVersion.cmake file and install them
 
 set(CMAKECONFIG_INSTALL_DIR "${KDE_INSTALL_CMAKEPACKAGEDIR}/KF6Svg")
-
-if (BUILD_QCH)
-    ecm_install_qch_export(
-        TARGETS KF6Svg_QCH
-        FILE KF6SvgQchTargets.cmake
-        DESTINATION "${CMAKECONFIG_INSTALL_DIR}"
-        COMPONENT Devel
-    )
-    set(PACKAGE_INCLUDE_QCHTARGETS "include(\"\${CMAKE_CURRENT_LIST_DIR}/KF6SvgQchTargets.cmake\")")
-endif()
 
 configure_package_config_file(
   "${CMAKE_CURRENT_SOURCE_DIR}/KF6SvgConfig.cmake.in"
