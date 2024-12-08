@@ -37,6 +37,10 @@ SvgItem::SvgItem(QQuickItem *parent)
 
 SvgItem::~SvgItem()
 {
+    // Make sure to not call anything on m_svg when this is shutting down
+    // Kirigami::PlatformTheme will lose its window at that point so will
+    // emit colorschanged, which we shouldn't react to during destructor
+    disconnect(m_kirigamiTheme, nullptr, this, nullptr);
 }
 
 void SvgItem::componentComplete()
