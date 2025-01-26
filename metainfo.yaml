@@ -11,7 +11,7 @@ portingAid: false
 deprecated: false
 release: true
 libraries:
- - cmake: KF6::Svg
+    - cmake: KF6::Svg
 cmakename: KF6Svg
 
 public_lib: true
