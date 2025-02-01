@@ -12,6 +12,7 @@
 
 #include <array>
 #include <cmath>
+#include <mutex>
 
 #include <QBuffer>
 #include <QCoreApplication>
@@ -517,6 +518,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         const bool imageWasCached = SvgRectsCache::instance()->loadImageFromCache(path, lastModified);
 
         if (!imageWasCached) {
+            std::shared_lock lock(s_renderersLock);
             auto i = s_renderers.constBegin();
             while (i != s_renderers.constEnd()) {
                 if (i.key().contains(path)) {
@@ -659,50 +661,59 @@ void SvgPrivate::createRenderer()
 
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
-    QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
+    {
+        std::shared_lock lock(s_renderersLock);
+        QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
 
-    if (it != s_renderers.constEnd()) {
-        renderer = it.value();
-    } else {
-        if (path.isEmpty()) {
-            renderer = new SharedSvgRenderer();
-        } else {
-            QHash<QString, QRectF> interestingElements;
-            renderer = new SharedSvgRenderer(path, styleSheet, interestingElements);
-
-            // Add interesting elements to the theme's rect cache.
-            QHashIterator<QString, QRectF> i(interestingElements);
-
-            QRegularExpression sizeHintedKeyExpr(QStringLiteral("^(\\d+)-(\\d+)-(.+)$"));
-
-            while (i.hasNext()) {
-                i.next();
-                const QString &elementId = i.key();
-                QString originalId = i.key();
-                const QRectF &elementRect = i.value();
-
-                originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
-                SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
-
-                const CacheId cacheId{.width = -1.0,
-                                      .height = -1.0,
-                                      .filePath = path,
-                                      .elementName = elementId,
-                                      .status = status,
-                                      .scaleFactor = devicePixelRatio,
-                                      .colorSet = -1,
-                                      .styleSheet = 0,
-                                      .extraFlags = 0,
-                                      .lastModified = lastModified};
-                SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
+        if (it != s_renderers.constEnd()) {
+            renderer = it.value();
+            if (size == QSizeF()) {
+                size = renderer->defaultSize();
             }
+            return;
         }
-
-        s_renderers[styleCrc + path] = renderer;
     }
 
-    if (size == QSizeF()) {
-        size = renderer->defaultSize();
+    if (path.isEmpty()) {
+        renderer = new SharedSvgRenderer();
+    } else {
+        QHash<QString, QRectF> interestingElements;
+        renderer = new SharedSvgRenderer(path, styleSheet, interestingElements);
+
+        // Add interesting elements to the theme's rect cache.
+        QHashIterator<QString, QRectF> i(interestingElements);
+
+        QRegularExpression sizeHintedKeyExpr(QStringLiteral("^(\\d+)-(\\d+)-(.+)$"));
+
+        while (i.hasNext()) {
+            i.next();
+            const QString &elementId = i.key();
+            QString originalId = i.key();
+            const QRectF &elementRect = i.value();
+
+            originalId.replace(sizeHintedKeyExpr, QStringLiteral("\\3"));
+            SvgRectsCache::instance()->insertSizeHintForId(path, originalId, elementRect.size().toSize());
+
+            const CacheId cacheId{.width = -1.0,
+                                  .height = -1.0,
+                                  .filePath = path,
+                                  .elementName = elementId,
+                                  .status = status,
+                                  .scaleFactor = devicePixelRatio,
+                                  .colorSet = -1,
+                                  .styleSheet = 0,
+                                  .extraFlags = 0,
+                                  .lastModified = lastModified};
+            SvgRectsCache::instance()->insert(cacheId, elementRect, lastModified);
+        }
+    }
+
+    {
+        std::unique_lock lock(s_renderersLock);
+        s_renderers[styleCrc + path] = renderer;
+        if (size == QSizeF()) {
+            size = renderer->defaultSize();
+        }
     }
 }
 
@@ -710,6 +721,7 @@ void SvgPrivate::eraseRenderer()
 {
     if (renderer && renderer->ref.loadRelaxed() == 2) {
         // this and the cache reference it
+        std::unique_lock lock(s_renderersLock);
         s_renderers.erase(s_renderers.find(styleCrc + path));
     }
 
@@ -851,6 +863,7 @@ void SvgPrivate::colorsChanged()
     Q_EMIT q->repaintNeeded();
 }
 
+std::shared_mutex SvgPrivate::s_renderersLock;
 QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
 QPointer<ImageSet> SvgPrivate::s_systemColorsCache;
 

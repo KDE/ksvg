@@ -9,6 +9,8 @@
 
 #include "svg.h"
 
+#include <shared_mutex>
+
 #include <KColorScheme>
 
 #include <QExplicitlySharedDataPointer>
@@ -91,6 +93,7 @@ public:
     void imageSetChanged();
     void colorsChanged();
 
+    static std::shared_mutex s_renderersLock;
     static QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
     static QPointer<ImageSet> s_systemColorsCache;
 
