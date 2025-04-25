@@ -136,7 +136,9 @@ public:
     KColorScheme viewColorScheme;
     KColorScheme complementaryColorScheme;
     KColorScheme headerColorScheme;
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     KColorScheme tooltipColorScheme;
+#endif
     QStringList selectors;
     KConfigGroup cfg;
     KImageCache *pixmapCache;

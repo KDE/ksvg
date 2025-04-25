@@ -86,7 +86,9 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     , viewColorScheme(QPalette::Active, KColorScheme::View, KSharedConfigPtr(nullptr))
     , complementaryColorScheme(QPalette::Active, KColorScheme::Complementary, KSharedConfigPtr(nullptr))
     , headerColorScheme(QPalette::Active, KColorScheme::Header, KSharedConfigPtr(nullptr))
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     , tooltipColorScheme(QPalette::Active, KColorScheme::Tooltip, KSharedConfigPtr(nullptr))
+#endif
     , pixmapCache(nullptr)
     , cacheSize(DEFAULT_CACHE_SIZE)
     , cachesToDiscard(NoCache)
@@ -321,7 +323,9 @@ void ImageSetPrivate::colorsChanged()
     selectionColorScheme = KColorScheme(QPalette::Active, KColorScheme::Selection, colors);
     complementaryColorScheme = KColorScheme(QPalette::Active, KColorScheme::Complementary, colors);
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
+#endif
     scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
     Q_EMIT applicationPaletteChange();
 }
@@ -358,9 +362,12 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
     case KColorScheme::Header:
         currentScheme = &headerColorScheme;
         break;
+
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     case KColorScheme::Tooltip:
         currentScheme = &tooltipColorScheme;
         break;
+#endif
     default:
         currentScheme = &colorScheme;
     }
@@ -442,6 +449,7 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
     case Svg::ViewNegativeText:
         return viewColorScheme.foreground(KColorScheme::NegativeText).color();
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     case Svg::TooltipText:
         if (status == Svg::Status::Selected) {
             return selectionColorScheme.foreground(KColorScheme::NormalText).color();
@@ -466,6 +474,7 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
         return tooltipColorScheme.foreground(KColorScheme::NeutralText).color();
     case Svg::TooltipNegativeText:
         return tooltipColorScheme.foreground(KColorScheme::NegativeText).color();
+#endif
 
     case Svg::ComplementaryText:
         if (status == Svg::Status::Selected) {
@@ -560,6 +569,7 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
                                                        Svg::ViewNeutralText,
                                                        Svg::ViewNegativeText,
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
                                                        Svg::TooltipText,
                                                        Svg::TooltipBackground,
                                                        Svg::TooltipHover,
@@ -568,6 +578,7 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
                                                        Svg::TooltipPositiveText,
                                                        Svg::TooltipNeutralText,
                                                        Svg::TooltipNegativeText,
+#endif
 
                                                        Svg::ComplementaryText,
                                                        Svg::ComplementaryBackground,
@@ -715,7 +726,9 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     viewColorScheme = KColorScheme(QPalette::Active, KColorScheme::View, colors);
     complementaryColorScheme = KColorScheme(QPalette::Active, KColorScheme::Complementary, colors);
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
+#endif
 
     pluginMetaData = metaDataForImageSet(basePath, theme);
     KSharedConfigPtr metadata = configForImageSet(basePath, theme);

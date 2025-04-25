@@ -107,11 +107,21 @@ public:
      * \value Window
      * \value Button
      * \value Selection
-     * \value Tooltip
+     * \value Tooltip This value is deprecated.
      * \value Complementary
      * \value Header
      */
-    enum ColorSet { View, Window, Button, Selection, Tooltip, Complementary, Header };
+    enum ColorSet {
+        View,
+        Window,
+        Button,
+        Selection,
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
+        Tooltip KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+#endif
+        Complementary,
+        Header,
+    };
     Q_ENUM(ColorSet)
 
     /*!
@@ -191,14 +201,16 @@ public:
         ViewNeutralText,
         ViewNegativeText,
 
-        TooltipText,
-        TooltipBackground,
-        TooltipHover,
-        TooltipFocus,
-        TooltipHighlightedText,
-        TooltipPositiveText,
-        TooltipNeutralText,
-        TooltipNegativeText,
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 15)
+        TooltipText KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipBackground KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipHover KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipFocus KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipHighlightedText KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipPositiveText KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipNeutralText KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+        TooltipNegativeText KSVG_ENUMERATOR_DEPRECATED_VERSION(6, 15, "Unused"),
+#endif
 
         ComplementaryText,
         ComplementaryBackground,
