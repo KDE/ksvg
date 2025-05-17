@@ -374,9 +374,6 @@ public:
      * \brief This method returns a pixmap of the SVG represented by this
      * object.
      *
-     * \a elementId the ID string of the element to render, or an empty
-     * string for the whole SVG (the default).
-     *
      * Returns a QPixmap of the rendered SVG
      */
     Q_INVOKABLE QPixmap framePixmap();

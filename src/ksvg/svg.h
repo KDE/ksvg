@@ -264,7 +264,7 @@ public:
      * containsMultipleImages is \c true; otherwise, it will be the size of the
      * requested element after the whole SVG has been scaled to size().
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      *
      * Returns a QPixmap of the rendered SVG
@@ -279,7 +279,7 @@ public:
      * containsMultipleImages is \c true; otherwise, it will be the size of the
      * requested element after the whole SVG has been scaled to size().
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      *
      * Returns a QPixmap of the rendered SVG
@@ -299,7 +299,7 @@ public:
      * \a point      the position to start drawing; the entire svg will be
      *                 drawn starting at this point.
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      */
     Q_INVOKABLE void paint(QPainter *painter, const QPointF &point, const QString &elementID = QString());
@@ -318,7 +318,7 @@ public:
      *
      * \a y          the vertical coordinate to start painting from
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      */
     Q_INVOKABLE void paint(QPainter *painter, int x, int y, const QString &elementID = QString());
@@ -332,7 +332,7 @@ public:
      * \a rect       the rect to draw into; if smaller than the current size
      *                 the drawing is starting at this point.
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      */
     Q_INVOKABLE void paint(QPainter *painter, const QRectF &rect, const QString &elementID = QString());
@@ -351,7 +351,7 @@ public:
      *
      * \a height     the height of the element do draw
      *
-     * \a elementId  the ID string of the element to render, or an empty
+     * \a elementID  the ID string of the element to render, or an empty
      *                 string for the whole SVG (the default)
      */
     Q_INVOKABLE void paint(QPainter *painter, int x, int y, int width, int height, const QString &elementID = QString());
