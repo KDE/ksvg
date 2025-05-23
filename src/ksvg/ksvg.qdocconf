@@ -17,3 +17,17 @@ depends += \
     qtcore \
     qtgui \
     ksvgqml
+
+qhp.projects            = KSvg
+
+qhp.KSvg.file                = ksvg.qhp
+qhp.KSvg.namespace           = org.kde.ksvg.$QT_VERSION_TAG
+qhp.KSvg.virtualFolder       = ksvg
+qhp.KSvg.indexTitle          = KSvg
+qhp.KSvg.indexRoot           =
+
+qhp.KSvg.subprojects         = classes
+qhp.KSvg.subprojects.classes.title = C++ Classes
+qhp.KSvg.subprojects.classes.indexTitle = KSvg C++ Classes
+qhp.KSvg.subprojects.classes.selectors = class fake:headerfile
+qhp.KSvg.subprojects.classes.sortPages = true

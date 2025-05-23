@@ -20,3 +20,17 @@ depends += \
     ksvg \
     kirigami \
     kirigamiplatform
+
+qhp.projects            = KSvgQml
+
+qhp.KSvgQml.file                = ksvgqml.qhp
+qhp.KSvgQml.namespace           = org.kde.ksvgqml.$QT_VERSION_TAG
+qhp.KSvgQml.virtualFolder       = ksvgqml
+qhp.KSvgQml.indexTitle          = KSvg QML
+qhp.KSvgQml.indexRoot           =
+
+qhp.KSvgQml.subprojects         = qmltypes
+qhp.KSvgQml.subprojects.qmltypes.title = QML Types
+qhp.KSvgQml.subprojects.qmltypes.indexTitle = KSvg QML Types
+qhp.KSvgQml.subprojects.qmltypes.selectors = qmltype
+qhp.KSvgQml.subprojects.qmltypes.sortPages = true
