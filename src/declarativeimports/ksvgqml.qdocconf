@@ -34,3 +34,5 @@ qhp.KSvgQml.subprojects.qmltypes.title = QML Types
 qhp.KSvgQml.subprojects.qmltypes.indexTitle = KSvg QML Types
 qhp.KSvgQml.subprojects.qmltypes.selectors = qmltype
 qhp.KSvgQml.subprojects.qmltypes.sortPages = true
+
+tagfile = ksvgqml.tags
