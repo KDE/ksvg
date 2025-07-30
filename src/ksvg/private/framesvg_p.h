@@ -72,6 +72,8 @@ public:
     QString imagePath;
     QString prefix;
     QString requestedPrefix;
+    int colorSet = 0;
+    QMap<Svg::StyleSheetColor, QColor> colorOverrides;
     FrameSvg::EnabledBorders enabledBorders;
     QPixmap cachedBackground;
     QCache<uint, QRegion> cachedMasks;

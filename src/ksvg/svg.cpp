@@ -1135,19 +1135,40 @@ QColor Svg::color(StyleSheetColor colorName) const
 
 void Svg::setColor(StyleSheetColor colorName, const QColor &color)
 {
-    if (d->colorOverrides.value(colorName) == color) {
+    setColors({
+        {colorName, color},
+    });
+}
+
+void Svg::setColors(const QMap<StyleSheetColor, QColor> &colors)
+{
+    bool changed = false;
+    for (const auto &[colorName, color] : colors.asKeyValueRange()) {
+        if (d->colorOverrides.value(colorName) != color) {
+            changed = true;
+
+            if (color.isValid()) {
+                d->colorOverrides[colorName] = color;
+            } else {
+                d->colorOverrides.remove(colorName);
+            }
+        }
+    }
+
+    if (!changed) {
         return;
     }
 
-    if (color.isValid()) {
-        d->colorOverrides[colorName] = color;
-    } else {
-        d->colorOverrides.remove(colorName);
-    }
     d->stylesheetOverride.clear();
 
     d->eraseRenderer();
+    Q_EMIT colorOverridesChanged();
     Q_EMIT repaintNeeded();
+}
+
+QMap<Svg::StyleSheetColor, QColor> Svg::colorOverrides() const
+{
+    return d->colorOverrides;
 }
 
 void Svg::clearColorOverrides()
@@ -1155,6 +1176,7 @@ void Svg::clearColorOverrides()
     d->colorOverrides.clear();
     d->stylesheetOverride.clear();
     d->eraseRenderer();
+    Q_EMIT colorOverridesChanged();
     Q_EMIT repaintNeeded();
 }
 

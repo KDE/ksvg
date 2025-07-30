@@ -64,13 +64,15 @@ void SvgItem::componentComplete()
             m_svg->clearColorOverrides();
             return;
         }
-        m_svg->setColor(Svg::Text, m_kirigamiTheme->textColor());
-        m_svg->setColor(Svg::Background, m_kirigamiTheme->backgroundColor());
-        m_svg->setColor(Svg::Highlight, m_kirigamiTheme->highlightColor());
-        m_svg->setColor(Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor());
-        m_svg->setColor(Svg::PositiveText, m_kirigamiTheme->positiveTextColor());
-        m_svg->setColor(Svg::NeutralText, m_kirigamiTheme->neutralTextColor());
-        m_svg->setColor(Svg::NegativeText, m_kirigamiTheme->negativeTextColor());
+        m_svg->setColors({
+            {Svg::Text, m_kirigamiTheme->textColor()},
+            {Svg::Background, m_kirigamiTheme->backgroundColor()},
+            {Svg::Highlight, m_kirigamiTheme->highlightColor()},
+            {Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor()},
+            {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
+            {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
+            {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
+        });
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);

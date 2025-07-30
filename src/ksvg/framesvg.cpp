@@ -44,6 +44,14 @@ FrameSvg::FrameSvg(QObject *parent)
     : Svg(parent)
     , d(new FrameSvgPrivate(this))
 {
+    auto tryUpdateFrameData = [this]() {
+        if (!d->repaintBlocked) {
+            d->updateFrameData(Svg::d->lastModified);
+        }
+    };
+    connect(this, &FrameSvg::colorSetChanged, this, tryUpdateFrameData);
+    connect(this, &FrameSvg::colorOverridesChanged, this, tryUpdateFrameData);
+
     connect(this, &FrameSvg::repaintNeeded, this, std::bind(&FrameSvgPrivate::updateNeeded, d));
 }
 
@@ -672,10 +680,14 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
         const QString oldPath = fd->imagePath;
         const FrameSvg::EnabledBorders oldBorders = fd->enabledBorders;
         const QSizeF currentSize = fd->frameSize;
+        const int oldColorSet = fd->colorSet;
+        const auto oldColors = fd->colorOverrides;
 
         fd->enabledBorders = enabledBorders;
         fd->frameSize = pendingFrameSize;
         fd->imagePath = q->imagePath();
+        fd->colorSet = q->colorSet();
+        fd->colorOverrides = q->colorOverrides();
 
         newKey = qHash(cacheId(fd.data(), prefix));
 
@@ -683,6 +695,8 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
         fd->enabledBorders = oldBorders;
         fd->frameSize = currentSize;
         fd->imagePath = oldPath;
+        fd->colorSet = oldColorSet;
+        fd->colorOverrides = oldColors;
 
         // FIXME: something more efficient than string comparison?
         if (oldKey == newKey) {
@@ -711,6 +725,8 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
     fd->enabledBorders = enabledBorders;
     fd->frameSize = pendingFrameSize;
     fd->imagePath = q->imagePath();
+    fd->colorSet = q->colorSet();
+    fd->colorOverrides = q->colorOverrides();
     fd->lastModified = lastModified;
     // was fd just created empty now?
     if (newKey == 0) {
@@ -816,6 +832,16 @@ void FrameSvgPrivate::paintCorner(QPainter &p, const QSharedPointer<FrameData> &
 
 SvgPrivate::CacheId FrameSvgPrivate::cacheId(FrameData *frame, const QString &prefixToSave) const
 {
+    std::vector<size_t> parts;
+    const auto colors = frame->colorOverrides.values();
+    for (const QColor &c : std::as_const(colors)) {
+        parts.push_back(::qHash(c.red()));
+        parts.push_back(::qHash(c.green()));
+        parts.push_back(::qHash(c.blue()));
+        parts.push_back(::qHash(c.alpha()));
+    }
+    const size_t colorsHash = qHashRange(parts.begin(), parts.end(), SvgRectsCache::s_seed);
+
     const QSize size = frameSize(frame).toSize();
     return SvgPrivate::CacheId{double(size.width()),
                                double(size.height()),
@@ -823,9 +849,9 @@ SvgPrivate::CacheId FrameSvgPrivate::cacheId(FrameData *frame, const QString &pr
                                prefixToSave,
                                q->status(),
                                q->devicePixelRatio(),
-                               q->colorSet(),
+                               frame->colorSet,
+                               colorsHash,
                                (uint)frame->enabledBorders,
-                               0,
                                q->Svg::d->lastModified};
 }
 

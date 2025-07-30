@@ -624,6 +624,21 @@ public:
     void setColor(StyleSheetColor colorName, const QColor &color);
 
     /*!
+     * Sets the specified stylesheet \a colors.
+     *
+     * \sa color(), colorOverrides(), clearColorOverrides()
+     * \since 6.18
+     */
+    void setColors(const QMap<StyleSheetColor, QColor> &colors);
+
+    /*!
+     * Returns the color overrides.
+     *
+     * \since 6.18
+     */
+    QMap<StyleSheetColor, QColor> colorOverrides() const;
+
+    /*!
      *
      */
     void clearColorOverrides();
@@ -681,6 +696,12 @@ Q_SIGNALS:
      * \brief This signal is emitted when the image set has changed.
      */
     void imageSetChanged(ImageSet *imageSet);
+
+    /*!
+     * \brief This signal is emitted when the color overrides change.
+     * \since 6.18
+     */
+    void colorOverridesChanged();
 
 private:
     SvgPrivate *const d;
