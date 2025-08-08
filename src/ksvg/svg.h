@@ -687,7 +687,6 @@ private:
     bool eventFilter(QObject *watched, QEvent *event) override;
 
     Q_PRIVATE_SLOT(d, void imageSetChanged())
-    Q_PRIVATE_SLOT(d, void colorsChanged())
 
     friend class SvgPrivate;
     friend class FrameSvgPrivate;

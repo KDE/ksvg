@@ -91,7 +91,6 @@ public:
 
     // Slots
     void imageSetChanged();
-    void colorsChanged();
 
     static std::shared_mutex s_renderersLock;
     static QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
