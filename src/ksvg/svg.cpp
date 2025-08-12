@@ -855,6 +855,14 @@ void SvgPrivate::imageSetChanged()
     Q_EMIT q->imageSetChanged(q->imageSet());
 }
 
+void SvgPrivate::colorsChanged()
+{
+    eraseRenderer();
+    qCDebug(LOG_KSVG) << "repaint needed from colorsChanged";
+
+    Q_EMIT q->repaintNeeded();
+}
+
 std::shared_mutex SvgPrivate::s_renderersLock;
 QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
 QPointer<ImageSet> SvgPrivate::s_systemColorsCache;
