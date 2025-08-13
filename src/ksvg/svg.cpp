@@ -1170,7 +1170,12 @@ void Svg::setColors(const QMap<StyleSheetColor, QColor> &colors)
     d->stylesheetOverride.clear();
 
     d->eraseRenderer();
-    Q_EMIT colorOverridesChanged();
+
+    // Ideally, there should be a signal but adding a new signal can make ksvg users crash in QML cache code.
+    if (auto frameSvg = qobject_cast<FrameSvg *>(this)) {
+        frameSvg->colorOverridesChange();
+    }
+
     Q_EMIT repaintNeeded();
 }
 
@@ -1184,7 +1189,9 @@ void Svg::clearColorOverrides()
     d->colorOverrides.clear();
     d->stylesheetOverride.clear();
     d->eraseRenderer();
-    Q_EMIT colorOverridesChanged();
+    if (auto frameSvg = qobject_cast<FrameSvg *>(this)) {
+        frameSvg->colorOverridesChange();
+    }
     Q_EMIT repaintNeeded();
 }
 

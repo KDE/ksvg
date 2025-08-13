@@ -44,13 +44,11 @@ FrameSvg::FrameSvg(QObject *parent)
     : Svg(parent)
     , d(new FrameSvgPrivate(this))
 {
-    auto tryUpdateFrameData = [this]() {
+    connect(this, &FrameSvg::colorSetChanged, this, [this]() {
         if (!d->repaintBlocked) {
             d->updateFrameData(Svg::d->lastModified);
         }
-    };
-    connect(this, &FrameSvg::colorSetChanged, this, tryUpdateFrameData);
-    connect(this, &FrameSvg::colorOverridesChanged, this, tryUpdateFrameData);
+    });
 
     connect(this, &FrameSvg::repaintNeeded, this, std::bind(&FrameSvgPrivate::updateNeeded, d));
 }
@@ -1060,6 +1058,13 @@ void FrameSvg::setRepaintBlocked(bool blocked)
     d->repaintBlocked = blocked;
 
     if (!blocked) {
+        d->updateFrameData(Svg::d->lastModified);
+    }
+}
+
+void FrameSvg::colorOverridesChange()
+{
+    if (!d->repaintBlocked) {
         d->updateFrameData(Svg::d->lastModified);
     }
 }

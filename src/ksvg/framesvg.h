@@ -457,8 +457,12 @@ public:
     Q_INVOKABLE int minimumDrawingWidth();
 
 private:
+    // Never call this from an inline function
+    void colorOverridesChange();
+
     FrameSvgPrivate *const d;
     friend class FrameData;
+    friend class Svg;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FrameSvg::EnabledBorders)

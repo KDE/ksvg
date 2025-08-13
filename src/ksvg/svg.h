@@ -697,12 +697,6 @@ Q_SIGNALS:
      */
     void imageSetChanged(ImageSet *imageSet);
 
-    /*!
-     * \brief This signal is emitted when the color overrides change.
-     * \since 6.18
-     */
-    void colorOverridesChanged();
-
 private:
     SvgPrivate *const d;
     bool eventFilter(QObject *watched, QEvent *event) override;
