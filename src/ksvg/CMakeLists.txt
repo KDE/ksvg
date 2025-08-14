@@ -57,7 +57,6 @@ PRIVATE
 
 set(KSvg_BUILD_INCLUDE_DIRS
     ${CMAKE_CURRENT_SOURCE_DIR}/..
-    ${CMAKE_CURRENT_BINARY_DIR}
     ${CMAKE_CURRENT_BINARY_DIR}/KSvg
 )
 target_include_directories(KF6Svg
