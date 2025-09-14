@@ -93,8 +93,9 @@ public:
     void imageSetChanged();
     void colorsChanged();
 
-    static std::shared_mutex s_renderersLock;
-    static QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
+    // thread local as QSvgRenderer is re-entrant but not thread safe
+    // key is 'styleCrc + path'
+    static thread_local QHash<QString, SharedSvgRenderer::Ptr> s_renderers;
     static QPointer<ImageSet> s_systemColorsCache;
 
     Svg *q;

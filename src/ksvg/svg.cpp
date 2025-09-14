@@ -518,7 +518,6 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
         const bool imageWasCached = SvgRectsCache::instance()->loadImageFromCache(path, lastModified);
 
         if (!imageWasCached) {
-            std::shared_lock lock(s_renderersLock);
             auto i = s_renderers.constBegin();
             while (i != s_renderers.constEnd()) {
                 if (i.key().contains(path)) {
@@ -662,7 +661,6 @@ void SvgPrivate::createRenderer()
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
     {
-        std::shared_lock lock(s_renderersLock);
         QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
 
         if (it != s_renderers.constEnd()) {
@@ -709,7 +707,6 @@ void SvgPrivate::createRenderer()
     }
 
     {
-        std::unique_lock lock(s_renderersLock);
         s_renderers[styleCrc + path] = renderer;
         if (size == QSizeF()) {
             size = renderer->defaultSize();
@@ -721,7 +718,6 @@ void SvgPrivate::eraseRenderer()
 {
     if (renderer && renderer->ref.loadRelaxed() == 2) {
         // this and the cache reference it
-        std::unique_lock lock(s_renderersLock);
         s_renderers.erase(s_renderers.find(styleCrc + path));
     }
 
@@ -863,9 +859,7 @@ void SvgPrivate::colorsChanged()
     Q_EMIT q->repaintNeeded();
 }
 
-std::shared_mutex SvgPrivate::s_renderersLock;
-QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
-QPointer<ImageSet> SvgPrivate::s_systemColorsCache;
+thread_local QHash<QString, SharedSvgRenderer::Ptr> SvgPrivate::s_renderers;
 
 Svg::Svg(QObject *parent)
     : QObject(parent)
