@@ -661,6 +661,10 @@ void SvgPrivate::createRenderer()
 
     styleCrc = qChecksum(QByteArrayView(styleSheet.toUtf8().constData(), styleSheet.size()));
 
+    // If the KSVG lives on the main thread (the majority case) share a renderer
+    // For other uses we should not as QSvgRenderer is not thread safe.
+    // We cannot compare the current thread as this might be hit from the render thread in updatePaintNode for KSVG objects living on the main thread
+    if (q->thread() == qGuiApp->thread())
     {
         std::shared_lock lock(s_renderersLock);
         QHash<QString, SharedSvgRenderer::Ptr>::const_iterator it = s_renderers.constFind(styleCrc + path);
