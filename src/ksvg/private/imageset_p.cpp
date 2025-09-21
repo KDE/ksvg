@@ -9,7 +9,6 @@
 #include "debug_p.h"
 #include "framesvg.h"
 #include "framesvg_p.h"
-#include "imageset.h"
 #include "svg_p.h"
 
 #include <QDir>
