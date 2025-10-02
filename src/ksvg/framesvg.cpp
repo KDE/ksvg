@@ -575,7 +575,16 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
             }
         }
 
-        overlay = alphaMask();
+        // Only search for alphaMask if we actually have a mask element, because
+        // alphamask will fallback using the background image itself as mask, which
+        // can call generateBackground(), leading to an infinite recursion
+        // see BUG:510157
+        if (q->hasElement(QLatin1String("mask-") % prefix % QLatin1String("center"))) {
+            overlay = alphaMask();
+        } else {
+            overlay = QPixmap(overlaySize.toSize());
+            overlay.fill(Qt::white);
+        }
         QPainter overlayPainter(&overlay);
         overlayPainter.setCompositionMode(QPainter::CompositionMode_SourceIn);
         // Tiling?
