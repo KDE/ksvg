@@ -11,6 +11,7 @@
 #include "framesvg_p.h"
 #include "svg_p.h"
 
+#include <KColorUtils>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -118,6 +119,10 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     updateNotificationTimer->setSingleShot(true);
     updateNotificationTimer->setInterval(100);
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ImageSetPrivate::notifyOfChanged);
+
+    // TODO This needs to be reloaded when colors change
+    KConfig globals(QStringLiteral("kdeglobals"));
+    frameContrast = globals.group(QStringLiteral("WM")).readEntry(QStringLiteral("separatorContrast"), 0.2);
 
     QCoreApplication::instance()->installEventFilter(this);
 
@@ -515,6 +520,8 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
         return headerColorScheme.foreground(KColorScheme::NeutralText).color();
     case Svg::HeaderNegativeText:
         return headerColorScheme.foreground(KColorScheme::NegativeText).color();
+    case Svg::Frame:
+        return KColorUtils::mix(currentScheme->background().color(), currentScheme->foreground().color(), frameContrast);
     default:
         return {};
     }
@@ -584,7 +591,8 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
                                                        Svg::HeaderHighlightedText,
                                                        Svg::HeaderPositiveText,
                                                        Svg::HeaderNeutralText,
-                                                       Svg::HeaderNegativeText});
+                                                       Svg::HeaderNegativeText,
+                                                       Svg::Frame});
         const QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
         const QMetaEnum metaEnum = QMetaEnum::fromType<Svg::StyleSheetColor>();
 
