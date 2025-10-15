@@ -74,6 +74,7 @@ void SvgItem::componentComplete()
                           {Svg::Frame, m_svg->frameColor(m_kirigamiTheme->textColor(), m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->frameContrast())}});
     };
     applyTheme();
+    connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_svg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
     connect(m_svg, &Svg::imageSetChanged, this, checkApplyTheme);
