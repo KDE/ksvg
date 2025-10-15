@@ -154,7 +154,6 @@ public:
     QString themeVersion;
     QString themeMetadataPath;
     QString iconImageSetMetadataPath;
-    qreal frameContrast = 0.2;
 
 #if defined(Q_OS_LINUX)
     // Store boot time to be able to compare it to the lastModifiedTime when the timestamp

@@ -120,10 +120,6 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     updateNotificationTimer->setInterval(100);
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ImageSetPrivate::notifyOfChanged);
 
-    // TODO This needs to be reloaded when colors change
-    KConfig globals(QStringLiteral("kdeglobals"));
-    frameContrast = globals.group(QStringLiteral("WM")).readEntry(QStringLiteral("frameContrast"), 0.2);
-
     QCoreApplication::instance()->installEventFilter(this);
 
     #if defined(Q_OS_LINUX)
@@ -520,8 +516,6 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
         return headerColorScheme.foreground(KColorScheme::NeutralText).color();
     case Svg::HeaderNegativeText:
         return headerColorScheme.foreground(KColorScheme::NegativeText).color();
-    case Svg::Frame:
-        return KColorUtils::mix(currentScheme->background().color(), currentScheme->foreground().color(), frameContrast);
     default:
         return {};
     }

@@ -646,6 +646,8 @@ public:
      */
     void clearColorOverrides();
 
+    QColor frameColor(const QColor &foreground, const QColor &background, qreal contrast);
+
 Q_SIGNALS:
     /*!
      * \brief This signal is emitted whenever the SVG data has changed in such a

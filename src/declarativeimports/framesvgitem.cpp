@@ -701,15 +701,15 @@ void FrameSvgItem::componentComplete()
 
             return;
         }
-        m_frameSvg->setColors({
-            {Svg::Text, m_kirigamiTheme->textColor()},
-            {Svg::Background, m_kirigamiTheme->backgroundColor()},
-            {Svg::Highlight, m_kirigamiTheme->highlightColor()},
-            {Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor()},
-            {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
-            {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
-            {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
-        });
+        m_frameSvg->setColors(
+            {{Svg::Text, m_kirigamiTheme->textColor()},
+             {Svg::Background, m_kirigamiTheme->backgroundColor()},
+             {Svg::Highlight, m_kirigamiTheme->highlightColor()},
+             {Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor()},
+             {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
+             {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
+             {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
+             {Svg::Frame, m_frameSvg->frameColor(m_kirigamiTheme->textColor(), m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->frameContrast())}});
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
