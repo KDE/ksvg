@@ -23,6 +23,7 @@
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
+#include <KColorUtils>
 #include <KCompressionDevice>
 #include <KConfigGroup>
 #include <QDebug>
@@ -1197,6 +1198,11 @@ void Svg::clearColorOverrides()
         frameSvg->colorOverridesChange();
     }
     Q_EMIT repaintNeeded();
+}
+
+QColor Svg::frameColor(const QColor &foreground, const QColor &background, qreal contrast)
+{
+    return KColorUtils::mix(background, foreground, contrast);
 }
 
 } // KSvg namespace
