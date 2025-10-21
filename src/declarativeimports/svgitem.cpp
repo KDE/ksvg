@@ -16,6 +16,8 @@
 
 #include "managedtexturenode.h"
 
+#include <KColorScheme>
+#include <KColorUtils>
 #include <Kirigami/Platform/PlatformTheme>
 #include <debug_p.h>
 
@@ -71,7 +73,7 @@ void SvgItem::componentComplete()
                           {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
                           {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
                           {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
-                          {Svg::Frame, m_svg->frameColor(m_kirigamiTheme->textColor(), m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->frameContrast())}});
+                          {Svg::Frame, KColorUtils::mix(m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->textColor(), KColorScheme::frameContrast())}});
     };
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);

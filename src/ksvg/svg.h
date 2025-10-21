@@ -218,7 +218,6 @@ public:
         HeaderPositiveText,
         HeaderNeutralText,
         HeaderNegativeText,
-
         Frame
     };
     Q_ENUM(StyleSheetColor);
@@ -645,8 +644,6 @@ public:
      *
      */
     void clearColorOverrides();
-
-    QColor frameColor(const QColor &foreground, const QColor &background, qreal contrast);
 
 Q_SIGNALS:
     /*!

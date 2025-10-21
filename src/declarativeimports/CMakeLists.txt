@@ -15,6 +15,7 @@ target_link_libraries(corebindingsplugin PRIVATE
         KF6::Svg
         KF6::ColorScheme
         KF6::KirigamiPlatform
+        KF6::GuiAddons
 )
 
 ecm_qt_declare_logging_category(corebindingsplugin

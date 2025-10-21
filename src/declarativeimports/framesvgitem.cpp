@@ -14,6 +14,7 @@
 #include <QSGGeometry>
 #include <QSGTexture>
 
+#include <KColorUtils>
 #include <QDebug>
 #include <QPainter>
 
@@ -709,8 +710,9 @@ void FrameSvgItem::componentComplete()
              {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
              {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
              {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
-             {Svg::Frame, m_frameSvg->frameColor(m_kirigamiTheme->textColor(), m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->frameContrast())}});
+             {Svg::Frame, KColorUtils::mix(m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->textColor(), KColorScheme::frameContrast())}});
     };
+
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
