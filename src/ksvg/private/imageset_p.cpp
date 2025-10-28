@@ -11,6 +11,7 @@
 #include "framesvg_p.h"
 #include "svg_p.h"
 
+#include <KColorUtils>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
@@ -18,6 +19,7 @@
 #include <QGuiApplication>
 #include <QMetaEnum>
 
+#include <KColorUtils>
 #include <KDirWatch>
 #include <KSharedConfig>
 #include <kpluginmetadata.h>
@@ -515,6 +517,8 @@ QColor ImageSetPrivate::namedColor(Svg::StyleSheetColor colorName, const KSvg::S
         return headerColorScheme.foreground(KColorScheme::NeutralText).color();
     case Svg::HeaderNegativeText:
         return headerColorScheme.foreground(KColorScheme::NegativeText).color();
+    case Svg::Frame:
+        return KColorUtils::mix(currentScheme->background().color(), currentScheme->foreground().color(), KColorScheme::frameContrast());
     default:
         return {};
     }
@@ -584,7 +588,8 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
                                                        Svg::HeaderHighlightedText,
                                                        Svg::HeaderPositiveText,
                                                        Svg::HeaderNeutralText,
-                                                       Svg::HeaderNegativeText});
+                                                       Svg::HeaderNegativeText,
+                                                       Svg::Frame});
         const QString skel = QStringLiteral(".ColorScheme-%1{color:%2;}");
         const QMetaEnum metaEnum = QMetaEnum::fromType<Svg::StyleSheetColor>();
 

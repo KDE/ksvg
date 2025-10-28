@@ -163,6 +163,7 @@ public:
      * \value HeaderPositiveText
      * \value HeaderNeutralText
      * \value HeaderNegativeText
+     * \value Frame
      */
     enum StyleSheetColor {
         Text,
@@ -216,7 +217,8 @@ public:
         HeaderHighlightedText,
         HeaderPositiveText,
         HeaderNeutralText,
-        HeaderNegativeText
+        HeaderNegativeText,
+        Frame
     };
     Q_ENUM(StyleSheetColor);
 

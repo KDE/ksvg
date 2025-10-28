@@ -14,6 +14,7 @@
 #include <QSGGeometry>
 #include <QSGTexture>
 
+#include <KColorUtils>
 #include <QDebug>
 #include <QPainter>
 
@@ -701,17 +702,19 @@ void FrameSvgItem::componentComplete()
 
             return;
         }
-        m_frameSvg->setColors({
-            {Svg::Text, m_kirigamiTheme->textColor()},
-            {Svg::Background, m_kirigamiTheme->backgroundColor()},
-            {Svg::Highlight, m_kirigamiTheme->highlightColor()},
-            {Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor()},
-            {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
-            {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
-            {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
-        });
+        m_frameSvg->setColors(
+            {{Svg::Text, m_kirigamiTheme->textColor()},
+             {Svg::Background, m_kirigamiTheme->backgroundColor()},
+             {Svg::Highlight, m_kirigamiTheme->highlightColor()},
+             {Svg::HighlightedText, m_kirigamiTheme->highlightedTextColor()},
+             {Svg::PositiveText, m_kirigamiTheme->positiveTextColor()},
+             {Svg::NeutralText, m_kirigamiTheme->neutralTextColor()},
+             {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
+             {Svg::Frame, KColorUtils::mix(m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->textColor(), KColorScheme::frameContrast())}});
     };
+
     applyTheme();
+    connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
     connect(m_frameSvg->imageSet(), &ImageSet::imageSetChanged, this, checkApplyTheme);
     connect(m_frameSvg, &Svg::imageSetChanged, this, checkApplyTheme);
