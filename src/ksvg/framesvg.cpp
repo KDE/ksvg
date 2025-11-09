@@ -335,6 +335,15 @@ void FrameSvg::getInset(qreal &left, qreal &top, qreal &right, qreal &bottom) co
     bottom = d->frame->insetBottomMargin;
 }
 
+QMarginsF FrameSvg::insets() const
+{
+    if (!d->frame || d->frame->noBorderPadding) {
+        return QMarginsF();
+    } else {
+        return QMarginsF(d->frame->insetLeftMargin, d->frame->insetTopMargin, d->frame->insetRightMargin, d->frame->insetBottomMargin);
+    }
+}
+
 QRectF FrameSvg::contentsRect() const
 {
     if (d->frame) {

@@ -278,6 +278,14 @@ public:
     Q_INVOKABLE void getInset(qreal &left, qreal &top, qreal &right, qreal &bottom) const;
 
     /*!
+     * Returns the inset extents. The insets specify the spacing between the borders and the SVG
+     * bounding rect. For example, that space may include things such as drop shadows.
+     *
+     * \since 6.21
+     */
+    QMarginsF insets() const;
+
+    /*!
      * \brief This method returns the rectangle of the center element, taking
      * the margins into account.
      */
