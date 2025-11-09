@@ -259,11 +259,12 @@ void ImageSet::setCacheLimit(int kbytes)
 }
 #endif
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 KPluginMetaData ImageSet::metadata() const
 {
     return d->pluginMetaData;
 }
-
+#endif
 }
 
 #include "moc_imageset.cpp"

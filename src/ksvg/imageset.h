@@ -199,13 +199,18 @@ public:
     void setCacheLimit(int kbytes);
 #endif
 
+#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
     /*!
      * \brief This method returns the plugin metadata for this theme.
      *
      * Metadata contains information such as name, description, author, website,
      * and url.
+     *
+     * \deprecated[6.21] Not used
      */
+    KSVG_DEPRECATED_VERSION(6, 21, "Not used")
     KPluginMetaData metadata() const;
+#endif
 
 Q_SIGNALS:
     /*!
