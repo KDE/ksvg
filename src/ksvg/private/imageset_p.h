@@ -161,7 +161,6 @@ public:
     time_t bootTime = 0;
     #endif
 
-    bool isDefault : 1;
     bool useGlobal : 1;
     bool cacheImageSet : 1;
     bool fixedName : 1;
