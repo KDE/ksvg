@@ -79,8 +79,9 @@ KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &them
     }
 }
 
-ImageSetPrivate::ImageSetPrivate(QObject *parent)
+ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     : QObject(parent)
+    , basePath(_basePath)
     , colorScheme(QPalette::Active, KColorScheme::Window, KSharedConfigPtr(nullptr))
     , selectionColorScheme(QPalette::Active, KColorScheme::Selection, KSharedConfigPtr(nullptr))
     , buttonColorScheme(QPalette::Active, KColorScheme::Button, KSharedConfigPtr(nullptr))
@@ -95,18 +96,21 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     , cacheImageSet(true)
     , fixedName(false)
 {
-    const QString org = QCoreApplication::organizationName();
-    if (!org.isEmpty()) {
-        basePath += u'/' + org;
-    }
-    const QString appName = QCoreApplication::applicationName();
-    if (!appName.isEmpty()) {
-        basePath += u'/' + appName;
-    }
     if (basePath.isEmpty()) {
-        basePath = QStringLiteral("ksvg");
+        const QString org = QCoreApplication::organizationName();
+        if (!org.isEmpty()) {
+            basePath += u'/' + org;
+        }
+        const QString appName = QCoreApplication::applicationName();
+        if (!appName.isEmpty()) {
+            basePath += u'/' + appName;
+        }
+        if (basePath.isEmpty()) {
+            basePath = QStringLiteral("ksvg");
+        }
+        basePath += u"/svgtheme/";
     }
-    basePath += u"/svgtheme/";
+
     pixmapSaveTimer = new QTimer(this);
     pixmapSaveTimer->setSingleShot(true);
     pixmapSaveTimer->setInterval(600);

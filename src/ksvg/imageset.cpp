@@ -30,7 +30,7 @@ ImageSet::ImageSet(QObject *parent)
     : QObject(parent)
 {
     if (!ImageSetPrivate::globalImageSet) {
-        ImageSetPrivate::globalImageSet = new ImageSetPrivate;
+        ImageSetPrivate::globalImageSet = new ImageSetPrivate(QString());
         if (QCoreApplication::instance()) {
             connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, ImageSetPrivate::globalImageSet, &ImageSetPrivate::onAppExitCleanup);
         }
@@ -46,7 +46,7 @@ ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject
 {
     auto &priv = ImageSetPrivate::themes[imageSetName];
     if (!priv) {
-        priv = new ImageSetPrivate;
+        priv = new ImageSetPrivate(basePath);
         if (QCoreApplication::instance()) {
             connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ImageSetPrivate::onAppExitCleanup);
         }
@@ -130,6 +130,8 @@ void ImageSet::setImageSetName(const QString &imageSetName)
     }
 
     if (d != ImageSetPrivate::globalImageSet) {
+        const QString basePath = d->basePath;
+
         disconnect(QCoreApplication::instance(), nullptr, d, nullptr);
         if (!d->ref.deref()) {
             delete ImageSetPrivate::themes.take(d->imageSetName);
@@ -137,7 +139,7 @@ void ImageSet::setImageSetName(const QString &imageSetName)
 
         auto &priv = ImageSetPrivate::themes[imageSetName];
         if (!priv) {
-            priv = new ImageSetPrivate;
+            priv = new ImageSetPrivate(basePath);
             if (QCoreApplication::instance()) {
                 connect(QCoreApplication::instance(), &QCoreApplication::aboutToQuit, priv, &ImageSetPrivate::onAppExitCleanup);
             }
