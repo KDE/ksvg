@@ -60,8 +60,8 @@ ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject
     d->cacheImageSet = false;
     if (!basePath.isEmpty()) {
         d->basePath = basePath;
-        if (!d->basePath.endsWith(QDir::separator())) {
-            d->basePath += QDir::separator();
+        if (!d->basePath.endsWith(u'/')) {
+            d->basePath += u'/';
         }
     }
     d->setImageSetName(imageSetName, false);
@@ -93,8 +93,8 @@ void ImageSet::setBasePath(const QString &basePath)
     }
 
     d->basePath = basePath;
-    if (!d->basePath.endsWith(QDir::separator())) {
-        d->basePath += QDir::separator();
+    if (!d->basePath.endsWith(u'/')) {
+        d->basePath += u'/';
     }
 
     // Don't use scheduleImageSetChangeNotification as we want things happening immediately there,
