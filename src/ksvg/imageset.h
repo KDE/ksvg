@@ -52,10 +52,13 @@ class KSVG_EXPORT ImageSet : public QObject
      */
     Q_PROPERTY(QString basePath READ basePath WRITE setBasePath NOTIFY imageSetChanged)
 
+#if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \property KSvg::ImageSet::useGlobalSettings
+     * \deprecated[6.21] Not used.
      */
     Q_PROPERTY(bool useGlobalSettings READ useGlobalSettings NOTIFY imageSetChanged)
+#endif
 
 public:
     /*!
@@ -155,20 +158,30 @@ public:
      */
     bool currentImageSetHasImage(const QString &name) const;
 
+#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
     /*!
      * \brief This method sets whether the theme should follow the global
      * settings or use application-specific settings.
      *
      * \a useGlobal pass in true to follow the global settings
+     *
+     * \deprecated[6.20] Not used
      */
+    KSVG_DEPRECATED_VERSION(6, 21, "Not used")
     void setUseGlobalSettings(bool useGlobal);
+#endif
 
+#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
     /*!
      * \brief This method returns whether the global settings are followed.
      *
      * If application-specific settings are being used, it returns \c false.
+     *
+     * \deprecated[6.21] Not used
      */
+    KSVG_DEPRECATED_VERSION(6, 21, "Not used")
     bool useGlobalSettings() const;
+#endif
 
     /*!
      * \brief This method sets the maximum size of the cache (in kilobytes).

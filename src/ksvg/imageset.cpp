@@ -230,6 +230,7 @@ bool ImageSet::currentImageSetHasImage(const QString &name) const
     return path.contains(d->basePath % d->imageSetName);
 }
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 void ImageSet::setUseGlobalSettings(bool useGlobal)
 {
     if (d->useGlobal == useGlobal) {
@@ -240,11 +241,14 @@ void ImageSet::setUseGlobalSettings(bool useGlobal)
     d->cfg = KConfigGroup();
     d->imageSetName.clear();
 }
+#endif
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 bool ImageSet::useGlobalSettings() const
 {
     return d->useGlobal;
 }
+#endif
 
 void ImageSet::setCacheLimit(int kbytes)
 {
