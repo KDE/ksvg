@@ -165,11 +165,6 @@ public:
     bool useGlobal : 1;
     bool cacheImageSet : 1;
     bool fixedName : 1;
-
-    // Version number of Plasma the ImageSet has been designed for
-    int apiMajor;
-    int apiMinor;
-    int apiRevision;
 };
 
 }

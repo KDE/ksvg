@@ -95,9 +95,6 @@ ImageSetPrivate::ImageSetPrivate(QObject *parent)
     , useGlobal(true)
     , cacheImageSet(true)
     , fixedName(false)
-    , apiMajor(1)
-    , apiMinor(0)
-    , apiRevision(0)
 {
     const QString org = QCoreApplication::organizationName();
     if (!org.isEmpty()) {
@@ -738,25 +735,6 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
 
     if (!fallbackImageSets.contains(QLatin1String(ImageSetPrivate::defaultImageSet))) {
         fallbackImageSets.append(QLatin1String(ImageSetPrivate::defaultImageSet));
-    }
-
-    // Check for what Plasma version the theme has been done
-    // There are some behavioral differences between KDE4 Plasma and Plasma 5
-    const QString apiVersion = pluginMetaData.value(QStringLiteral("X-Plasma-API"));
-    apiMajor = 1;
-    apiMinor = 0;
-    apiRevision = 0;
-    if (!apiVersion.isEmpty()) {
-        const QList<QStringView> parts = QStringView(apiVersion).split(QLatin1Char('.'));
-        if (!parts.isEmpty()) {
-            apiMajor = parts.value(0).toInt();
-        }
-        if (parts.count() > 1) {
-            apiMinor = parts.value(1).toInt();
-        }
-        if (parts.count() > 2) {
-            apiRevision = parts.value(2).toInt();
-        }
     }
 
     if (emitChanged) {
