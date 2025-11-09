@@ -250,12 +250,14 @@ bool ImageSet::useGlobalSettings() const
 }
 #endif
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 void ImageSet::setCacheLimit(int kbytes)
 {
     d->cacheSize = kbytes;
     delete d->pixmapCache;
     d->pixmapCache = nullptr;
 }
+#endif
 
 KPluginMetaData ImageSet::metadata() const
 {

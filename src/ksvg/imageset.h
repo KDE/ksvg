@@ -183,6 +183,7 @@ public:
     bool useGlobalSettings() const;
 #endif
 
+#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
     /*!
      * \brief This method sets the maximum size of the cache (in kilobytes).
      *
@@ -191,8 +192,12 @@ public:
      *
      * Note that the cleanup might not be done immediately, so the cache might
      * temporarily (for a few seconds) grow bigger than the limit.
+     *
+     * \deprecated[6.21] Not used
      **/
+    KSVG_DEPRECATED_VERSION(6, 21, "Not used")
     void setCacheLimit(int kbytes);
+#endif
 
     /*!
      * \brief This method returns the plugin metadata for this theme.
