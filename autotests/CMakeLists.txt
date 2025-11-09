@@ -25,5 +25,6 @@ ENDMACRO(KSVG_UNIT_TESTS)
 
 KSVG_UNIT_TESTS(
     framesvgtest
+    imagesettest
 )
 

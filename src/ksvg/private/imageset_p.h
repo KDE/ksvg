@@ -38,7 +38,7 @@ class ImageSetPrivate : public QObject, public QSharedData
     Q_OBJECT
 
 public:
-    explicit ImageSetPrivate(QObject *parent = nullptr);
+    explicit ImageSetPrivate(const QString &basePath, QObject *parent = nullptr);
     ~ImageSetPrivate() override;
 
     QString imagePath(const QString &theme, const QString &type, const QString &image);
