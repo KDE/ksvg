@@ -291,6 +291,15 @@ void FrameSvg::getMargins(qreal &left, qreal &top, qreal &right, qreal &bottom) 
     bottom = d->frame->bottomMargin;
 }
 
+QMarginsF FrameSvg::margins() const
+{
+    if (!d->frame || d->frame->noBorderPadding) {
+        return QMarginsF();
+    } else {
+        return QMarginsF(d->frame->leftMargin, d->frame->topMargin, d->frame->rightMargin, d->frame->bottomMargin);
+    }
+}
+
 void FrameSvg::getFixedMargins(qreal &left, qreal &top, qreal &right, qreal &bottom) const
 {
     if (!d->frame || d->frame->noBorderPadding) {
@@ -302,6 +311,15 @@ void FrameSvg::getFixedMargins(qreal &left, qreal &top, qreal &right, qreal &bot
     left = d->frame->fixedLeftMargin;
     right = d->frame->fixedRightMargin;
     bottom = d->frame->fixedBottomMargin;
+}
+
+QMarginsF FrameSvg::fixedMargins() const
+{
+    if (!d->frame || d->frame->noBorderPadding) {
+        return QMarginsF();
+    } else {
+        return QMarginsF(d->frame->fixedLeftMargin, d->frame->fixedTopMargin, d->frame->fixedRightMargin, d->frame->fixedBottomMargin);
+    }
 }
 
 void FrameSvg::getInset(qreal &left, qreal &top, qreal &right, qreal &bottom) const

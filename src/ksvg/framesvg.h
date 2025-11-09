@@ -207,6 +207,16 @@ public:
     Q_INVOKABLE void getMargins(qreal &left, qreal &top, qreal &right, qreal &bottom) const;
 
     /*!
+     * Returns the margin extents. The margins specify the spacing between the contents and the SVG
+     * bounding rect.
+     *
+     * If you don't care about the margins being on or off, use fixedMargins() instead.
+     *
+     * \since 6.21
+     */
+    QMarginsF margins() const;
+
+    /*!
      * \brief This method returns the margin size for the specified edge.
      *
      * Compared to marginSize(), this does not depend on whether the margin is
@@ -216,6 +226,14 @@ public:
      * Returns the margin size
      */
     Q_INVOKABLE qreal fixedMarginSize(const FrameSvg::MarginEdge edge) const;
+
+    /*!
+     * Returns the margin extents. The margins specify the spacing between the contents and the SVG
+     * bounding rect. Compared to margins(), this does not depend on whether a border is enabled or not.
+     *
+     * \since 6.21
+     */
+    QMarginsF fixedMargins() const;
 
     /*!
      * \brief This is a convenience method that extracts the size of the four
