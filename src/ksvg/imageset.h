@@ -158,7 +158,7 @@ public:
      */
     bool currentImageSetHasImage(const QString &name) const;
 
-#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
+#if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \brief This method sets whether the theme should follow the global
      * settings or use application-specific settings.
@@ -171,7 +171,7 @@ public:
     void setUseGlobalSettings(bool useGlobal);
 #endif
 
-#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
+#if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \brief This method returns whether the global settings are followed.
      *
@@ -183,7 +183,7 @@ public:
     bool useGlobalSettings() const;
 #endif
 
-#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
+#if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \brief This method sets the maximum size of the cache (in kilobytes).
      *
@@ -199,7 +199,7 @@ public:
     void setCacheLimit(int kbytes);
 #endif
 
-#if KSVG_ENABLE_DEPRECATED_SINCE(5, 21)
+#if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \brief This method returns the plugin metadata for this theme.
      *
