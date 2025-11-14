@@ -182,7 +182,7 @@ public:
      *
      * The margins specify the spacing between the contents and the SVG bounding rect.
      *
-     * If you don't care about the margin being on or off, use
+     * If you don't care about the border being on or off, use
      * fixedMarginSize() instead.
      *
      * \a edge the margin edge we want, top, bottom, left or right
@@ -197,7 +197,7 @@ public:
      *
      * The margins specify the spacing between the contents and the SVG bounding rect.
      *
-     * If you don't care about the margins being on or off, use
+     * If you don't care about the borders being on or off, use
      * getFixedMargins() instead.
      *
      * \a left left margin size
@@ -214,7 +214,7 @@ public:
      * Returns the margin extents. The margins specify the spacing between the contents and the SVG
      * bounding rect.
      *
-     * If you don't care about the margins being on or off, use fixedMargins() instead.
+     * If you don't care about the borders being on or off, use fixedMargins() instead.
      *
      * \since 6.21
      */
@@ -225,7 +225,7 @@ public:
      *
      * The margins specify the spacing between the contents and the SVG bounding rect.
      *
-     * Compared to marginSize(), this does not depend on whether the margin is
+     * Compared to marginSize(), this does not depend on whether the border is
      * enabled or not.
      *
      * \a edge the margin edge we want, top, bottom, left or right
@@ -247,7 +247,7 @@ public:
      *
      * The margins specify the spacing between the contents and the SVG bounding rect.
      *
-     * Compared to getMargins(), this doesn't depend on whether the margins are
+     * Compared to getMargins(), this doesn't depend on whether the borders are
      * enabled or not.
      *
      * \a left left margin size
