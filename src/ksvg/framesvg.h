@@ -180,6 +180,8 @@ public:
      *
      * Note that \c 0 will be returned if the given margin is disabled.
      *
+     * The margins specify the spacing between the contents and the SVG bounding rect.
+     *
      * If you don't care about the margin being on or off, use
      * fixedMarginSize() instead.
      *
@@ -192,6 +194,8 @@ public:
     /*!
      * \brief This is a convenience method that extracts the size of the four
      * margins and saves their size into the passed variables.
+     *
+     * The margins specify the spacing between the contents and the SVG bounding rect.
      *
      * If you don't care about the margins being on or off, use
      * getFixedMargins() instead.
@@ -219,6 +223,8 @@ public:
     /*!
      * \brief This method returns the margin size for the specified edge.
      *
+     * The margins specify the spacing between the contents and the SVG bounding rect.
+     *
      * Compared to marginSize(), this does not depend on whether the margin is
      * enabled or not.
      *
@@ -238,6 +244,8 @@ public:
     /*!
      * \brief This is a convenience method that extracts the size of the four
      * margins and saves their size into the passed variables.
+     *
+     * The margins specify the spacing between the contents and the SVG bounding rect.
      *
      * Compared to getMargins(), this doesn't depend on whether the margins are
      * enabled or not.
