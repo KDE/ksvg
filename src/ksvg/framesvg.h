@@ -263,6 +263,9 @@ public:
     /*!
      * \brief This method returns the insets margin size for the specified edge.
      *
+     * The insets specify the spacing between the borders and the SVG bounding rect. For example,
+     * that space may include things such as drop shadows.
+     *
      * \a edge the margin edge we want, top, bottom, left or right
      *
      * Returns the margin size
@@ -273,6 +276,9 @@ public:
     /*!
      * \brief This is a convenience method that extracts the size of the four
      * inset margins and saves their size into the passed variables.
+     *
+     * The insets specify the spacing between the borders and the SVG bounding rect. For example,
+     * that space may include things such as drop shadows.
      *
      * \a left left margin size
      *
