@@ -7,7 +7,10 @@
 #include "imageset.h"
 
 #include <QDirIterator>
+#include <QSignalSpy>
 #include <QTest>
+
+using namespace Qt::Literals;
 
 class ImageSetTest : public QObject
 {
@@ -19,6 +22,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void testBasePath();
+    void testSelectors();
 
 private:
     QDir m_themeDir;
@@ -64,6 +68,27 @@ void ImageSetTest::testBasePath()
     set.setImageSetName("test_old_metadata_format_theme");
     QCOMPARE(set.imageSetName(), "test_old_metadata_format_theme");
     QCOMPARE(set.basePath(), "plasma/desktoptheme/");
+}
+
+void ImageSetTest::testSelectors()
+{
+    KSvg::ImageSet set("testtheme", "plasma/desktoptheme");
+
+    QVERIFY(set.imagePath(u"element"_s).endsWith(u"plasma/desktoptheme/testtheme/element.svg"));
+
+    QSignalSpy spy(&set, &KSvg::ImageSet::imageSetChanged);
+
+    set.setSelectors({u"opaque"_s});
+    QVERIFY(spy.wait());
+    QCOMPARE(spy.count(), 1);
+    QCOMPARE(spy[0][0], "testtheme");
+    QVERIFY(set.imagePath(u"element"_s).endsWith(u"plasma/desktoptheme/testtheme/opaque/element.svg"));
+
+    set.setSelectors({});
+    QVERIFY(spy.wait());
+    QCOMPARE(spy.count(), 2);
+    QCOMPARE(spy[1][0], "testtheme");
+    QVERIFY(set.imagePath(u"element"_s).endsWith(u"plasma/desktoptheme/testtheme/element.svg"));
 }
 
 QTEST_MAIN(ImageSetTest)
