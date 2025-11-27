@@ -223,7 +223,7 @@ Q_SIGNALS:
      * and respond appropriately to imageSetChanged() internally, emitting
      * Svg::repaintNeeded() at an appropriate time.
      */
-    void imageSetChanged(const QString &basePath);
+    void imageSetChanged(const QString &imageSetName);
 
     /*!
      * \brief This signal is emitted when the user changes the base path of the
