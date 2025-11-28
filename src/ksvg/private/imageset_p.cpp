@@ -721,24 +721,9 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
 
+    fallbackImageSets = {QLatin1String(ImageSetPrivate::defaultImageSet)};
+
     pluginMetaData = metaDataForImageSet(basePath, theme);
-    KSharedConfigPtr metadata = configForImageSet(basePath, theme);
-
-    KConfigGroup cg(metadata, QStringLiteral("Settings"));
-    QString fallback = cg.readEntry("FallbackImageSet", QString());
-
-    fallbackImageSets.clear();
-    while (!fallback.isEmpty() && !fallbackImageSets.contains(fallback)) {
-        fallbackImageSets.append(fallback);
-
-        KSharedConfigPtr metadata = configForImageSet(basePath, fallback);
-        KConfigGroup cg(metadata, QStringLiteral("Settings"));
-        fallback = cg.readEntry("FallbackImageSet", QString());
-    }
-
-    if (!fallbackImageSets.contains(QLatin1String(ImageSetPrivate::defaultImageSet))) {
-        fallbackImageSets.append(QLatin1String(ImageSetPrivate::defaultImageSet));
-    }
 
     if (emitChanged) {
         scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
