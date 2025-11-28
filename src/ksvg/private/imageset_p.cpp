@@ -94,7 +94,9 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     , pixmapCache(nullptr)
     , cacheSize(DEFAULT_CACHE_SIZE)
     , cachesToDiscard(NoCache)
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     , useGlobal(true)
+#endif
     , cacheImageSet(true)
 {
     if (basePath.isEmpty()) {
