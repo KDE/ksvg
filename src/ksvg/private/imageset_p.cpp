@@ -198,10 +198,8 @@ bool ImageSetPrivate::useCache()
             if (!cacheFilePath.isEmpty()) {
                 const QFileInfo cacheFileInfo(cacheFilePath);
                 const QFileInfo metadataFileInfo(themeMetadataPath);
-                const QFileInfo iconImageSetMetadataFileInfo(iconImageSetMetadataPath);
 
-                cachesTooOld = (cacheFileInfo.lastModified().toSecsSinceEpoch() < metadataFileInfo.lastModified().toSecsSinceEpoch())
-                    || (cacheFileInfo.lastModified().toSecsSinceEpoch() < iconImageSetMetadataFileInfo.lastModified().toSecsSinceEpoch());
+                cachesTooOld = (cacheFileInfo.lastModified().toSecsSinceEpoch() < metadataFileInfo.lastModified().toSecsSinceEpoch());
             }
         }
 

@@ -152,7 +152,6 @@ public:
     unsigned cacheSize;
     CacheTypes cachesToDiscard;
     QString themeVersion;
-    QString iconImageSetMetadataPath;
 
 #if defined(Q_OS_LINUX)
     // Store boot time to be able to compare it to the lastModifiedTime when the timestamp
