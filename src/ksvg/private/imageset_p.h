@@ -159,7 +159,7 @@ public:
     // Store boot time to be able to compare it to the lastModifiedTime when the timestamp
     // of files is the UNIX epoch.
     time_t bootTime = 0;
-    #endif
+#endif
 
     bool useGlobal : 1;
     bool cacheImageSet : 1;

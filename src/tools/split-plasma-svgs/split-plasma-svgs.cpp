@@ -22,11 +22,23 @@ static KSvg::Svg s_ksvg;
 static QSvgRenderer s_renderer;
 
 // https://developer.mozilla.org/en-US/docs/Web/SVG/Element#renderable_elements
-static const QStringList s_renderableElements = {
-    "a"_L1, "circle"_L1, "ellipse"_L1, "foreignObject"_L1, "g"_L1, "image"_L1,
-    "line"_L1, "path"_L1, "polygon"_L1, "polyline"_L1, "rect"_L1, // excluding <svg>
-    "switch"_L1, "symbol"_L1, "text"_L1, "textPath"_L1, "tspan"_L1, "use"_L1
-};
+static const QStringList s_renderableElements = {"a"_L1,
+                                                 "circle"_L1,
+                                                 "ellipse"_L1,
+                                                 "foreignObject"_L1,
+                                                 "g"_L1,
+                                                 "image"_L1,
+                                                 "line"_L1,
+                                                 "path"_L1,
+                                                 "polygon"_L1,
+                                                 "polyline"_L1,
+                                                 "rect"_L1, // excluding <svg>
+                                                 "switch"_L1,
+                                                 "symbol"_L1,
+                                                 "text"_L1,
+                                                 "textPath"_L1,
+                                                 "tspan"_L1,
+                                                 "use"_L1};
 
 QString joinedStrings(const QStringList &strings)
 {
@@ -181,15 +193,20 @@ int main(int argc, char **argv)
 {
     QCoreApplication app(argc, argv);
 
-    KAboutData aboutData(app.applicationName(), app.applicationName(), "1.0"_L1,
+    KAboutData aboutData(app.applicationName(),
+                         app.applicationName(),
+                         "1.0"_L1,
                          "Splits Plasma/KSVG SVGs into individual SVGs"_L1,
-                         KAboutLicense::LGPL_V2, "2023 Noah Davis"_L1);
+                         KAboutLicense::LGPL_V2,
+                         "2023 Noah Davis"_L1);
     aboutData.addAuthor("Noah Davis"_L1, {}, "noahadvs@gmail.com"_L1);
     KAboutData::setApplicationData(aboutData);
 
     QCommandLineParser commandLineParser;
     commandLineParser.addPositionalArgument("inputs"_L1, "Input files (separated by spaces)"_L1, "inputs..."_L1);
-    commandLineParser.addPositionalArgument("output"_L1, "Output folder (optional, must exist). The default output folder is the current working directory."_L1, "[output]"_L1);
+    commandLineParser.addPositionalArgument("output"_L1,
+                                            "Output folder (optional, must exist). The default output folder is the current working directory."_L1,
+                                            "[output]"_L1);
     aboutData.setupCommandLine(&commandLineParser);
 
     commandLineParser.process(app);

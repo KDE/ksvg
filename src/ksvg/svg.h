@@ -111,7 +111,15 @@ public:
      * \value Complementary
      * \value Header
      */
-    enum ColorSet { View, Window, Button, Selection, Tooltip, Complementary, Header };
+    enum ColorSet {
+        View,
+        Window,
+        Button,
+        Selection,
+        Tooltip,
+        Complementary,
+        Header
+    };
     Q_ENUM(ColorSet)
 
     /*!

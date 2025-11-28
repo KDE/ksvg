@@ -471,7 +471,7 @@ int FrameSvg::minimumDrawingWidth()
     return 0;
 }
 
-//#define DEBUG_FRAMESVG_CACHE
+// #define DEBUG_FRAMESVG_CACHE
 FrameSvgPrivate::~FrameSvgPrivate() = default;
 
 QPixmap FrameSvgPrivate::alphaMask()
@@ -938,7 +938,7 @@ void FrameSvgPrivate::updateSizes(FrameData *frame) const
     // converting that to a QString temporary for the replace operation.
     // Additionally, we use a template parameter to provide us the compile-time
     // length of the literal so we don't need to calculate that.
-    auto createName = [&nameBuffer, offset]<std::size_t length>(const char16_t(&name)[length]) {
+    auto createName = [&nameBuffer, offset]<std::size_t length>(const char16_t (&name)[length]) {
         nameBuffer.replace(offset, length - 1, reinterpret_cast<const QChar *>(name), length);
         return QStringView(nameBuffer).mid(0, offset + length - 1);
     };

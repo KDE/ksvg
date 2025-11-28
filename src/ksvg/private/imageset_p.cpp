@@ -71,7 +71,8 @@ KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &them
         for (const QString &key : cg.keyList()) {
             obj[key] = cg.readEntry(key);
         }
-        qWarning(LOG_KSVG) << "The theme" << theme << "uses the legacy metadata.desktop. Consider contacting the author and asking them update it to use the newer JSON format.";
+        qWarning(LOG_KSVG) << "The theme" << theme
+                           << "uses the legacy metadata.desktop. Consider contacting the author and asking them update it to use the newer JSON format.";
         return KPluginMetaData(obj, packageBasePath + QLatin1String("/metadata.desktop"));
     } else {
         qCWarning(LOG_KSVG) << "Could not locate metadata for theme" << theme;
@@ -123,9 +124,9 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
 
     QCoreApplication::instance()->installEventFilter(this);
 
-    #if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX)
     struct sysinfo x;
-    if (sysinfo(&x) == 0)  {
+    if (sysinfo(&x) == 0) {
         bootTime = QDateTime::currentSecsSinceEpoch() - x.uptime;
         qCDebug(LOG_KSVG) << "ImageSetPrivate: Using boot time value" << bootTime;
     } else {
@@ -133,7 +134,7 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
         bootTime = QDateTime::currentSecsSinceEpoch();
         qCWarning(LOG_KSVG) << "ImageSetPrivate: Failed to get uptime from sysinfo. Using current time as boot time" << bootTime;
     }
-    #endif
+#endif
 }
 
 ImageSetPrivate::~ImageSetPrivate()
@@ -620,19 +621,19 @@ bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int
         qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified > cacheLastModifiedTime for" << key;
         return false;
     }
-    #if defined(Q_OS_LINUX)
+#if defined(Q_OS_LINUX)
     // If the timestamp is the UNIX epoch (0)  then we compare against the boot time instead.
     // This is notably the case on ostree based systems such as Fedora Kinoite.
     if (lastModified == 0 && bootTime > cacheLastModifiedTime) {
         qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified == 0 && bootTime > cacheLastModifiedTime for" << key;
         return false;
     }
-    #else
+#else
     if (lastModified == 0) {
         qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
         return false;
     }
-    #endif
+#endif
 
     qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: using cache for" << key;
     const QString id = keysToCache.value(key);
