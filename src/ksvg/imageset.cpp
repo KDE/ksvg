@@ -19,7 +19,6 @@
 #include <QTimer>
 
 #include <KConfigGroup>
-#include <KDirWatch>
 #include <KImageCache>
 
 #include "debug_p.h"

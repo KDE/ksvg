@@ -20,7 +20,6 @@
 #include <QMetaEnum>
 
 #include <KColorUtils>
-#include <KDirWatch>
 #include <KSharedConfig>
 #include <kpluginmetadata.h>
 
@@ -155,10 +154,6 @@ bool ImageSetPrivate::useCache()
 
         // clear any cached values from the previous theme cache
         themeVersion.clear();
-
-        if (!themeMetadataPath.isEmpty()) {
-            KDirWatch::self()->removeFile(themeMetadataPath);
-        }
 
         themeMetadataPath = configForImageSet(basePath, imageSetName)->name();
         const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
