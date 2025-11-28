@@ -163,7 +163,6 @@ public:
 
     bool useGlobal : 1;
     bool cacheImageSet : 1;
-    bool fixedName : 1;
 };
 
 }
