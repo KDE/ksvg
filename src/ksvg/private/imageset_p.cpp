@@ -48,6 +48,7 @@ KSharedConfig::Ptr configForImageSet(const QString &basePath, const QString &the
     return KSharedConfig::openConfig(metadataPath, KConfig::SimpleConfig);
 }
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &theme)
 {
     QString packageBasePath = basePath % theme;
@@ -78,6 +79,7 @@ KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &them
         return {};
     }
 }
+#endif
 
 ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     : QObject(parent)
@@ -714,7 +716,10 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     pluginMetaData = metaDataForImageSet(basePath, theme);
+#endif
+
     KSharedConfigPtr metadata = configForImageSet(basePath, theme);
 
     KConfigGroup cg(metadata, QStringLiteral("Settings"));
