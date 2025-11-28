@@ -152,7 +152,6 @@ public:
     unsigned cacheSize;
     CacheTypes cachesToDiscard;
     QString themeVersion;
-    QString themeMetadataPath;
     QString iconImageSetMetadataPath;
 
 #if defined(Q_OS_LINUX)

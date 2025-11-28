@@ -155,7 +155,7 @@ bool ImageSetPrivate::useCache()
         // clear any cached values from the previous theme cache
         themeVersion.clear();
 
-        themeMetadataPath = configForImageSet(basePath, imageSetName)->name();
+        const QString themeMetadataPath = configForImageSet(basePath, imageSetName)->name();
         const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
 
         QString currentCacheFileName;
