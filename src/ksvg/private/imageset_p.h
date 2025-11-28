@@ -161,7 +161,10 @@ public:
     time_t bootTime = 0;
 #endif
 
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     bool useGlobal : 1;
+#endif
+
     bool cacheImageSet : 1;
 };
 
