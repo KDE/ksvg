@@ -127,7 +127,9 @@ public:
 
     QString imageSetName = QStringLiteral("default");
     QString basePath;
+#if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     KPluginMetaData pluginMetaData;
+#endif
     QList<QString> fallbackImageSets;
     KSharedConfigPtr colors;
     KColorScheme colorScheme;
