@@ -23,6 +23,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void testBasePath();
     void testSelectors();
+    void testHasImage();
 
 private:
     QDir m_themeDir;
@@ -89,6 +90,14 @@ void ImageSetTest::testSelectors()
     QCOMPARE(spy.count(), 2);
     QCOMPARE(spy[1][0], "testtheme");
     QVERIFY(set.imagePath(u"element"_s).endsWith(u"plasma/desktoptheme/testtheme/element.svg"));
+}
+
+void ImageSetTest::testHasImage()
+{
+    KSvg::ImageSet set("testtheme", "plasma/desktoptheme");
+
+    QVERIFY(set.currentImageSetHasImage(u"element"_s));
+    QVERIFY(!set.currentImageSetHasImage(u"banana"_s));
 }
 
 QTEST_MAIN(ImageSetTest)
