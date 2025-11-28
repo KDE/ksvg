@@ -65,7 +65,6 @@ ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject
     }
     d->setImageSetName(imageSetName, false);
     d->cacheImageSet = useCache;
-    d->fixedName = true;
     connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
 }
 

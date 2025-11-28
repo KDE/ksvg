@@ -94,7 +94,6 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     , cachesToDiscard(NoCache)
     , useGlobal(true)
     , cacheImageSet(true)
-    , fixedName(false)
 {
     if (basePath.isEmpty()) {
         const QString org = QCoreApplication::organizationName();
