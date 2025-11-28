@@ -38,15 +38,15 @@ ImageSetPrivate *ImageSetPrivate::globalImageSet = nullptr;
 QHash<QString, ImageSetPrivate *> ImageSetPrivate::themes = QHash<QString, ImageSetPrivate *>();
 using QSP = QStandardPaths;
 
-KSharedConfig::Ptr configForImageSet(const QString &basePath, const QString &theme)
+QString configFileForImageSet(const QString &basePath, const QString &theme)
 {
     const QString baseName = basePath % theme;
     QString configPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/config"));
     if (!configPath.isEmpty()) {
-        return KSharedConfig::openConfig(configPath, KConfig::SimpleConfig);
+        return configPath;
     }
     QString metadataPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/metadata.desktop"));
-    return KSharedConfig::openConfig(metadataPath, KConfig::SimpleConfig);
+    return metadataPath;
 }
 
 KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &theme)
@@ -159,7 +159,7 @@ bool ImageSetPrivate::useCache()
             KDirWatch::self()->removeFile(themeMetadataPath);
         }
 
-        themeMetadataPath = configForImageSet(basePath, imageSetName)->name();
+        themeMetadataPath = configFileForImageSet(basePath, imageSetName);
         const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
 
         QString currentCacheFileName;
