@@ -113,7 +113,6 @@ public Q_SLOTS:
 
 Q_SIGNALS:
     void imageSetChanged(const QString &imageSetName);
-    void applicationPaletteChange();
 
 public:
     bool eventFilter(QObject *watched, QEvent *event) override;

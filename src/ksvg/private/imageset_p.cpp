@@ -321,7 +321,6 @@ void ImageSetPrivate::colorsChanged()
     headerColorScheme = KColorScheme(QPalette::Active, KColorScheme::Header, colors);
     tooltipColorScheme = KColorScheme(QPalette::Active, KColorScheme::Tooltip, colors);
     scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
-    Q_EMIT applicationPaletteChange();
 }
 
 void ImageSetPrivate::scheduleImageSetChangeNotification(CacheTypes caches)
