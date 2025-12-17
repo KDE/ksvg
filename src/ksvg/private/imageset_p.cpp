@@ -11,7 +11,6 @@
 #include "framesvg_p.h"
 #include "svg_p.h"
 
-#include <KColorUtils>
 #include <QDir>
 #include <QFile>
 #include <QFileInfo>
