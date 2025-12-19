@@ -629,7 +629,7 @@ bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int
     }
 #endif
 
-    qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: using cache for" << key;
+    // qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: using cache for" << key;
     const QString id = keysToCache.value(key);
     const auto it = pixmapsToCache.constFind(id);
     if (it != pixmapsToCache.constEnd()) {
