@@ -13,3 +13,4 @@ Options:
  test-before-installing: True
  cppcheck-ignore-files: ['templates/']
  require-passing-tests-on: ['Linux', 'FreeBSD', 'Windows', 'macOS']
+ enable-lsan: True
