@@ -116,8 +116,12 @@ bool SharedSvgRenderer::load(const QByteArray &contents, const QString &styleShe
         QBuffer buffer(&processedContents);
         buffer.open(QIODevice::WriteOnly);
         QXmlStreamWriter writer(&buffer);
+        bool foundStyleSheet = false;
         while (!reader.atEnd()) {
-            if (reader.readNext() == QXmlStreamReader::StartElement && reader.qualifiedName() == QLatin1String("style")
+            reader.readNext();
+            if (!foundStyleSheet //
+                && reader.tokenType() == QXmlStreamReader::StartElement //
+                && reader.qualifiedName() == QLatin1String("style")
                 && reader.attributes().value(QLatin1String("id")) == QLatin1String("current-color-scheme")) {
                 writer.writeStartElement(QLatin1String("style"));
                 writer.writeAttributes(reader.attributes());
@@ -126,7 +130,8 @@ bool SharedSvgRenderer::load(const QByteArray &contents, const QString &styleShe
                 while (reader.tokenType() != QXmlStreamReader::EndElement) {
                     reader.readNext();
                 }
-            } else if (reader.tokenType() != QXmlStreamReader::Invalid) {
+                foundStyleSheet = true;
+            } else if (reader.tokenType() != QXmlStreamReader::Invalid && !reader.isWhitespace() && !reader.isComment()) {
                 writer.writeCurrentToken(reader);
             }
         }
