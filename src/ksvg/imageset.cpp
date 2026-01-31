@@ -79,7 +79,8 @@ ImageSet::~ImageSet()
         }
     } else {
         if (!d->ref.deref()) {
-            delete ImageSetPrivate::themes.take(d->imageSetName);
+            ImageSetPrivate::themes.remove(d->imageSetName);
+            delete d;
         }
     }
 }
