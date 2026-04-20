@@ -137,6 +137,7 @@ void SvgItem::setSvg(KSvg::Svg *svg)
         disconnect(m_svg.data(), nullptr, this, nullptr);
     }
     m_svg = svg;
+    updateDevicePixelRatio();
 
     if (svg) {
         connect(svg, &Svg::repaintNeeded, this, &SvgItem::updateNeeded);
