@@ -27,5 +27,6 @@ KSVG_UNIT_TESTS(
     framesvgtest
     imagesettest
     svgtest
+    itemtest
 )
 
