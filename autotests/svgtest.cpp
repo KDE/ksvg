@@ -10,6 +10,8 @@
 #include <QSignalSpy>
 #include <QTest>
 
+#include <KColorScheme>
+
 using namespace Qt::Literals;
 
 class SvgTest : public QObject
@@ -23,6 +25,7 @@ public Q_SLOTS:
 private Q_SLOTS:
     void testSize();
     void testElements();
+    void testColors();
 
 private:
     KSvg::Svg *m_svg;
@@ -114,6 +117,37 @@ void SvgTest::testElements()
     QCOMPARE(m_svg->elementSize("left"), QSizeF(35, 26));
 
     QCOMPARE(m_svg->elementRect("left").toRect(), QRect(8, 71, 35, 26));
+}
+
+void SvgTest::testColors()
+{
+    KColorScheme windowColors(QPalette::Normal, KColorScheme::Window);
+    KColorScheme selectionColors(QPalette::Active, KColorScheme::Selection);
+    KColorScheme viewColors(QPalette::Active, KColorScheme::View);
+
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), windowColors.foreground(KColorScheme::NormalText));
+
+    m_svg->setStatus(KSvg::Svg::Selected);
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), selectionColors.foreground(KColorScheme::NormalText));
+
+    m_svg->setStatus(KSvg::Svg::Inactive);
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), selectionColors.foreground(KColorScheme::InactiveText));
+
+    m_svg->setStatus(KSvg::Svg::Normal);
+    m_svg->setColorSet(KSvg::Svg::View);
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), viewColors.foreground(KColorScheme::NormalText));
+
+    m_svg->setStatus(KSvg::Svg::Selected);
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), selectionColors.foreground(KColorScheme::NormalText));
+
+    m_svg->setStatus(KSvg::Svg::Normal);
+
+    m_svg->setColor(KSvg::Svg::Text, QColor("#123456"));
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), QColor("#123456"));
+
+    m_svg->clearColorOverrides();
+
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), viewColors.foreground(KColorScheme::NormalText));
 }
 
 QTEST_MAIN(SvgTest)
