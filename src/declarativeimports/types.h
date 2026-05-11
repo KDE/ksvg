@@ -27,7 +27,6 @@ struct PlatformThemeForeign {
  */
 struct SvgForeign {
     Q_GADGET
-    QML_ELEMENT
     QML_NAMED_ELEMENT(Svg)
     QML_FOREIGN(KSvg::Svg)
 };
@@ -39,7 +38,6 @@ struct SvgForeign {
  */
 struct FrameSvgForeign {
     Q_GADGET
-    QML_ELEMENT
     QML_NAMED_ELEMENT(FrameSvg)
     QML_FOREIGN(KSvg::FrameSvg)
 };
@@ -51,7 +49,6 @@ struct FrameSvgForeign {
  */
 struct ImageSetForeign {
     Q_GADGET
-    QML_ELEMENT
     QML_SINGLETON
     QML_NAMED_ELEMENT(ImageSet)
     QML_FOREIGN(KSvg::ImageSet)
