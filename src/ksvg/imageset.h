@@ -11,7 +11,6 @@
 #include <QGuiApplication>
 #include <QObject>
 
-#include <KSharedConfig>
 #include <ksvg/ksvg_export.h>
 
 class KPluginMetaData;

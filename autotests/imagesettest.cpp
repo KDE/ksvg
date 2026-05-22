@@ -8,6 +8,7 @@
 
 #include <QDirIterator>
 #include <QSignalSpy>
+#include <QStandardPaths>
 #include <QTest>
 
 using namespace Qt::Literals;
