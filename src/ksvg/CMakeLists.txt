@@ -45,7 +45,6 @@ ecm_generate_export_header(KF6Svg
 target_link_libraries(KF6Svg
 PUBLIC
     Qt6::Gui
-    KF6::ConfigCore
 PRIVATE
     Qt6::Svg
     KF6::Archive
