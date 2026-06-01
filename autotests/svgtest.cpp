@@ -4,13 +4,17 @@
  *  SPDX-License-Identifier: LGPL-2.0-or-later
  */
 
-#include "svg.h"
-
 #include <QDirIterator>
 #include <QSignalSpy>
 #include <QTest>
 
 #include <KColorScheme>
+#include <KConfigGroup>
+
+// Cursed way to access SvgPrivate
+#define private public
+#include "../src/ksvg/private/svg_p.h"
+#include "svg.h"
 
 using namespace Qt::Literals;
 
@@ -21,11 +25,13 @@ class SvgTest : public QObject
 public Q_SLOTS:
     void initTestCase();
     void cleanupTestCase();
+    void cleanup();
 
 private Q_SLOTS:
     void testSize();
     void testElements();
     void testColors();
+    void testStylesheetOverrideColorChange();
 
 private:
     KSvg::Svg *m_svg;
@@ -69,6 +75,13 @@ void SvgTest::initTestCase()
 void SvgTest::cleanupTestCase()
 {
     m_themeDir.removeRecursively();
+}
+
+void SvgTest::cleanup()
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kdeglobals"));
+    KConfigGroup cg(config, "Colors:Window");
+    cg.deleteEntry("BackgroundNormal");
 }
 
 void SvgTest::testSize()
@@ -148,6 +161,39 @@ void SvgTest::testColors()
     m_svg->clearColorOverrides();
 
     QCOMPARE(m_svg->color(KSvg::Svg::Text), viewColors.foreground(KColorScheme::NormalText));
+}
+
+void SvgTest::testStylesheetOverrideColorChange()
+{
+    auto config = KSharedConfig::openConfig(QStringLiteral("kdeglobals"));
+    KColorScheme windowColors(QPalette::Normal, KColorScheme::Window, config);
+    auto set = new KSvg::ImageSet("testthemesystemcolors", "plasma/desktoptheme");
+    m_svg->setImageSet(set);
+    // Set a color override in the svg
+    m_svg->setColor(KSvg::Svg::Text, Qt::blue);
+    // set->setImageSetName(QStringLiteral("testthemesystemcolors"));
+
+    QSignalSpy spy(set, &KSvg::ImageSet::imageSetChanged);
+
+    QCOMPARE(m_svg->color(KSvg::Svg::Text), Qt::blue);
+
+    // Generate pixmap and stylesheet
+    m_svg->pixmap();
+    // Since we set a color, stylesheetOverride must be present
+    QVERIFY(!m_svg->d->stylesheetOverride.isEmpty());
+
+    // Simulate an application color scheme change, setting background to red
+    QPalette pal = qApp->palette();
+    KConfigGroup cg(config, "Colors:Window");
+    cg.writeEntry("BackgroundNormal", QStringLiteral("255,0,0"));
+    KColorScheme::adjustForeground(pal, KColorScheme::NormalText, QPalette::WindowText, KColorScheme::Window, config);
+    config->sync();
+    qApp->setPalette(pal);
+    // Wait the app color change is completely done, then regenerate pixmaps and stylesheets
+    QVERIFY(spy.wait());
+    m_svg->pixmap();
+    // The background in stylesheetoverride is now red
+    QVERIFY(m_svg->d->stylesheetOverride.contains(QStringLiteral(".ColorScheme-Background{color:#ff0000;}")));
 }
 
 QTEST_MAIN(SvgTest)

@@ -854,6 +854,10 @@ void SvgPrivate::imageSetChanged()
 
     QString currentPath = themed ? themePath : path;
     themePath.clear();
+    // If imageset colors changed, stylesheetOverride will lways be
+    // invalid, because it contains both the colors it overrides and the
+    // colors it doesn't, which come from imageset colors
+    stylesheetOverride.clear();
     eraseRenderer();
     setImagePath(currentPath);
     q->resize();

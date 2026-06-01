@@ -9,7 +9,7 @@ include(ECMAddTests)
 
 MACRO(KSVG_UNIT_TESTS)
        FOREACH(_testname ${ARGN})
-               set(libs Qt6::Qml Qt6::Test KF6::Svg
+               set(libs Qt6::Qml Qt6::Test KF6::Svg Qt6::Svg
                         KF6::Archive KF6::CoreAddons KF6::ConfigGui KF6::ColorScheme)
                if(QT_QTOPENGL_FOUND)
                    list(APPEND libs Qt6::OpenGL)
