@@ -653,6 +653,8 @@ public:
      */
     void clearColorOverrides();
 
+    bool eventFilter(QObject *watched, QEvent *event) override;
+
 Q_SIGNALS:
     /*!
      * \brief This signal is emitted whenever the SVG data has changed in such a
@@ -709,7 +711,6 @@ Q_SIGNALS:
 
 private:
     SvgPrivate *const d;
-    bool eventFilter(QObject *watched, QEvent *event) override;
 
     Q_PRIVATE_SLOT(d, void imageSetChanged())
     Q_PRIVATE_SLOT(d, void colorsChanged())
