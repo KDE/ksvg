@@ -73,17 +73,7 @@ public:
      *
      * Returns true when pixmap was found and loaded from cache, false otherwise
      **/
-    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified);
-
-    /*!
-     * Insert specified pixmap into the cache.
-     * If the cache already contains pixmap with the specified key then it is
-     * overwritten.
-     *
-     * \param key the name to use in the cache for this pixmap
-     * \param pix the pixmap data to store in the cache
-     **/
-    void insertIntoCache(const QString &key, const QPixmap &pix);
+    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified, qreal devicePixelRatio);
 
     /*!
      * Insert specified pixmap into the cache.

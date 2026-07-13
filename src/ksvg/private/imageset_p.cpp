@@ -604,7 +604,7 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
     return stylesheet;
 }
 
-bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
+bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified, qreal devicePixelRatio)
 {
     if (!useCache()) {
         return false;
@@ -638,19 +638,12 @@ bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int
     }
 
     QPixmap temp;
-    if (pixmapCache->findPixmap(key, &temp) && !temp.isNull()) {
+    if (pixmapCache->findPixmapWithDevicePixelRatio(key, &temp, devicePixelRatio) && !temp.isNull()) {
         pix = temp;
         return true;
     }
 
     return false;
-}
-
-void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix)
-{
-    if (useCache()) {
-        pixmapCache->insertPixmap(key, pix);
-    }
 }
 
 void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix, const QString &id)
