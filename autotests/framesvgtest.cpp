@@ -115,6 +115,34 @@ void FrameSvgTest::resizeMask()
     QCOMPARE(m_frameSvg->alphaMask().size(), QSize(100, 100));
 }
 
+void FrameSvgTest::solidCenter()
+{
+    // When the "center" element rasterizes to a single color, the frame interior must render as that
+    // exact color. This is the case the flat-fill fast path optimizes, and it must stay pixel-correct.
+    m_frameSvg->setElementPrefix(QString());
+    m_frameSvg->setEnabledBorders(KSvg::FrameSvg::AllBorders);
+    m_frameSvg->resizeFrame(QSize(100, 100));
+
+    const QImage frame = m_frameSvg->framePixmap().toImage();
+    QCOMPARE(frame.size(), QSize(100, 100));
+
+    // The color the "center" element itself rasterizes to.
+    const QImage center =
+        m_frameSvg->image(m_frameSvg->elementSize(QStringLiteral("center")).toSize(), QStringLiteral("center")).convertToFormat(QImage::Format_ARGB32);
+    QVERIFY(!center.isNull());
+    const QColor expected = QColor::fromRgba(center.pixel(0, 0));
+    QVERIFY(expected.alpha() > 0);
+
+    // Every pixel of the content rect (borders are 26px), inset slightly to stay clear of the
+    // antialiased border seam, must be exactly that color.
+    const QRect interior = QRect(26, 26, 48, 48).adjusted(2, 2, -2, -2);
+    for (int y = interior.top(); y <= interior.bottom(); ++y) {
+        for (int x = interior.left(); x <= interior.right(); ++x) {
+            QCOMPARE(frame.pixelColor(x, y), expected);
+        }
+    }
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;

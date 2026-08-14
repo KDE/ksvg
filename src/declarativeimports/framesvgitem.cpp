@@ -604,6 +604,14 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
             FrameItemNode::FitMode borderFitMode = stretchBorders ? FrameItemNode::Stretch : FrameItemNode::Tile;
             FrameItemNode::FitMode centerFitMode = tileCenter ? FrameItemNode::Tile : FrameItemNode::Stretch;
 
+            // A center that rasterizes to a single color (a flat, recolored theme background) does not
+            // need to be re-rendered at the full frame size on every resize; the native-size element
+            // stretched by the GPU is identical, avoids a frame-sized texture, and can share the atlas.
+            QColor solidCenter;
+            if (centerFitMode == FrameItemNode::Stretch && m_frameSvg->d->frame && m_frameSvg->d->solidCenterColor(m_frameSvg->d->frame, solidCenter)) {
+                centerFitMode = FrameItemNode::FastStretch;
+            }
+
             new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode);
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);

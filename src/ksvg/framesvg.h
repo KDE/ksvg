@@ -503,6 +503,7 @@ private:
     FrameSvgPrivate *const d;
     friend class FrameData;
     friend class Svg;
+    friend class FrameSvgItem;
 };
 
 Q_DECLARE_OPERATORS_FOR_FLAGS(FrameSvg::EnabledBorders)

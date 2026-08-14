@@ -10,7 +10,10 @@
 
 #include <QCache>
 #include <QHash>
+#include <QImage>
 #include <QStringBuilder>
+
+#include <algorithm>
 
 #include <QDebug>
 
@@ -41,6 +44,8 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
+        , centerSolidValid(false)
+        , centerIsSolid(false)
         , imageSet(nullptr)
     {
     }
@@ -63,6 +68,8 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
+        , centerSolidValid(false)
+        , centerIsSolid(false)
         , imageSet(nullptr)
     {
     }
@@ -76,6 +83,8 @@ public:
     QMap<Svg::StyleSheetColor, QColor> colorOverrides;
     FrameSvg::EnabledBorders enabledBorders;
     QPixmap cachedBackground;
+    // Cached result of the "center" element uniformity check, valid for this frame variant.
+    QColor centerColor;
     QCache<uint, QRegion> cachedMasks;
     static const int MAX_CACHED_MASKS = 10;
     uint lastModified = 0;
@@ -120,6 +129,9 @@ public:
     bool stretchBorders : 1;
     bool tileCenter : 1;
     bool composeOverBorder : 1;
+    // Whether solidCenterColor() has run for this frame variant, and its outcome.
+    bool centerSolidValid : 1;
+    bool centerIsSolid : 1;
 
     KSvg::ImageSetPrivate *imageSet;
 };
@@ -170,6 +182,64 @@ public:
                      const QRectF &output) const;
     void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border, const QRectF &output) const;
     void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRectF &contentRect, const QSizeF &fullSize);
+    // Returns true and sets color if the frame's "center" element rasterizes to a single uniform
+    // color, so it can be drawn as a flat fill instead of a full-size texture.
+    // Defined inline so both the FrameSvg painting code and the QML item can share one detector.
+    bool solidCenterColor(const QSharedPointer<FrameData> &frame, QColor &color)
+    {
+        if (frame->centerSolidValid) {
+            color = frame->centerColor;
+            return frame->centerIsSolid;
+        }
+
+        frame->centerSolidValid = true;
+        frame->centerIsSolid = false;
+
+        // Whether the center is a single color, and which one, depends on the image, prefix, color set
+        // and overrides, but never on the frame size, so the outcome is cached across sizes and only
+        // recomputed when one of those changes. Frames are read from the render thread only while the
+        // GUI thread is blocked for synchronization, so this shares the lock-free access of s_sharedFrames.
+        size_t colorsHash = 0;
+        for (const auto &[styleColor, color] : frame->colorOverrides.asKeyValueRange()) {
+            colorsHash = qHashMulti(colorsHash, int(styleColor), color.rgba());
+        }
+        const size_t key = qHashMulti(colorsHash, frame->imagePath, frame->prefix, int(q->status()), frame->colorSet, q->Svg::d->lastModified);
+
+        static QHash<size_t, QPair<bool, QColor>> s_solidCenters;
+        const auto cached = s_solidCenters.constFind(key);
+        if (cached != s_solidCenters.constEnd()) {
+            frame->centerIsSolid = cached->first;
+            frame->centerColor = cached->second;
+            color = cached->second;
+            return cached->first;
+        }
+
+        const QString centerElementId = frame->prefix % QLatin1String("center");
+        // Render the element at its native size, which is small, and check whether every pixel is the
+        // same. A recolored flat element (currentColor from the color scheme) resolves to one color, so
+        // it can be drawn as a fill; a gradient or detailed element does not and keeps the texture path.
+        const QImage image = q->image(q->elementSize(centerElementId).toSize(), centerElementId).convertToFormat(QImage::Format_ARGB32);
+        if (!image.isNull()) {
+            const QRgb first = image.pixel(0, 0);
+            bool uniform = true;
+            for (int y = 0; y < image.height() && uniform; ++y) {
+                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+                uniform = std::ranges::all_of(line, line + image.width(), [first](QRgb pixel) {
+                    return pixel == first;
+                });
+            }
+            if (uniform) {
+                frame->centerIsSolid = true;
+                frame->centerColor = QColor::fromRgba(first);
+            }
+        }
+
+        const bool solid = frame->centerIsSolid;
+        s_solidCenters.insert(key, qMakePair(solid, frame->centerColor));
+
+        color = frame->centerColor;
+        return frame->centerIsSolid;
+    }
 
     QRectF contentGeometry(const QSharedPointer<FrameData> &frame, const QSizeF &size) const;
     void updateFrameData(uint lastModified, UpdateType updateType = UpdateFrameAndMargins);

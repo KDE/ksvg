@@ -783,7 +783,10 @@ void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &
     // fullSize and contentRect are in device pixels
     if (!contentRect.isEmpty()) {
         const QString centerElementId = frame->prefix % QLatin1String("center");
-        if (frame->tileCenter) {
+        QColor solidColor;
+        if (!frame->tileCenter && !frame->composeOverBorder && solidCenterColor(frame, solidColor)) {
+            p.fillRect(FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize * q->devicePixelRatio()), solidColor);
+        } else if (frame->tileCenter) {
             QSizeF centerTileSize = q->elementSize(centerElementId);
             QPixmap center(centerTileSize.toSize());
             center.fill(Qt::transparent);
