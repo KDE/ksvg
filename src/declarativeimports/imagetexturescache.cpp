@@ -5,6 +5,8 @@
 */
 
 #include "imagetexturescache.h"
+#include <QMutex>
+#include <QMutexLocker>
 #include <QSGTexture>
 
 typedef QHash<qint64, QHash<QWindow *, QWeakPointer<QSGTexture>>> TexturesCache;
@@ -13,6 +15,9 @@ class ImageTexturesCachePrivate
 {
 public:
     TexturesCache cache;
+    // Items ask for their textures from the render thread of the window they are in, and a window has its
+    // own, so the cache is reached from several threads at once.
+    QMutex lock;
 };
 
 ImageTexturesCache::ImageTexturesCache()
@@ -24,13 +29,21 @@ ImageTexturesCache::~ImageTexturesCache()
 {
 }
 
+ImageTexturesCache *ImageTexturesCache::instance()
+{
+    static ImageTexturesCache cache;
+    return &cache;
+}
+
 QSharedPointer<QSGTexture> ImageTexturesCache::loadTexture(QQuickWindow *window, const QImage &image, QQuickWindow::CreateTextureOptions options)
 {
     qint64 id = image.cacheKey();
+    QMutexLocker locked(&d->lock);
     QSharedPointer<QSGTexture> texture = d->cache.value(id).value(window).toStrongRef();
 
     if (!texture) {
         auto cleanAndDelete = [this, window, id](QSGTexture *texture) {
+            QMutexLocker locked(&d->lock);
             QHash<QWindow *, QWeakPointer<QSGTexture>> &textures = (d->cache)[id];
             textures.remove(window);
             if (textures.isEmpty()) {
