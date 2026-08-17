@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- A frame whose centre shades down its height and so is every column alike: it needs no more pixels
+     across than the element has, whatever width the frame is given. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" version="1.1">
+  <defs>
+    <linearGradient id="downTheHeight" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3daee9" />
+      <stop offset="1" stop-color="#204a87" />
+    </linearGradient>
+  </defs>
+
+  <rect id="topleft" x="0" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="top" x="8" y="0" width="24" height="8" fill="#204a87" />
+  <rect id="topright" x="32" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="left" x="0" y="8" width="8" height="24" fill="#204a87" />
+  <rect id="right" x="32" y="8" width="8" height="24" fill="#204a87" />
+  <rect id="bottomleft" x="0" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="bottom" x="8" y="32" width="24" height="8" fill="#204a87" />
+  <rect id="bottomright" x="32" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="center" x="8" y="8" width="24" height="24" fill="url(#downTheHeight)" />
+</svg>

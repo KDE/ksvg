@@ -79,13 +79,21 @@ public:
         Tile,
     };
 
-    FrameItemNode(FrameSvgItem *frameSvg, FrameSvg::EnabledBorders borders, FitMode fitMode, QSGNode *parent)
+    FrameItemNode(FrameSvgItem *frameSvg, FrameSvg::EnabledBorders borders, FitMode fitMode, QSGNode *parent, Qt::Orientations nativeAxes = {})
         : ManagedTextureNode()
         , m_frameSvg(frameSvg)
         , m_border(borders)
         , m_fitMode(fitMode)
+        , m_nativeAxes(nativeAxes)
     {
         parent->appendChildNode(this);
+
+        if (m_fitMode == Stretch && m_nativeAxes) {
+            // An element which repeats along an axis needs no more pixels than its own along that axis,
+            // so the size it is re-rendered at is clamped there and the node stretches it back out.
+            m_elementNativeSize =
+                m_frameSvg->frameSvg()->elementSize(m_frameSvg->frameSvg()->actualPrefix() % FrameSvgHelpers::borderToElementId(m_border)).toSize();
+        }
 
         if (m_fitMode == Tile) {
             if (m_border == FrameSvg::TopBorder || m_border == FrameSvg::BottomBorder || m_border == FrameSvg::NoBorder) {
@@ -152,8 +160,15 @@ public:
 
             QString elementId = prefix + FrameSvgHelpers::borderToElementId(m_border);
 
-            // re-render the SVG at new size
-            updateTexture(nodeRect.size().toSize(), elementId);
+            // re-render the SVG at new size, no larger than it has to be along an axis it repeats along
+            QSize renderSize = nodeRect.size().toSize();
+            if (m_nativeAxes & Qt::Horizontal && m_elementNativeSize.width() > 0) {
+                renderSize.setWidth(qMin(renderSize.width(), m_elementNativeSize.width()));
+            }
+            if (m_nativeAxes & Qt::Vertical && m_elementNativeSize.height() > 0) {
+                renderSize.setHeight(qMin(renderSize.height(), m_elementNativeSize.height()));
+            }
+            updateTexture(renderSize, elementId);
             textureRect = texture()->normalizedTextureSubRect();
         } else if (texture()) { // for fast stretch.
             textureRect = texture()->normalizedTextureSubRect();
@@ -168,6 +183,7 @@ private:
     FrameSvg::EnabledBorders m_border;
     QSize m_elementNativeSize;
     FitMode m_fitMode;
+    Qt::Orientations m_nativeAxes;
 };
 
 FrameSvgItemMargins::FrameSvgItemMargins(KSvg::FrameSvg *frameSvg, QObject *parent)
@@ -612,6 +628,13 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 centerFitMode = FrameItemNode::FastStretch;
             }
 
+            // A center which repeats along one axis only, a gradient down its height being the common
+            // one, keeps its own size along that axis rather than the frame's.
+            Qt::Orientations centerNativeAxes;
+            if (centerFitMode == FrameItemNode::Stretch && m_frameSvg->d->frame) {
+                centerNativeAxes = m_frameSvg->d->centerNativeAxes(m_frameSvg->d->frame);
+            }
+
             // A border which repeats along the axis the frame stretches it is the same drawn from its
             // native size texture, which spares a frame-sized texture and a re-render at every size.
             auto sideFitMode = [this, borderFitMode](FrameSvg::EnabledBorders border) {
@@ -624,7 +647,7 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 return FrameItemNode::FastStretch;
             };
 
-            new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode);
+            new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode, centerNativeAxes);
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
             }

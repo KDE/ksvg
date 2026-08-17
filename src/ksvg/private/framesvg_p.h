@@ -26,6 +26,21 @@
 
 namespace KSvg
 {
+// What one rasterization of an element says about the cheapest way to draw it at any size.
+struct Uniformity {
+    // Every column alike, so the element needs no more than its own width and a horizontal stretch.
+    bool alongX = false;
+    // Every row alike, so it needs no more than its own height and a vertical stretch.
+    bool alongY = false;
+    // The one color, when it is uniform both ways.
+    QRgb color = 0;
+
+    bool uniform() const
+    {
+        return alongX && alongY;
+    }
+};
+
 class FrameData
 {
 public:
@@ -46,8 +61,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
-        , centerSolidValid(false)
-        , centerIsSolid(false)
+        , centerChecked(false)
         , imageSet(nullptr)
     {
     }
@@ -70,8 +84,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
-        , centerSolidValid(false)
-        , centerIsSolid(false)
+        , centerChecked(false)
         , imageSet(nullptr)
     {
     }
@@ -86,7 +99,7 @@ public:
     FrameSvg::EnabledBorders enabledBorders;
     QPixmap cachedBackground;
     // Cached result of the "center" element uniformity check, valid for this frame variant.
-    QColor centerColor;
+    Uniformity centerUniformity;
     // Which borders were found to repeat along the axis a frame stretches them, and which of them have
     // been asked about at all. Same variant, same answer, whatever the frame size.
     FrameSvg::EnabledBorders stretchableBorders;
@@ -135,9 +148,8 @@ public:
     bool stretchBorders : 1;
     bool tileCenter : 1;
     bool composeOverBorder : 1;
-    // Whether solidCenterColor() has run for this frame variant, and its outcome.
-    bool centerSolidValid : 1;
-    bool centerIsSolid : 1;
+    // Whether the center element has been rasterized and asked about for this frame variant.
+    bool centerChecked : 1;
 
     KSvg::ImageSetPrivate *imageSet;
 };
@@ -192,6 +204,110 @@ public:
     static constexpr int MinimumCheckSide = 32;
 
     /*
+     * What one rasterization of an element says: which axes its picture repeats along, whether it draws
+     * anything at all, and its color when it is one color. Every fast path here rests on this question,
+     * asked once per frame variant.
+     *
+     * The size to ask at is the caller's, because it differs: a floor of MinimumCheckSide along an axis
+     * the frame stretches, since a shape whose variation is finer than a pixel at its own size would go
+     * unnoticed there and show itself once stretched, and the element's own size across an axis which
+     * keeps its native measure.
+     */
+    Uniformity uniformity(const QString &elementId, const QSize &checkSize) const
+    {
+        Uniformity answer;
+        const QImage image = q->image(checkSize, elementId).convertToFormat(QImage::Format_ARGB32);
+        if (image.isNull()) {
+            return answer;
+        }
+
+        answer.alongX = true;
+        for (int y = 0; y < image.height() && answer.alongX; ++y) {
+            const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+            answer.alongX = std::ranges::all_of(line, line + image.width(), [line](QRgb pixel) {
+                return pixel == line[0];
+            });
+        }
+
+        answer.alongY = true;
+        const QRgb *first = reinterpret_cast<const QRgb *>(image.constScanLine(0));
+        for (int y = 1; y < image.height() && answer.alongY; ++y) {
+            const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+            answer.alongY = std::equal(line, line + image.width(), first);
+        }
+
+        answer.color = first[0];
+        return answer;
+    }
+
+    /*
+     * The center element's rasterization, cached for this frame variant. Which axes it repeats along,
+     * whether it draws anything, and its color if it is one color, never depend on the frame size, so
+     * they are worked out once and kept.
+     */
+    const Uniformity &centerUniformity(const QSharedPointer<FrameData> &frame) const
+    {
+        if (frame->centerChecked) {
+            return frame->centerUniformity;
+        }
+        frame->centerChecked = true;
+
+        // The answer depends on the image, prefix, color set and overrides, but never on the frame size,
+        // so it is shared by every frame of the variant. Frames are read from the render thread only
+        // while the GUI thread is blocked for synchronization, so this shares the lock-free access of
+        // s_sharedFrames.
+        size_t colorsHash = 0;
+        for (const auto &[styleColor, color] : frame->colorOverrides.asKeyValueRange()) {
+            colorsHash = qHashMulti(colorsHash, int(styleColor), color.rgba());
+        }
+        const size_t key = qHashMulti(colorsHash, frame->imagePath, frame->prefix, int(q->status()), frame->colorSet, q->Svg::d->lastModified);
+
+        static QHash<size_t, Uniformity> s_centers;
+        const auto cached = s_centers.constFind(key);
+        if (cached != s_centers.constEnd()) {
+            frame->centerUniformity = *cached;
+            return frame->centerUniformity;
+        }
+
+        const QString centerElementId = frame->prefix % QLatin1String("center");
+        const QSizeF nativeSize = q->elementSize(centerElementId);
+        // A frame stretches its center both ways, so the floor applies to both.
+        const QSize checkSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
+        frame->centerUniformity = uniformity(centerElementId, checkSize);
+        s_centers.insert(key, frame->centerUniformity);
+        return frame->centerUniformity;
+    }
+
+    // Returns true and sets color if the frame's "center" element rasterizes to a single uniform
+    // color, so it can be drawn as a flat fill instead of a full-size texture.
+    // Defined inline so both the FrameSvg painting code and the QML item can share one detector.
+    bool solidCenterColor(const QSharedPointer<FrameData> &frame, QColor &color) const
+    {
+        const Uniformity &center = centerUniformity(frame);
+        color = QColor::fromRgba(center.color);
+        return center.uniform();
+    }
+
+    /*
+     * The axes the center repeats along when it is not one color: a center which is a gradient down its
+     * height is every column alike, so it needs no more pixels across than the element has, whatever the
+     * frame's width. Rendering it that narrow and stretching that axis is what rendering it at the
+     * frame's width gives, pixel for pixel, since the columns are identical.
+     */
+    Qt::Orientations centerNativeAxes(const QSharedPointer<FrameData> &frame) const
+    {
+        const Uniformity &center = centerUniformity(frame);
+        Qt::Orientations axes;
+        if (center.alongX) {
+            axes |= Qt::Horizontal;
+        }
+        if (center.alongY) {
+            axes |= Qt::Vertical;
+        }
+        return axes;
+    }
+
+    /*
      * Whether the given border repeats along the axis the frame stretches it: every column alike for
      * the top and bottom, every row alike for the left and right. Such a border drawn from its native
      * size texture, stretched by the GPU, is what re-rendering it at every frame size produces, so the
@@ -200,10 +316,18 @@ public:
      * The answer holds for the image, prefix and color set, not for the size, so it is cached per
      * frame variant like the centre's.
      */
-    bool stretchableBorder(const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border)
+    bool stretchableBorder(const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border) const
+    {
+        borderUniformity(frame, border);
+        return frame->stretchableBorders & border;
+    }
+
+private:
+    // Rasterizes a border once and records both answers about it in the frame, for the whole variant.
+    void borderUniformity(const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border) const
     {
         if (frame->askedBorders & border) {
-            return frame->stretchableBorders & border;
+            return;
         }
         frame->askedBorders |= border;
 
@@ -211,111 +335,20 @@ public:
         const QString elementId = frame->prefix % FrameSvgHelpers::borderToElementId(border);
         const QSizeF nativeSize = q->elementSize(elementId);
         if (nativeSize.isEmpty()) {
-            return false;
+            return;
         }
 
         // Along the stretched axis the element is asked for at a floor, for the same reason the centre
-        // is: a shape whose variation is finer than a pixel at native size would go unnoticed there and
-        // show itself once stretched. Across it the element keeps its own size, which is the thickness
-        // the frame gives it.
+        // is. Across it the element keeps its own size, which is the thickness the frame gives it.
         const QSize checkSize = horizontal ? QSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qCeil(nativeSize.height()))
                                            : QSize(qCeil(nativeSize.width()), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
-        const QImage image = q->image(checkSize, elementId).convertToFormat(QImage::Format_ARGB32);
-        if (image.isNull()) {
-            return false;
-        }
-
-        bool repeats = true;
-        if (horizontal) {
-            // One column repeated, so widening it is a horizontal stretch.
-            for (int y = 0; y < image.height() && repeats; ++y) {
-                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
-                repeats = std::all_of(line, line + image.width(), [line](QRgb pixel) {
-                    return pixel == line[0];
-                });
-            }
-        } else {
-            // One row repeated, so heightening it is a vertical stretch.
-            const QRgb *first = reinterpret_cast<const QRgb *>(image.constScanLine(0));
-            for (int y = 1; y < image.height() && repeats; ++y) {
-                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
-                repeats = std::equal(line, line + image.width(), first);
-            }
-        }
-
-        if (repeats) {
+        const Uniformity side = uniformity(elementId, checkSize);
+        if (horizontal ? side.alongX : side.alongY) {
             frame->stretchableBorders |= border;
         }
-        return repeats;
     }
 
-    // Returns true and sets color if the frame's "center" element rasterizes to a single uniform
-    // color, so it can be drawn as a flat fill instead of a full-size texture.
-    // Defined inline so both the FrameSvg painting code and the QML item can share one detector.
-    bool solidCenterColor(const QSharedPointer<FrameData> &frame, QColor &color)
-    {
-        if (frame->centerSolidValid) {
-            color = frame->centerColor;
-            return frame->centerIsSolid;
-        }
-
-        frame->centerSolidValid = true;
-        frame->centerIsSolid = false;
-
-        // Whether the center is a single color, and which one, depends on the image, prefix, color set
-        // and overrides, but never on the frame size, so the outcome is cached across sizes and only
-        // recomputed when one of those changes. Frames are read from the render thread only while the
-        // GUI thread is blocked for synchronization, so this shares the lock-free access of s_sharedFrames.
-        size_t colorsHash = 0;
-        for (const auto &[styleColor, color] : frame->colorOverrides.asKeyValueRange()) {
-            colorsHash = qHashMulti(colorsHash, int(styleColor), color.rgba());
-        }
-        const size_t key = qHashMulti(colorsHash, frame->imagePath, frame->prefix, int(q->status()), frame->colorSet, q->Svg::d->lastModified);
-
-        static QHash<size_t, QPair<bool, QColor>> s_solidCenters;
-        const auto cached = s_solidCenters.constFind(key);
-        if (cached != s_solidCenters.constEnd()) {
-            frame->centerIsSolid = cached->first;
-            frame->centerColor = cached->second;
-            color = cached->second;
-            return cached->first;
-        }
-
-        const QString centerElementId = frame->prefix % QLatin1String("center");
-        // Render the element and check whether every pixel is the same. A recolored flat element
-        // (currentColor from the color scheme) resolves to one color, so it can be drawn as a fill; a
-        // gradient or detailed element does not and keeps the texture path.
-        //
-        // The element's own size is not enough to ask at: a shape can lose what makes it not flat when
-        // it is that small. A rounded corner narrower than a pixel, or a gradient finer than one,
-        // rasterizes to a single color there and shows itself once the frame stretches it. So the
-        // check is made at a floor of MinimumCheckSide pixels a side, which keeps it a rasterization
-        // of a few microseconds, once per frame variant.
-        const QSizeF nativeSize = q->elementSize(centerElementId);
-        const QSize checkSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
-        const QImage image = q->image(checkSize, centerElementId).convertToFormat(QImage::Format_ARGB32);
-        if (!image.isNull()) {
-            const QRgb first = image.pixel(0, 0);
-            bool uniform = true;
-            for (int y = 0; y < image.height() && uniform; ++y) {
-                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
-                uniform = std::ranges::all_of(line, line + image.width(), [first](QRgb pixel) {
-                    return pixel == first;
-                });
-            }
-            if (uniform) {
-                frame->centerIsSolid = true;
-                frame->centerColor = QColor::fromRgba(first);
-            }
-        }
-
-        const bool solid = frame->centerIsSolid;
-        s_solidCenters.insert(key, qMakePair(solid, frame->centerColor));
-
-        color = frame->centerColor;
-        return frame->centerIsSolid;
-    }
-
+public:
     QRectF contentGeometry(const QSharedPointer<FrameData> &frame, const QSizeF &size) const;
     void updateFrameData(uint lastModified, UpdateType updateType = UpdateFrameAndMargins);
     QSharedPointer<FrameData> lookupOrCreateMaskFrame(const QSharedPointer<FrameData> &frame, const QString &maskPrefix, const QString &maskRequestedPrefix);

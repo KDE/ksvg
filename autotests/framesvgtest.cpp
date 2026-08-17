@@ -191,6 +191,31 @@ void FrameSvgTest::stretchingABorderMatchesRenderingIt()
     QVERIFY(changingStretched != frame.image(changingWide, QStringLiteral("bumpy-top")));
 }
 
+void FrameSvgTest::aCenterWhichRepeatsOneWayStretchesAlongThatAxisOnly()
+{
+    // What the fast path for a centre which is not one colour rests on. A centre shading down its height
+    // is every column alike, so widening it is a stretch of its own narrow rendering, and the frame needs
+    // no more pixels across than the element has. Along the axis it shades, it is not: rendering it short
+    // and stretching that would band the gradient, so that axis has to keep the frame's size.
+    KSvg::FrameSvg frame;
+    frame.setImagePath(QFINDTESTDATA("data/gradientcenter.svg"));
+    QVERIFY(frame.isValid());
+
+    const QSize own = frame.elementSize(QStringLiteral("center")).toSize();
+    QVERIFY(!own.isEmpty());
+
+    // Not a whole multiple of the element, so a nearest neighbour stretch has to land between the source
+    // pixels rather than on them.
+    const QSize wide(own.width() * 8 + 3, own.height() * 4 + 1);
+    const QImage acrossItsWidth =
+        frame.image(QSize(own.width(), wide.height()), QStringLiteral("center")).scaled(wide, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QCOMPARE(acrossItsWidth, frame.image(wide, QStringLiteral("center")));
+
+    const QImage downItsHeight =
+        frame.image(QSize(wide.width(), own.height()), QStringLiteral("center")).scaled(wide, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QVERIFY(downItsHeight != frame.image(wide, QStringLiteral("center")));
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
