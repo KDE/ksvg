@@ -781,7 +781,7 @@ void FrameSvgPrivate::updateFrameData(uint lastModified, UpdateType updateType)
 void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRectF &contentRect, const QSizeF &fullSize)
 {
     // fullSize and contentRect are in device pixels
-    if (!contentRect.isEmpty()) {
+    if (!contentRect.isEmpty() && !drawsNothing(frame, FrameSvg::NoBorder)) {
         const QString centerElementId = frame->prefix % QLatin1String("center");
         QColor solidColor;
         if (!frame->tileCenter && !frame->composeOverBorder && solidCenterColor(frame, solidColor)) {
@@ -824,7 +824,7 @@ void FrameSvgPrivate::paintBorder(QPainter &p,
 {
     // size and contentRect are in device pixels
     QString side = frame->prefix % FrameSvgHelpers::borderToElementId(borders);
-    if (frame->enabledBorders & borders && q->hasElement(side) && !size.isEmpty()) {
+    if (frame->enabledBorders & borders && q->hasElement(side) && !size.isEmpty() && !drawsNothing(frame, borders)) {
         if (frame->stretchBorders) {
             q->paint(&p, FrameSvgHelpers::sectionRect(borders, contentRect, frame->frameSize * q->devicePixelRatio()), side);
         } else {

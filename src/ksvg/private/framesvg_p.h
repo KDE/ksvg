@@ -32,6 +32,8 @@ struct Uniformity {
     bool alongX = false;
     // Every row alike, so it needs no more than its own height and a vertical stretch.
     bool alongY = false;
+    // Nothing is drawn at all, so there is nothing to render, upload or put in the scene.
+    bool blank = false;
     // The one color, when it is uniform both ways.
     QRgb color = 0;
 
@@ -100,9 +102,10 @@ public:
     QPixmap cachedBackground;
     // Cached result of the "center" element uniformity check, valid for this frame variant.
     Uniformity centerUniformity;
-    // Which borders were found to repeat along the axis a frame stretches them, and which of them have
-    // been asked about at all. Same variant, same answer, whatever the frame size.
+    // Which borders were found to repeat along the axis a frame stretches them, which of them draw
+    // nothing at all, and which have been asked about. Same variant, same answer, whatever the size.
     FrameSvg::EnabledBorders stretchableBorders;
+    FrameSvg::EnabledBorders blankBorders;
     FrameSvg::EnabledBorders askedBorders;
     QCache<uint, QRegion> cachedMasks;
     static const int MAX_CACHED_MASKS = 10;
@@ -237,6 +240,7 @@ public:
         }
 
         answer.color = first[0];
+        answer.blank = answer.uniform() && qAlpha(answer.color) == 0;
         return answer;
     }
 
@@ -308,6 +312,20 @@ public:
     }
 
     /*
+     * Whether the given border or the center draws nothing at all. A shadow frame is borders only, and
+     * its "center" element exists but is empty, so every dialog, tooltip and panel background carrying
+     * one has a part which costs a rasterization, a texture and a node to draw nothing.
+     */
+    bool drawsNothing(const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border) const
+    {
+        if (border == FrameSvg::NoBorder) {
+            return centerUniformity(frame).blank;
+        }
+        borderUniformity(frame, border);
+        return frame->blankBorders & border;
+    }
+
+    /*
      * Whether the given border repeats along the axis the frame stretches it: every column alike for
      * the top and bottom, every row alike for the left and right. Such a border drawn from its native
      * size texture, stretched by the GPU, is what re-rendering it at every frame size produces, so the
@@ -345,6 +363,9 @@ private:
         const Uniformity side = uniformity(elementId, checkSize);
         if (horizontal ? side.alongX : side.alongY) {
             frame->stretchableBorders |= border;
+        }
+        if (side.blank) {
+            frame->blankBorders |= border;
         }
     }
 

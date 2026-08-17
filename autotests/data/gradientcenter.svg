@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
 <!-- A frame whose centre shades down its height and so is every column alike: it needs no more pixels
-     across than the element has, whatever width the frame is given. -->
+     across than the element has, whatever width the frame is given. The empty- prefix is the other case,
+     a frame whose centre exists but draws nothing, the shape a shadow frame has. -->
 <svg xmlns="http://www.w3.org/2000/svg" width="120" height="60" version="1.1">
   <defs>
     <linearGradient id="downTheHeight" x1="0" y1="0" x2="0" y2="1">
@@ -18,4 +19,14 @@
   <rect id="bottom" x="8" y="32" width="24" height="8" fill="#204a87" />
   <rect id="bottomright" x="32" y="32" width="8" height="8" fill="#204a87" />
   <rect id="center" x="8" y="8" width="24" height="24" fill="url(#downTheHeight)" />
+
+  <rect id="empty-topleft" x="60" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="empty-top" x="68" y="0" width="24" height="8" fill="#204a87" />
+  <rect id="empty-topright" x="92" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="empty-left" x="60" y="8" width="8" height="24" fill="#204a87" />
+  <rect id="empty-right" x="92" y="8" width="8" height="24" fill="#204a87" />
+  <rect id="empty-bottomleft" x="60" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="empty-bottom" x="68" y="32" width="24" height="8" fill="#204a87" />
+  <rect id="empty-bottomright" x="92" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="empty-center" x="68" y="8" width="24" height="24" fill="none" />
 </svg>

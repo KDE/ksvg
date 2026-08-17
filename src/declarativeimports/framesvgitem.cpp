@@ -635,6 +635,11 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 centerNativeAxes = m_frameSvg->d->centerNativeAxes(m_frameSvg->d->frame);
             }
 
+            // A part which draws nothing, a shadow frame's center being the common one, needs no node.
+            auto draws = [this](FrameSvg::EnabledBorders border) {
+                return !m_frameSvg->d->frame || !m_frameSvg->d->drawsNothing(m_frameSvg->d->frame, border);
+            };
+
             // A border which repeats along the axis the frame stretches it is the same drawn from its
             // native size texture, which spares a frame-sized texture and a re-render at every size.
             auto sideFitMode = [this, borderFitMode](FrameSvg::EnabledBorders border) {
@@ -647,17 +652,19 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 return FrameItemNode::FastStretch;
             };
 
-            new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode, centerNativeAxes);
+            if (draws(FrameSvg::NoBorder)) {
+                new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode, centerNativeAxes);
+            }
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
             }
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::RightBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
-            if (enabledBorders() & FrameSvg::TopBorder) {
+            if (enabledBorders() & FrameSvg::TopBorder && draws(FrameSvg::TopBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder, sideFitMode(FrameSvg::TopBorder), oldNode);
             }
-            if (enabledBorders() & FrameSvg::BottomBorder) {
+            if (enabledBorders() & FrameSvg::BottomBorder && draws(FrameSvg::BottomBorder)) {
                 new FrameItemNode(this, FrameSvg::BottomBorder, sideFitMode(FrameSvg::BottomBorder), oldNode);
             }
             if (enabledBorders() & (FrameSvg::BottomBorder | FrameSvg::LeftBorder)) {
@@ -666,10 +673,10 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
             if (enabledBorders() & (FrameSvg::BottomBorder | FrameSvg::RightBorder)) {
                 new FrameItemNode(this, FrameSvg::BottomBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
-            if (enabledBorders() & FrameSvg::LeftBorder) {
+            if (enabledBorders() & FrameSvg::LeftBorder && draws(FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::LeftBorder, sideFitMode(FrameSvg::LeftBorder), oldNode);
             }
-            if (enabledBorders() & FrameSvg::RightBorder) {
+            if (enabledBorders() & FrameSvg::RightBorder && draws(FrameSvg::RightBorder)) {
                 new FrameItemNode(this, FrameSvg::RightBorder, sideFitMode(FrameSvg::RightBorder), oldNode);
             }
 

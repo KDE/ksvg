@@ -28,6 +28,7 @@ private Q_SLOTS:
     void roundedCenterIsNotFlat();
     void stretchingABorderMatchesRenderingIt();
     void aCenterWhichRepeatsOneWayStretchesAlongThatAxisOnly();
+    void aPartWhichDrawsNothingLeavesItsAreaAlone();
     void loadQrc();
 
 private:

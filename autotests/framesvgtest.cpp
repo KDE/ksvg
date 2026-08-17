@@ -216,6 +216,34 @@ void FrameSvgTest::aCenterWhichRepeatsOneWayStretchesAlongThatAxisOnly()
     QVERIFY(downItsHeight != frame.image(wide, QStringLiteral("center")));
 }
 
+void FrameSvgTest::aPartWhichDrawsNothingLeavesItsAreaAlone()
+{
+    // A part whose element exists but draws nothing, which is the shape of a shadow frame's centre, is
+    // skipped rather than rendered and composed. What that must not do is skip anything which does draw,
+    // so the borders around the empty centre have to come out as before.
+    KSvg::FrameSvg frame;
+    frame.setImagePath(QFINDTESTDATA("data/gradientcenter.svg"));
+    QVERIFY(frame.isValid());
+    frame.setElementPrefix(QStringLiteral("empty"));
+    frame.setEnabledBorders(KSvg::FrameSvg::AllBorders);
+    frame.resizeFrame(QSize(240, 120));
+
+    const QImage image = frame.framePixmap().toImage().convertToFormat(QImage::Format_ARGB32);
+    QCOMPARE(image.size(), QSize(240, 120));
+
+    const QRect content = frame.contentsRect().toRect().adjusted(2, 2, -2, -2);
+    QVERIFY(content.width() > 20 && content.height() > 20);
+    for (int y = content.top(); y <= content.bottom(); y += 4) {
+        for (int x = content.left(); x <= content.right(); x += 4) {
+            QCOMPARE(image.pixelColor(x, y).alpha(), 0);
+        }
+    }
+
+    // The borders are opaque in the fixture, and they are what must survive the skipping.
+    QCOMPARE(image.pixelColor(image.width() / 2, 1).alpha(), 255);
+    QCOMPARE(image.pixelColor(1, image.height() / 2).alpha(), 255);
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;
