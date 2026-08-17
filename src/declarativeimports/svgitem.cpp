@@ -9,8 +9,11 @@
 
 #include <QDebug>
 #include <QQuickWindow>
+#include <QtMath>
+
 #include <QRectF>
 #include <QSGTexture>
+#include <algorithm>
 
 #include "ksvg/svg.h"
 
@@ -23,6 +26,56 @@
 
 namespace KSvg
 {
+namespace
+{
+// Whether an element's rasterisation repeats along an axis: every column alike, so it can be drawn from
+// one column and stretched across, or every row alike, so it can be drawn from one row and stretched down.
+// An element which repeats needs no more pixels than its own size, however large the item showing it is.
+struct RepeatsAlong {
+    bool horizontally = false;
+    bool vertically = false;
+};
+
+// The size the element is asked for when the question is put. Its own size is not enough: a shape whose
+// variation is finer than a pixel there would go unnoticed and show itself once stretched.
+constexpr int MinimumCheckSide = 32;
+
+RepeatsAlong repeatsAlong(KSvg::Svg *svg, const QString &elementId, const QSizeF &nativeSize)
+{
+    // The answer holds for the image, the element, the colour set and the theme, not for the item's size,
+    // so it is worked out once and kept.
+    static QHash<size_t, RepeatsAlong> s_answers;
+    const size_t key = qHashMulti(0, svg->imagePath(), elementId, int(svg->colorSet()), int(svg->status()), svg->devicePixelRatio());
+    const auto known = s_answers.constFind(key);
+    if (known != s_answers.constEnd()) {
+        return *known;
+    }
+
+    RepeatsAlong answer;
+    const QSize checkSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
+    const QImage image = svg->image(checkSize, elementId).convertToFormat(QImage::Format_ARGB32);
+    if (!image.isNull()) {
+        answer.horizontally = true;
+        for (int y = 0; y < image.height() && answer.horizontally; ++y) {
+            const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+            answer.horizontally = std::all_of(line, line + image.width(), [line](QRgb pixel) {
+                return pixel == line[0];
+            });
+        }
+
+        answer.vertically = true;
+        const QRgb *first = reinterpret_cast<const QRgb *>(image.constScanLine(0));
+        for (int y = 1; y < image.height() && answer.vertically; ++y) {
+            const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+            answer.vertically = std::equal(line, line + image.width(), first);
+        }
+    }
+
+    s_answers.insert(key, answer);
+    return answer;
+}
+}
+
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
@@ -213,7 +266,7 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
     // if !m_smooth and size is approximate simply change the textureNode.rect without
     // updating the material
 
-    if (m_textureChanged || textureNode->texture()->textureSize() != QSize(width(), height())) {
+    if (m_textureChanged || textureNode->texture()->textureSize() != m_image.size()) {
         // despite having a valid size sometimes we still get a null QImage from KSvg::Svg
         // loading a null texture to an atlas fatals
         // Dave E fixed this in Qt in 5.3.something onwards but we need this for now
@@ -259,7 +312,23 @@ void SvgItem::updatePolish()
         // setContainsMultipleImages has to be done there since m_svg can be shared with somebody else
         m_textureChanged = true;
         m_svg->setContainsMultipleImages(!m_elementID.isEmpty());
-        m_image = m_svg->image(QSize(width(), height()), m_elementID);
+
+        // An element which repeats along an axis is the same picture drawn from its own size and stretched
+        // by the GPU, which is one small texture rather than one the size of the item. A flat element, a
+        // line or a plain fill, repeats along both.
+        QSize target(qCeil(width()), qCeil(height()));
+        const QSizeF nativeSize = naturalSize();
+        if (nativeSize.width() >= 1 && nativeSize.height() >= 1) {
+            const RepeatsAlong repeats = repeatsAlong(m_svg, m_elementID, nativeSize);
+            if (repeats.horizontally) {
+                target.setWidth(qMin(target.width(), qCeil(nativeSize.width())));
+            }
+            if (repeats.vertically) {
+                target.setHeight(qMin(target.height(), qCeil(nativeSize.height())));
+            }
+        }
+
+        m_image = m_svg->image(target, m_elementID);
     }
 }
 

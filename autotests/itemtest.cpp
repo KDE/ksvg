@@ -8,6 +8,9 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
+#include <QQmlContext>
+#include <QQuickItem>
+#include <QQuickView>
 #include <QStandardPaths>
 #include <QTest>
 
@@ -24,6 +27,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void testItem();
+    void stretchedElementKeepsItsColour();
 
 private:
     QDir m_themeDir;
@@ -85,6 +89,56 @@ void ItemTest::testItem()
     QCOMPARE(item->property("elementRect"), QRectF(0, 0, 148, 148));
 
     delete item;
+}
+
+void ItemTest::stretchedElementKeepsItsColour()
+{
+    // An element which repeats along an axis is drawn from a texture of its own size and stretched, so what
+    // the item shows has to be what rendering it at the item's size would have shown. A flat element makes
+    // that checkable: every pixel of it, and of the item, is one colour.
+    auto set = std::make_unique<KSvg::ImageSet>();
+    set->setBasePath("plasma/desktoptheme");
+    set->setImageSetName("testtheme");
+
+    const QString path = QFINDTESTDATA("data/stretchborders.svg");
+    QVERIFY(!path.isEmpty());
+
+    KSvg::Svg reference;
+    reference.setImageSet(set.get());
+    reference.setImagePath(path);
+    reference.setContainsMultipleImages(true);
+    QVERIFY(reference.isValid());
+    const QImage own = reference.image(reference.elementSize(QStringLiteral("center")).toSize(), QStringLiteral("center"));
+    QVERIFY(!own.isNull());
+    const QColor expected = own.pixelColor(own.width() / 2, own.height() / 2);
+
+    QQuickView view;
+    view.engine()->rootContext()->setContextProperty(QStringLiteral("stretchImagePath"), path);
+    view.engine()->rootContext()->setContextProperty(QStringLiteral("stretchElementId"), QStringLiteral("center"));
+    view.setSource(QUrl::fromLocalFile(QFINDTESTDATA("itemstretchtest.qml")));
+    QCOMPARE(view.status(), QQuickView::Ready);
+    view.setResizeMode(QQuickView::SizeRootObjectToView);
+    view.resize(240, 40); // far wider and taller than the element, so it is stretched both ways
+    view.show();
+    if (!QTest::qWaitForWindowExposed(&view)) {
+        QSKIP("this platform never shows the window, so there is no rendering to compare");
+    }
+    // The item rasterises its element while it is polished, so the first frame has to have happened.
+    QTRY_VERIFY(view.rootObject() && view.rootObject()->width() > 0);
+    QTest::qWait(200);
+
+    const QImage shown = view.grabWindow();
+    if (shown.isNull()) {
+        QSKIP("this platform gives back no rendering to compare");
+    }
+    QCOMPARE(shown.size(), view.size() * view.devicePixelRatio());
+
+    // Inside the item, away from its edges, every pixel is the element's one colour.
+    for (int y = 4; y < shown.height() - 4; y += 4) {
+        for (int x = 4; x < shown.width() - 4; x += 4) {
+            QCOMPARE(shown.pixelColor(x, y), expected);
+        }
+    }
 }
 
 #include "itemtest.moc"
