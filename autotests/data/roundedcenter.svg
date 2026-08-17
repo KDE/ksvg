@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- A frame whose centre is a circle 2 pixels across. At its own size every pixel of it comes out the
+     same, by symmetry, so a check made there would take it for a flat colour. Stretched over a frame
+     it plainly is not one. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" version="1.1">
+  <rect id="topleft" x="0" y="0" width="10" height="10" fill="#204a87" />
+  <rect id="top" x="10" y="0" width="10" height="10" fill="#204a87" />
+  <rect id="topright" x="20" y="0" width="10" height="10" fill="#204a87" />
+  <rect id="left" x="0" y="10" width="10" height="10" fill="#204a87" />
+  <rect id="right" x="20" y="10" width="10" height="10" fill="#204a87" />
+  <rect id="bottomleft" x="0" y="20" width="10" height="10" fill="#204a87" />
+  <rect id="bottom" x="10" y="20" width="10" height="10" fill="#204a87" />
+  <rect id="bottomright" x="20" y="20" width="10" height="10" fill="#204a87" />
+  <rect id="center" x="40" y="40" width="2" height="2" rx="1" fill="#729fcf" />
+</svg>

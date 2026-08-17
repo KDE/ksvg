@@ -25,6 +25,7 @@ private Q_SLOTS:
     void repaintBlocked();
     void resizeMask();
     void solidCenter();
+    void roundedCenterIsNotFlat();
     void loadQrc();
 
 private:

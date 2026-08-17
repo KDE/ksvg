@@ -143,6 +143,31 @@ void FrameSvgTest::solidCenter()
     }
 }
 
+void FrameSvgTest::roundedCenterIsNotFlat()
+{
+    // A centre which is a circle 2 pixels across comes out one colour at its own size, by symmetry, so
+    // a check made there would take it for a flat colour and fill the content rect with it. Stretched
+    // over the frame the circle plainly is not flat, and its corners must stay clear.
+    KSvg::FrameSvg frame;
+    frame.setImagePath(QFINDTESTDATA("data/roundedcenter.svg"));
+    QVERIFY(frame.isValid());
+    frame.setEnabledBorders(KSvg::FrameSvg::AllBorders);
+    frame.resizeFrame(QSize(100, 100));
+
+    const QImage image = frame.framePixmap().toImage();
+    QCOMPARE(image.size(), QSize(100, 100));
+
+    const QRect content = frame.contentsRect().toRect();
+    QVERIFY(content.width() > 20 && content.height() > 20);
+
+    // The middle of the content rect is inside the circle, its corner is outside it.
+    const int middleAlpha = image.pixelColor(content.center()).alpha();
+    const int cornerAlpha = image.pixelColor(content.topLeft() + QPoint(1, 1)).alpha();
+    QVERIFY(middleAlpha > 0);
+    QVERIFY2(cornerAlpha < middleAlpha,
+             qPrintable(QStringLiteral("the centre was painted as a flat colour: corner alpha %1, middle alpha %2").arg(cornerAlpha).arg(middleAlpha)));
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;

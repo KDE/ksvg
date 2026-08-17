@@ -12,6 +12,7 @@
 #include <QHash>
 #include <QImage>
 #include <QStringBuilder>
+#include <QtMath>
 
 #include <algorithm>
 
@@ -182,6 +183,9 @@ public:
                      const QRectF &output) const;
     void paintCorner(QPainter &p, const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border, const QRectF &output) const;
     void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRectF &contentRect, const QSizeF &fullSize);
+    // The smallest size the uniformity check is made at, whatever the element's own size is.
+    static constexpr int MinimumCheckSide = 32;
+
     // Returns true and sets color if the frame's "center" element rasterizes to a single uniform
     // color, so it can be drawn as a flat fill instead of a full-size texture.
     // Defined inline so both the FrameSvg painting code and the QML item can share one detector.
@@ -215,10 +219,18 @@ public:
         }
 
         const QString centerElementId = frame->prefix % QLatin1String("center");
-        // Render the element at its native size, which is small, and check whether every pixel is the
-        // same. A recolored flat element (currentColor from the color scheme) resolves to one color, so
-        // it can be drawn as a fill; a gradient or detailed element does not and keeps the texture path.
-        const QImage image = q->image(q->elementSize(centerElementId).toSize(), centerElementId).convertToFormat(QImage::Format_ARGB32);
+        // Render the element and check whether every pixel is the same. A recolored flat element
+        // (currentColor from the color scheme) resolves to one color, so it can be drawn as a fill; a
+        // gradient or detailed element does not and keeps the texture path.
+        //
+        // The element's own size is not enough to ask at: a shape can lose what makes it not flat when
+        // it is that small. A rounded corner narrower than a pixel, or a gradient finer than one,
+        // rasterizes to a single color there and shows itself once the frame stretches it. So the
+        // check is made at a floor of MinimumCheckSide pixels a side, which keeps it a rasterization
+        // of a few microseconds, once per frame variant.
+        const QSizeF nativeSize = q->elementSize(centerElementId);
+        const QSize checkSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
+        const QImage image = q->image(checkSize, centerElementId).convertToFormat(QImage::Format_ARGB32);
         if (!image.isNull()) {
             const QRgb first = image.pixel(0, 0);
             bool uniform = true;
