@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- A frame whose borders shade across their thickness and repeat along their length, which is the
+     shape a border usually has, plus one that does not: bumpy-top changes along its length, so
+     stretching it would not be what re-rendering it gives. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="80" height="60" version="1.1">
+  <defs>
+    <linearGradient id="acrossThickness" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#3daee9" />
+      <stop offset="1" stop-color="#2980b9" />
+    </linearGradient>
+    <linearGradient id="acrossThicknessSideways" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3daee9" />
+      <stop offset="1" stop-color="#2980b9" />
+    </linearGradient>
+  </defs>
+
+  <rect id="topleft" x="0" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="top" x="8" y="0" width="24" height="8" fill="url(#acrossThickness)" />
+  <rect id="topright" x="32" y="0" width="8" height="8" fill="#204a87" />
+  <rect id="left" x="0" y="8" width="8" height="24" fill="url(#acrossThicknessSideways)" />
+  <rect id="right" x="32" y="8" width="8" height="24" fill="url(#acrossThicknessSideways)" />
+  <rect id="bottomleft" x="0" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="bottom" x="8" y="32" width="24" height="8" fill="url(#acrossThickness)" />
+  <rect id="bottomright" x="32" y="32" width="8" height="8" fill="#204a87" />
+  <rect id="center" x="8" y="8" width="24" height="24" fill="#729fcf" />
+  <rect id="hint-stretch-borders" x="70" y="0" width="2" height="2" fill="#4e9a06" />
+
+  <g id="bumpy-top">
+    <rect x="44" y="0" width="12" height="8" fill="#3daee9" />
+    <rect x="56" y="0" width="12" height="8" fill="#204a87" />
+  </g>
+</svg>

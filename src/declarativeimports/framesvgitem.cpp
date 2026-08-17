@@ -612,6 +612,18 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 centerFitMode = FrameItemNode::FastStretch;
             }
 
+            // A border which repeats along the axis the frame stretches it is the same drawn from its
+            // native size texture, which spares a frame-sized texture and a re-render at every size.
+            auto sideFitMode = [this, borderFitMode](FrameSvg::EnabledBorders border) {
+                if (borderFitMode != FrameItemNode::Stretch || !m_frameSvg->d->frame) {
+                    return borderFitMode;
+                }
+                if (!m_frameSvg->d->stretchableBorder(m_frameSvg->d->frame, border)) {
+                    return borderFitMode;
+                }
+                return FrameItemNode::FastStretch;
+            };
+
             new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode);
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
@@ -620,10 +632,10 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
             if (enabledBorders() & FrameSvg::TopBorder) {
-                new FrameItemNode(this, FrameSvg::TopBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::TopBorder, sideFitMode(FrameSvg::TopBorder), oldNode);
             }
             if (enabledBorders() & FrameSvg::BottomBorder) {
-                new FrameItemNode(this, FrameSvg::BottomBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::BottomBorder, sideFitMode(FrameSvg::BottomBorder), oldNode);
             }
             if (enabledBorders() & (FrameSvg::BottomBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::BottomBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
@@ -632,10 +644,10 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 new FrameItemNode(this, FrameSvg::BottomBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
             if (enabledBorders() & FrameSvg::LeftBorder) {
-                new FrameItemNode(this, FrameSvg::LeftBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::LeftBorder, sideFitMode(FrameSvg::LeftBorder), oldNode);
             }
             if (enabledBorders() & FrameSvg::RightBorder) {
-                new FrameItemNode(this, FrameSvg::RightBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::RightBorder, sideFitMode(FrameSvg::RightBorder), oldNode);
             }
 
             m_sizeChanged = true;

@@ -21,6 +21,7 @@
 #include <KSvg/ImageSet>
 
 #include "framesvg.h"
+#include "framesvg_helpers.h"
 #include "svg_p.h"
 
 namespace KSvg
@@ -86,6 +87,10 @@ public:
     QPixmap cachedBackground;
     // Cached result of the "center" element uniformity check, valid for this frame variant.
     QColor centerColor;
+    // Which borders were found to repeat along the axis a frame stretches them, and which of them have
+    // been asked about at all. Same variant, same answer, whatever the frame size.
+    FrameSvg::EnabledBorders stretchableBorders;
+    FrameSvg::EnabledBorders askedBorders;
     QCache<uint, QRegion> cachedMasks;
     static const int MAX_CACHED_MASKS = 10;
     uint lastModified = 0;
@@ -185,6 +190,64 @@ public:
     void paintCenter(QPainter &p, const QSharedPointer<FrameData> &frame, const QRectF &contentRect, const QSizeF &fullSize);
     // The smallest size the uniformity check is made at, whatever the element's own size is.
     static constexpr int MinimumCheckSide = 32;
+
+    /*
+     * Whether the given border repeats along the axis the frame stretches it: every column alike for
+     * the top and bottom, every row alike for the left and right. Such a border drawn from its native
+     * size texture, stretched by the GPU, is what re-rendering it at every frame size produces, so the
+     * re-render and the frame-sized texture can both go.
+     *
+     * The answer holds for the image, prefix and color set, not for the size, so it is cached per
+     * frame variant like the centre's.
+     */
+    bool stretchableBorder(const QSharedPointer<FrameData> &frame, KSvg::FrameSvg::EnabledBorders border)
+    {
+        if (frame->askedBorders & border) {
+            return frame->stretchableBorders & border;
+        }
+        frame->askedBorders |= border;
+
+        const bool horizontal = border == FrameSvg::TopBorder || border == FrameSvg::BottomBorder;
+        const QString elementId = frame->prefix % FrameSvgHelpers::borderToElementId(border);
+        const QSizeF nativeSize = q->elementSize(elementId);
+        if (nativeSize.isEmpty()) {
+            return false;
+        }
+
+        // Along the stretched axis the element is asked for at a floor, for the same reason the centre
+        // is: a shape whose variation is finer than a pixel at native size would go unnoticed there and
+        // show itself once stretched. Across it the element keeps its own size, which is the thickness
+        // the frame gives it.
+        const QSize checkSize = horizontal ? QSize(qMax(qCeil(nativeSize.width()), MinimumCheckSide), qCeil(nativeSize.height()))
+                                           : QSize(qCeil(nativeSize.width()), qMax(qCeil(nativeSize.height()), MinimumCheckSide));
+        const QImage image = q->image(checkSize, elementId).convertToFormat(QImage::Format_ARGB32);
+        if (image.isNull()) {
+            return false;
+        }
+
+        bool repeats = true;
+        if (horizontal) {
+            // One column repeated, so widening it is a horizontal stretch.
+            for (int y = 0; y < image.height() && repeats; ++y) {
+                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+                repeats = std::all_of(line, line + image.width(), [line](QRgb pixel) {
+                    return pixel == line[0];
+                });
+            }
+        } else {
+            // One row repeated, so heightening it is a vertical stretch.
+            const QRgb *first = reinterpret_cast<const QRgb *>(image.constScanLine(0));
+            for (int y = 1; y < image.height() && repeats; ++y) {
+                const QRgb *line = reinterpret_cast<const QRgb *>(image.constScanLine(y));
+                repeats = std::equal(line, line + image.width(), first);
+            }
+        }
+
+        if (repeats) {
+            frame->stretchableBorders |= border;
+        }
+        return repeats;
+    }
 
     // Returns true and sets color if the frame's "center" element rasterizes to a single uniform
     // color, so it can be drawn as a flat fill instead of a full-size texture.

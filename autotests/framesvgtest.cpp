@@ -168,6 +168,29 @@ void FrameSvgTest::roundedCenterIsNotFlat()
              qPrintable(QStringLiteral("the centre was painted as a flat colour: corner alpha %1, middle alpha %2").arg(cornerAlpha).arg(middleAlpha)));
 }
 
+void FrameSvgTest::stretchingABorderMatchesRenderingIt()
+{
+    // What the fast path for borders rests on: a border which repeats along its length is the same
+    // picture whether it is rendered at the frame's size or stretched from its own, so the frame can
+    // hand the small texture to the GPU and let it stretch. A border which changes along its length is
+    // not, and must keep being rendered at size.
+    KSvg::FrameSvg frame;
+    frame.setImagePath(QFINDTESTDATA("data/stretchborders.svg"));
+    QVERIFY(frame.isValid());
+
+    // Not a whole multiple of the element, so that a nearest neighbour stretch has to land between the
+    // source pixels rather than on them.
+    const QSize repeating = frame.elementSize(QStringLiteral("top")).toSize();
+    const QSize wide(repeating.width() * 8 + 3, repeating.height());
+    const QImage stretched = frame.image(repeating, QStringLiteral("top")).scaled(wide, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QCOMPARE(stretched, frame.image(wide, QStringLiteral("top")));
+
+    const QSize changing = frame.elementSize(QStringLiteral("bumpy-top")).toSize();
+    const QSize changingWide(changing.width() * 8 + 3, changing.height());
+    const QImage changingStretched = frame.image(changing, QStringLiteral("bumpy-top")).scaled(changingWide, Qt::IgnoreAspectRatio, Qt::FastTransformation);
+    QVERIFY(changingStretched != frame.image(changingWide, QStringLiteral("bumpy-top")));
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;

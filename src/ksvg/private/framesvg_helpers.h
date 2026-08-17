@@ -16,7 +16,7 @@ namespace FrameSvgHelpers
 /*
  * Returns the element id name for said borders
  */
-QString borderToElementId(FrameSvg::EnabledBorders borders)
+inline QString borderToElementId(FrameSvg::EnabledBorders borders)
 {
     if (borders == FrameSvg::NoBorder) {
         return QStringLiteral("center");
@@ -45,7 +45,7 @@ QString borderToElementId(FrameSvg::EnabledBorders borders)
 /*
  * Returns the suggested geometry for the borders given a fullSize frame size and a contentRect
  */
-QRectF sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRectF &contentRect, const QSizeF &fullSize)
+inline QRectF sectionRect(KSvg::FrameSvg::EnabledBorders borders, const QRectF &contentRect, const QSizeF &fullSize)
 {
     // don't use QRect corner methods here, they have semantics that might come as unexpected.
     // prefer constructing the points explicitly. e.g. from QRect::topRight docs:
