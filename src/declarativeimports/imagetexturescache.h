@@ -30,6 +30,14 @@ public:
     ~ImageTexturesCache();
 
     /*!
+     * Returns the cache every item shares.
+     *
+     * Two items drawing the same picture should hold one texture between them, which only works if they
+     * ask the same cache for it.
+     */
+    static ImageTexturesCache *instance();
+
+    /*!
      * Returns the texture for a given window and image.
      *
      * If image id is the same as one already provided before, we will not

@@ -28,7 +28,6 @@
 
 namespace KSvg
 {
-Q_GLOBAL_STATIC(ImageTexturesCache, s_cache)
 
 class FrameNode : public QSGNode
 {
@@ -126,7 +125,7 @@ public:
         if (m_fitMode != Tile) {
             options = QQuickWindow::TextureCanUseAtlas;
         }
-        setTexture(s_cache->loadTexture(m_frameSvg->window(), m_frameSvg->frameSvg()->image(size, elementId), options));
+        setTexture(ImageTexturesCache::instance()->loadTexture(m_frameSvg->window(), m_frameSvg->frameSvg()->image(size, elementId), options));
     }
 
     void reposition(const QRect &frameGeometry, QSize &fullSize)
@@ -714,7 +713,7 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
 
         if ((m_textureChanged || m_sizeChanged) || textureNode->texture()->textureSize() != m_frameSvg->size()) {
             QImage image = m_frameSvg->framePixmap().toImage();
-            textureNode->setTexture(s_cache->loadTexture(window(), image));
+            textureNode->setTexture(ImageTexturesCache::instance()->loadTexture(window(), image));
             textureNode->setRect(0, 0, width(), height());
 
             m_textureChanged = false;

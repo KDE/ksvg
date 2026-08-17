@@ -32,6 +32,7 @@ private Q_SLOTS:
     void testElements();
     void testColors();
     void testStylesheetOverrideColorChange();
+    void theSameImageIsHandedBackForTheSameRequest();
 
 private:
     KSvg::Svg *m_svg;
@@ -97,6 +98,35 @@ void SvgTest::testSize()
     m_svg->resize();
     QCOMPARE(spy.count(), 2);
     QCOMPARE(m_svg->size(), QSizeF(148, 148));
+}
+
+void SvgTest::theSameImageIsHandedBackForTheSameRequest()
+{
+    // The texture cache the QML items share keys on QImage::cacheKey(), so two items drawing one element
+    // at one size hold a single texture between them only as long as the same image comes back for it.
+    // Sixty list rows showing one arrow are sixty uploads and sixty atlas entries if this stops holding.
+    const QSize size(25, 25);
+
+    // Two items are two Svg objects, so the question is asked of two of them rather than of m_svg, which
+    // the cases before this one leave carrying color overrides.
+    KSvg::Svg one;
+    one.setImagePath(QFINDTESTDATA("data/background.svgz"));
+    QVERIFY(one.isValid());
+    const QImage once = one.image(size, QString());
+    QVERIFY(!once.isNull());
+    QCOMPARE(one.image(size, QString()).cacheKey(), once.cacheKey());
+
+    KSvg::Svg other;
+    other.setImagePath(QFINDTESTDATA("data/background.svgz"));
+    QVERIFY(other.isValid());
+    QCOMPARE(other.image(size, QString()).cacheKey(), once.cacheKey());
+
+    // A different size is a different picture, and has to be a different image.
+    QVERIFY(one.image(QSize(26, 26), QString()).cacheKey() != once.cacheKey());
+
+    // A color override is a different picture too, so it must not be served the same image.
+    other.setColor(KSvg::Svg::StyleSheetColor::Text, Qt::magenta);
+    QVERIFY(other.image(size, QString()).cacheKey() != once.cacheKey());
 }
 
 void SvgTest::testElements()

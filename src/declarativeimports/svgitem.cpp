@@ -17,6 +17,7 @@
 
 #include "ksvg/svg.h"
 
+#include "imagetexturescache.h"
 #include "managedtexturenode.h"
 
 #include <KColorScheme>
@@ -275,8 +276,10 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
             return nullptr;
         }
 
-        QSharedPointer<QSGTexture> texture(window()->createTextureFromImage(m_image, QQuickWindow::TextureCanUseAtlas));
-        textureNode->setTexture(texture);
+        // The same element at the same size is one picture however many items draw it, and KSvg hands back
+        // the same image for it, so one texture is enough: an arrow in sixty list rows was sixty uploads
+        // and sixty atlas entries before this.
+        textureNode->setTexture(ImageTexturesCache::instance()->loadTexture(window(), m_image, QQuickWindow::TextureCanUseAtlas));
         m_textureChanged = false;
 
         textureNode->setRect(0, 0, width(), height());
