@@ -623,6 +623,15 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 return m_frameSvg->hasElement(QString(hint)) || m_frameSvg->hasElement(prefix % hint);
             };
             const bool solidCenter = hinted(QLatin1String("hint-solid-color"));
+
+            // A border is only ever stretched along its length. Where the theme says its borders vary just
+            // across their thickness, the picture at any length is the one the GPU can make from the
+            // element's own texture, so the re-render at every size goes. Where it does not say so, a
+            // stretched border keeps being rendered at size: that is the only correct reading when the
+            // artwork changes along the length, which is most of Oxygen.
+            if (borderFitMode == FrameItemNode::Stretch && hinted(QLatin1String("hint-uniform-borders"))) {
+                borderFitMode = FrameItemNode::FastStretch;
+            }
             Qt::Orientations centerNativeAxes;
             if (hinted(QLatin1String("hint-stretch-center-horizontally"))) {
                 centerNativeAxes |= Qt::Horizontal;
