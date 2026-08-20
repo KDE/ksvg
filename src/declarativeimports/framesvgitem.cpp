@@ -87,11 +87,6 @@ public:
     {
         parent->appendChildNode(this);
 
-        if (m_fitMode == Stretch && m_nativeAxes) {
-            m_elementNativeSize =
-                m_frameSvg->frameSvg()->elementSize(m_frameSvg->frameSvg()->actualPrefix() % FrameSvgHelpers::borderToElementId(m_border)).toSize();
-        }
-
         if (m_fitMode == Tile) {
             if (m_border == FrameSvg::TopBorder || m_border == FrameSvg::BottomBorder || m_border == FrameSvg::NoBorder) {
                 static_cast<QSGTextureMaterial *>(material())->setHorizontalWrapMode(QSGTexture::Repeat);
@@ -113,7 +108,27 @@ public:
                 m_fitMode = FastStretch;
             }
 
-            updateTexture(m_elementNativeSize, elementId);
+            QSize sourceSize = m_elementNativeSize;
+            if (m_fitMode == FastStretch) {
+                // The node takes its thickness from elementSize() truncated, so the texture is asked for at
+                // the same whole number. Rounding up instead would leave the GPU resampling the axis the
+                // artwork varies across: Breeze's menubaritem borders are 7.5 thick, Oxygen's scrollbar
+                // background 4.989.
+                const QSizeF exact = m_frameSvg->frameSvg()->elementSize(elementId);
+                sourceSize = QSize(qMax(1, int(exact.width())), qMax(1, int(exact.height())));
+
+                // A part which repeats along the axis it is stretched on carries its whole picture in one
+                // row or column of itself, whatever size the frame takes, so that is all the texture has
+                // to hold. The thickness is kept, since that is where the shading is. Corners arrive here
+                // as a pair of borders and are never stretched, so they keep their own size.
+                if (m_border == FrameSvg::TopBorder || m_border == FrameSvg::BottomBorder) {
+                    sourceSize.setWidth(1);
+                } else if (m_border == FrameSvg::LeftBorder || m_border == FrameSvg::RightBorder) {
+                    sourceSize.setHeight(1);
+                }
+            }
+
+            updateTexture(sourceSize, elementId);
         }
     }
 
@@ -158,13 +173,14 @@ public:
             QString elementId = prefix + FrameSvgHelpers::borderToElementId(m_border);
 
             // Re-render the SVG at the new size, except along an axis the theme says the picture repeats
-            // along: there the element's own size is all it can show, and the node stretches it back out.
+            // along: one column of a picture whose columns are alike is the whole of it, so a single pixel
+            // there is enough and the node stretches it back out.
             QSize renderSize = nodeRect.size().toSize();
-            if (m_nativeAxes & Qt::Horizontal && m_elementNativeSize.width() > 0) {
-                renderSize.setWidth(qMin(renderSize.width(), m_elementNativeSize.width()));
+            if (m_nativeAxes & Qt::Horizontal) {
+                renderSize.setWidth(1);
             }
-            if (m_nativeAxes & Qt::Vertical && m_elementNativeSize.height() > 0) {
-                renderSize.setHeight(qMin(renderSize.height(), m_elementNativeSize.height()));
+            if (m_nativeAxes & Qt::Vertical) {
+                renderSize.setHeight(1);
             }
             updateTexture(renderSize, elementId);
             textureRect = texture()->normalizedTextureSubRect();
