@@ -635,19 +635,31 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
             FrameItemNode::FitMode centerFitMode = tileCenter ? FrameItemNode::Tile : FrameItemNode::Stretch;
 
             // The same shape as the hints above: unprefixed for a whole image, prefixed for one frame of it.
-            auto hinted = [this, &prefix](QLatin1StringView hint) {
-                return m_frameSvg->hasElement(QString(hint)) || m_frameSvg->hasElement(prefix % hint);
+            auto hinted = [this, &prefix](const QString &hint) {
+                return m_frameSvg->hasElement(hint) || m_frameSvg->hasElement(prefix % hint);
             };
-            const bool solidCenter = hinted(QLatin1String("hint-solid-color"));
+            const bool solidCenter = hinted(QStringLiteral("hint-solid-color"));
 
-            // A border is only ever stretched along its length. Where the theme says its borders vary just
-            // across their thickness, the picture at any length is the one the GPU can make from the
-            // element's own texture, so the re-render at every size goes. Where it does not say so, a
-            // stretched border keeps being rendered at size: that is the only correct reading when the
-            // artwork changes along the length, which is most of Oxygen.
-            if (borderFitMode == FrameItemNode::Stretch && hinted(QLatin1String("hint-uniform-borders"))) {
-                borderFitMode = FrameItemNode::FastStretch;
-            }
+            // A border is only ever stretched along its length. Where the theme says a border varies just
+            // across its thickness, the picture at any length is the one the GPU can make from the element's
+            // own texture, so the re-render at every size goes. Where it does not say so, a stretched border
+            // keeps being rendered at size: that is the only correct reading when the artwork changes along
+            // the length.
+            //
+            // Whether it holds is a question per side, not per frame: of Oxygen's frames which ask for
+            // stretched borders, four have all four sides uniform and fifty have some. hint-uniform-borders
+            // answers for all four at once, hint-uniform-top-border and its three siblings answer for one,
+            // and either is enough for the side it covers.
+            const bool uniformBorders = hinted(QStringLiteral("hint-uniform-borders"));
+            auto borderFit = [&hinted, borderFitMode, uniformBorders](FrameSvg::EnabledBorders border) {
+                if (borderFitMode != FrameItemNode::Stretch) {
+                    return borderFitMode;
+                }
+                if (uniformBorders || hinted(QLatin1String("hint-uniform-") % FrameSvgHelpers::borderToElementId(border) % QLatin1String("-border"))) {
+                    return FrameItemNode::FastStretch;
+                }
+                return borderFitMode;
+            };
             Qt::Orientations centerNativeAxes;
             if (hinted(QLatin1String("hint-stretch-center-horizontally"))) {
                 centerNativeAxes |= Qt::Horizontal;
@@ -678,10 +690,10 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
             if (enabledBorders() & FrameSvg::TopBorder) {
-                new FrameItemNode(this, FrameSvg::TopBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::TopBorder, borderFit(FrameSvg::TopBorder), oldNode);
             }
             if (enabledBorders() & FrameSvg::BottomBorder) {
-                new FrameItemNode(this, FrameSvg::BottomBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::BottomBorder, borderFit(FrameSvg::BottomBorder), oldNode);
             }
             if (enabledBorders() & (FrameSvg::BottomBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::BottomBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
@@ -690,10 +702,10 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
                 new FrameItemNode(this, FrameSvg::BottomBorder | FrameSvg::RightBorder, FrameItemNode::FastStretch, oldNode);
             }
             if (enabledBorders() & FrameSvg::LeftBorder) {
-                new FrameItemNode(this, FrameSvg::LeftBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::LeftBorder, borderFit(FrameSvg::LeftBorder), oldNode);
             }
             if (enabledBorders() & FrameSvg::RightBorder) {
-                new FrameItemNode(this, FrameSvg::RightBorder, borderFitMode, oldNode);
+                new FrameItemNode(this, FrameSvg::RightBorder, borderFit(FrameSvg::RightBorder), oldNode);
             }
 
             m_sizeChanged = true;
