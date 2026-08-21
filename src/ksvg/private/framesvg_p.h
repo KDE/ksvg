@@ -41,6 +41,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
+        , solidCenter(false)
         , imageSet(nullptr)
     {
     }
@@ -63,6 +64,7 @@ public:
         , stretchBorders(false)
         , tileCenter(false)
         , composeOverBorder(false)
+        , solidCenter(false)
         , imageSet(nullptr)
     {
     }
@@ -120,6 +122,9 @@ public:
     bool stretchBorders : 1;
     bool tileCenter : 1;
     bool composeOverBorder : 1;
+    // hint-solid-color: the center is one flat color, so it is filled with that color rather than painted
+    // from a rendering of the element.
+    bool solidCenter : 1;
 
     KSvg::ImageSetPrivate *imageSet;
 };

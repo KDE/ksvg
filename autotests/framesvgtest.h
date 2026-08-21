@@ -24,6 +24,7 @@ private Q_SLOTS:
     void setImageSet();
     void repaintBlocked();
     void resizeMask();
+    void aCenterDeclaredSolidIsFilledWithItsColour();
     void loadQrc();
 
 private:

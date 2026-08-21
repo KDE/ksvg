@@ -115,6 +115,34 @@ void FrameSvgTest::resizeMask()
     QCOMPARE(m_frameSvg->alphaMask().size(), QSize(100, 100));
 }
 
+void FrameSvgTest::aCenterDeclaredSolidIsFilledWithItsColour()
+{
+    // hint-solid-color says the centre is one colour, so the frame fills its interior with that colour
+    // instead of rendering the element at the frame's size. What must hold is that the colour is the
+    // element's own, read through whatever a colour scheme does to it, so the result is what rendering
+    // the element gives.
+    KSvg::FrameSvg frame;
+    frame.setImagePath(QFINDTESTDATA("data/solidhint.svg"));
+    QVERIFY(frame.isValid());
+    QVERIFY(frame.hasElement(QStringLiteral("hint-solid-color")));
+    frame.setEnabledBorders(KSvg::FrameSvg::AllBorders);
+    frame.resizeFrame(QSize(240, 120));
+
+    const QImage expected = frame.image(frame.elementSize(QStringLiteral("center")).toSize(), QStringLiteral("center"));
+    QVERIFY(!expected.isNull());
+    const QColor colour = expected.pixelColor(expected.width() / 2, expected.height() / 2);
+    QVERIFY(colour.alpha() > 0);
+
+    const QImage painted = frame.framePixmap().toImage();
+    const QRect content = frame.contentsRect().toRect().adjusted(2, 2, -2, -2);
+    QVERIFY(content.width() > 20 && content.height() > 20);
+    for (int y = content.top(); y <= content.bottom(); y += 4) {
+        for (int x = content.left(); x <= content.right(); x += 4) {
+            QCOMPARE(painted.pixelColor(x, y), colour);
+        }
+    }
+}
+
 void FrameSvgTest::loadQrc()
 {
     KSvg::FrameSvg *frameSvg = new KSvg::FrameSvg;

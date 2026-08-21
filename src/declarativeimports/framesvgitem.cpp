@@ -78,13 +78,19 @@ public:
         Tile,
     };
 
-    FrameItemNode(FrameSvgItem *frameSvg, FrameSvg::EnabledBorders borders, FitMode fitMode, QSGNode *parent)
+    FrameItemNode(FrameSvgItem *frameSvg, FrameSvg::EnabledBorders borders, FitMode fitMode, QSGNode *parent, Qt::Orientations nativeAxes = {})
         : ManagedTextureNode()
         , m_frameSvg(frameSvg)
         , m_border(borders)
         , m_fitMode(fitMode)
+        , m_nativeAxes(nativeAxes)
     {
         parent->appendChildNode(this);
+
+        if (m_fitMode == Stretch && m_nativeAxes) {
+            m_elementNativeSize =
+                m_frameSvg->frameSvg()->elementSize(m_frameSvg->frameSvg()->actualPrefix() % FrameSvgHelpers::borderToElementId(m_border)).toSize();
+        }
 
         if (m_fitMode == Tile) {
             if (m_border == FrameSvg::TopBorder || m_border == FrameSvg::BottomBorder || m_border == FrameSvg::NoBorder) {
@@ -151,8 +157,16 @@ public:
 
             QString elementId = prefix + FrameSvgHelpers::borderToElementId(m_border);
 
-            // re-render the SVG at new size
-            updateTexture(nodeRect.size().toSize(), elementId);
+            // Re-render the SVG at the new size, except along an axis the theme says the picture repeats
+            // along: there the element's own size is all it can show, and the node stretches it back out.
+            QSize renderSize = nodeRect.size().toSize();
+            if (m_nativeAxes & Qt::Horizontal && m_elementNativeSize.width() > 0) {
+                renderSize.setWidth(qMin(renderSize.width(), m_elementNativeSize.width()));
+            }
+            if (m_nativeAxes & Qt::Vertical && m_elementNativeSize.height() > 0) {
+                renderSize.setHeight(qMin(renderSize.height(), m_elementNativeSize.height()));
+            }
+            updateTexture(renderSize, elementId);
             textureRect = texture()->normalizedTextureSubRect();
         } else if (texture()) { // for fast stretch.
             textureRect = texture()->normalizedTextureSubRect();
@@ -167,6 +181,7 @@ private:
     FrameSvg::EnabledBorders m_border;
     QSize m_elementNativeSize;
     FitMode m_fitMode;
+    Qt::Orientations m_nativeAxes;
 };
 
 FrameSvgItemMargins::FrameSvgItemMargins(KSvg::FrameSvg *frameSvg, QObject *parent)
@@ -603,7 +618,34 @@ QSGNode *FrameSvgItem::updatePaintNode(QSGNode *oldNode, QQuickItem::UpdatePaint
             FrameItemNode::FitMode borderFitMode = stretchBorders ? FrameItemNode::Stretch : FrameItemNode::Tile;
             FrameItemNode::FitMode centerFitMode = tileCenter ? FrameItemNode::Tile : FrameItemNode::Stretch;
 
-            new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode);
+            // The same shape as the hints above: unprefixed for a whole image, prefixed for one frame of it.
+            auto hinted = [this, &prefix](QLatin1StringView hint) {
+                return m_frameSvg->hasElement(QString(hint)) || m_frameSvg->hasElement(prefix % hint);
+            };
+            const bool solidCenter = hinted(QLatin1String("hint-solid-color"));
+            Qt::Orientations centerNativeAxes;
+            if (hinted(QLatin1String("hint-stretch-center-horizontally"))) {
+                centerNativeAxes |= Qt::Horizontal;
+            }
+            if (hinted(QLatin1String("hint-stretch-center-vertically"))) {
+                centerNativeAxes |= Qt::Vertical;
+            }
+
+            if (solidCenter) {
+                // One colour repeats along both axes, so one pixel of it is the whole of it and the node
+                // stretches that across the content, whatever size the frame takes.
+                centerNativeAxes = Qt::Horizontal | Qt::Vertical;
+
+                // One colour which happens to be no colour: a shadow frame is borders only and its center
+                // element is empty. Nothing is drawn for it at all.
+                const QImage sample = m_frameSvg->image(QSize(3, 3), prefix % QLatin1String("center"));
+                const bool drawsSomething = !sample.isNull() && sample.pixelColor(1, 1).alpha() > 0;
+                if (drawsSomething) {
+                    new FrameItemNode(this, FrameSvg::NoBorder, FrameItemNode::Stretch, oldNode, centerNativeAxes);
+                }
+            } else {
+                new FrameItemNode(this, FrameSvg::NoBorder, centerFitMode, oldNode, centerNativeAxes);
+            }
             if (enabledBorders() & (FrameSvg::TopBorder | FrameSvg::LeftBorder)) {
                 new FrameItemNode(this, FrameSvg::TopBorder | FrameSvg::LeftBorder, FrameItemNode::FastStretch, oldNode);
             }

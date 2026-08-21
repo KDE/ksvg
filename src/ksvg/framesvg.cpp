@@ -783,7 +783,18 @@ void FrameSvgPrivate::paintCenter(QPainter &p, const QSharedPointer<FrameData> &
     // fullSize and contentRect are in device pixels
     if (!contentRect.isEmpty()) {
         const QString centerElementId = frame->prefix % QLatin1String("center");
-        if (frame->tileCenter) {
+        if (frame->solidCenter && !frame->composeOverBorder) {
+            // Declared one flat color, so the content rect is filled with it rather than with a rendering
+            // of the element. The color is read from a one pixel rendering, which is what a scene graph node
+            // is given for the same center, and which keeps a color scheme and any overrides applying to it.
+            const QImage sample = q->image(QSize(1, 1), centerElementId);
+            const QColor colour = sample.isNull() ? QColor(Qt::transparent) : sample.pixelColor(0, 0);
+            // An empty center, which is what a shadow frame has, is one colour too: nothing is painted for
+            // it rather than a transparent rendering being composed over the frame.
+            if (colour.alpha() > 0) {
+                p.fillRect(FrameSvgHelpers::sectionRect(FrameSvg::NoBorder, contentRect, fullSize * q->devicePixelRatio()), colour);
+            }
+        } else if (frame->tileCenter) {
             QSizeF centerTileSize = q->elementSize(centerElementId);
             QPixmap center(centerTileSize.toSize());
             center.fill(Qt::transparent);
@@ -1041,6 +1052,9 @@ void FrameSvgPrivate::updateSizes(FrameData *frame) const
     frame->tileCenter = (q->hasElement(hintTileCenter) || q->hasElement(createName(u"hint-tile-center")));
     frame->noBorderPadding = (q->hasElement(hintNoBorderPadding) || q->hasElement(createName(u"hint-no-border-padding")));
     frame->stretchBorders = (q->hasElement(hintStretchBorders) || q->hasElement(createName(u"hint-stretch-borders")));
+
+    static const QString hintSolidColor = QStringLiteral("hint-solid-color");
+    frame->solidCenter = (q->hasElement(hintSolidColor) || q->hasElement(createName(u"hint-solid-color")));
     q->resize(s);
 }
 
