@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Elements an item is pointed at by name rather than parts of a frame. vertical-line is one flat colour
+     and says so under its own name, which is what makes it drawn as a colour rather than as a picture of
+     one. shaded-line is the same shape with a gradient, so it says nothing and is drawn as a picture. -->
+<svg xmlns="http://www.w3.org/2000/svg" width="60" height="20" version="1.1">
+  <defs>
+    <linearGradient id="fade" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#204a87" stop-opacity="0" />
+      <stop offset="1" stop-color="#204a87" stop-opacity="1" />
+    </linearGradient>
+  </defs>
+  <rect id="vertical-line" x="0" y="0" width="1" height="1" fill="#204a87" />
+  <rect id="shaded-line" x="4" y="0" width="1" height="8" fill="url(#fade)" />
+  <rect id="vertical-line-hint-solid-color" x="40" y="0" width="5" height="5" style="fill:#ff6600" />
+  <rect id="shaded-line-hint-stretch-horizontally" x="48" y="0" width="5" height="5" style="fill:#ff6600" />
+</svg>

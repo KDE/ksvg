@@ -214,7 +214,10 @@ QSGNode *SvgItem::updatePaintNode(QSGNode *oldNode, UpdatePaintNodeData *updateP
     // if !m_smooth and size is approximate simply change the textureNode.rect without
     // updating the material
 
-    if (m_textureChanged || textureNode->texture()->textureSize() != QSize(width(), height())) {
+    // Against the size of the picture rather than of the item: an element drawn from one pixel along an
+    // axis has a texture smaller than the item by design, and comparing with the item's size would upload
+    // it again every frame.
+    if (m_textureChanged || textureNode->texture()->textureSize() != m_image.size()) {
         // despite having a valid size sometimes we still get a null QImage from KSvg::Svg
         // loading a null texture to an atlas fatals
         // Dave E fixed this in Qt in 5.3.something onwards but we need this for now
@@ -262,7 +265,46 @@ void SvgItem::updatePolish()
         // setContainsMultipleImages has to be done there since m_svg can be shared with somebody else
         m_textureChanged = true;
         m_svg->setContainsMultipleImages(!m_elementID.isEmpty());
-        m_image = m_svg->image(QSize(width(), height()), m_elementID);
+
+        // An element the theme says is one flat color is drawn as that color. It is worth asking because an
+        // item rasterises its element at the item's own size however small the artwork is: widgets/line's
+        // vertical-line is a 1x1 rect and became a texture as tall as the panel showing it.
+        // Only ever under an element's own name. An unprefixed hint in a theme file describes the frame that
+        // file holds, so reading it here would take a claim about a frame's center as a claim about the whole
+        // image, and draw all nine parts of it from a single pixel.
+        auto hinted = [this](QLatin1StringView hint) {
+            return !m_elementID.isEmpty() && m_svg->hasElement(m_elementID % QLatin1Char('-') % hint);
+        };
+        // An element whose picture repeats along an axis needs no more pixels than one there, whatever the
+        // item's size, and the node stretches it back out. One flat color repeats both ways. Air's
+        // vertical-line is the other case, a shade across three pixels which is the same all the way down.
+        const bool oneColor = hinted(QLatin1String("hint-solid-color"));
+        QSize renderSize(width(), height());
+        if (oneColor || hinted(QLatin1String("hint-stretch-horizontally"))) {
+            renderSize.setWidth(1);
+        }
+        if (oneColor || hinted(QLatin1String("hint-stretch-vertically"))) {
+            renderSize.setHeight(1);
+        }
+        m_image = m_svg->image(renderSize, m_elementID);
+
+        // One color which happens to be no color: nothing is drawn for it, rather than a transparent quad
+        // being blended over the scene. A picture asked for at one pixel comes back at the device pixel
+        // ratio, so what is checked is the pixels rather than the size.
+        if (oneColor && !m_image.isNull() && m_image.width() * m_image.height() <= 64) {
+            bool anythingDrawn = false;
+            for (int y = 0; y < m_image.height() && !anythingDrawn; ++y) {
+                for (int x = 0; x < m_image.width(); ++x) {
+                    if (qAlpha(m_image.pixel(x, y)) != 0) {
+                        anythingDrawn = true;
+                        break;
+                    }
+                }
+            }
+            if (!anythingDrawn) {
+                m_image = QImage();
+            }
+        }
     }
 }
 
