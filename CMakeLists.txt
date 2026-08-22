@@ -61,6 +61,8 @@ ecm_set_disabled_deprecation_versions(
 
 #########################################################################
 
+set(EXCLUDE_DEPRECATED_BEFORE_AND_AT 0 CACHE STRING "Control the range of deprecated API excluded from the build [default=0].")
+
 option(BUILD_TOOLS "Build and install KSVG tools." OFF)
 
 option(BUILD_COVERAGE "Build Plasma Frameworks with gcov support" OFF)
