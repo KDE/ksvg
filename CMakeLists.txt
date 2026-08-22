@@ -28,6 +28,8 @@ include(ECMDeprecationSettings)
 include(ECMQmlModule)
 include(ECMGenerateQDoc)
 
+set(EXCLUDE_DEPRECATED_BEFORE_AND_AT 0 CACHE STRING "Control the range of deprecated API excluded from the build [default=0].")
+
 ecm_setup_version(PROJECT
                   VARIABLE_PREFIX KSVG
                   VERSION_HEADER "${CMAKE_CURRENT_BINARY_DIR}/ksvg_version.h"
