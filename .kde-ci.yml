@@ -14,3 +14,4 @@ Options:
  cppcheck-ignore-files: ['templates/']
  require-passing-tests-on: ['Linux', 'FreeBSD', 'Windows', 'macOS']
  enable-lsan: True
+ run-installed-library-check-on: ['@all']

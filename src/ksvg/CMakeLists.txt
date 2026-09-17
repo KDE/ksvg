@@ -91,3 +91,17 @@ install(
 install(TARGETS KF6Svg EXPORT KF6SvgTargets ${KF_INSTALL_TARGETS_DEFAULT_ARGS})
 
 ecm_generate_qdoc(KF6Svg ksvg.qdocconf)
+
+ecm_add_installed_library_check(KF6Svg
+    PACKAGE_NAME "KF6Svg"
+    PACKAGE_TARGET_NAMESPACE "KF6::"
+)
+
+ecm_installed_library_check_include_strings(KF6Svg
+    HEADERS ${KSvg_CamelCase_HEADERS}
+    PREFIX KSvg
+)
+
+ecm_installed_library_check_version_preprocessor_macros(KF6Svg
+    PREFIX KSVG
+)
