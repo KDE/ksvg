@@ -8,6 +8,7 @@
 #include <QGuiApplication>
 #include <QQmlApplicationEngine>
 #include <QQmlComponent>
+#include <QSignalSpy>
 #include <QStandardPaths>
 #include <QTest>
 
@@ -24,6 +25,7 @@ public Q_SLOTS:
 
 private Q_SLOTS:
     void testItem();
+    void testColorsFollowImageSet();
 
 private:
     QDir m_themeDir;
@@ -56,6 +58,8 @@ void ItemTest::initTestCase()
 
     m_themeDir.mkpath("desktoptheme/testtheme/widgets");
     QVERIFY(QFile::copy(QFINDTESTDATA("data/background.svgz"), m_themeDir.absolutePath() + "/desktoptheme/testtheme/widgets/background.svgz"));
+    m_themeDir.mkpath("desktoptheme/testthemesystemcolors/widgets");
+    QVERIFY(QFile::copy(QFINDTESTDATA("data/background.svgz"), m_themeDir.absolutePath() + "/desktoptheme/testthemesystemcolors/widgets/background.svgz"));
 }
 
 void ItemTest::cleanupTestCase()
@@ -85,6 +89,29 @@ void ItemTest::testItem()
     QCOMPARE(item->property("elementRect"), QRectF(0, 0, 148, 148));
 
     delete item;
+}
+
+void ItemTest::testColorsFollowImageSet()
+{
+    KSvg::ImageSet set;
+    set.setBasePath("plasma/desktoptheme");
+    set.setImageSetName("testthemesystemcolors");
+
+    QQmlEngine engine;
+    QQmlComponent comp(&engine);
+    comp.setData("import QtQuick; import org.kde.ksvg as KSvg; KSvg.SvgItem { imagePath: \"widgets/background\" }", QUrl());
+    std::unique_ptr<QObject> item(comp.create());
+    QVERIFY2(item, qPrintable(comp.errorString()));
+
+    auto svg = item->property("svg").value<KSvg::Svg *>();
+    QVERIFY(svg);
+    QVERIFY(!svg->colorOverrides().isEmpty());
+
+    // Which colors to use has to follow the image set when it changes.
+    QSignalSpy imageSetChanged(svg->imageSet(), &KSvg::ImageSet::imageSetChanged);
+    set.setImageSetName("testtheme");
+    QVERIFY(imageSetChanged.wait());
+    QVERIFY(svg->colorOverrides().isEmpty());
 }
 
 #include "itemtest.moc"

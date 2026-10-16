@@ -124,12 +124,14 @@ private:
     void scheduleImageUpdate();
     void updatePolish() override;
     void geometryChange(const QRectF &newGeometry, const QRectF &oldGeometry) override;
+    void updateImageSetHasColors();
 
     QPointer<KSvg::Svg> m_svg;
     Kirigami::Platform::PlatformTheme *m_kirigamiTheme;
     QString m_elementID;
     QImage m_image;
     bool m_textureChanged;
+    bool m_imageSetHasColors;
 };
 }
 
