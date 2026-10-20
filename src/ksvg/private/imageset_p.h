@@ -148,6 +148,8 @@ public:
     QHash<qint64, QString> cachedSelectedSvgStyleSheets;
     QHash<qint64, QString> cachedInactiveSvgStyleSheets;
     QHash<QString, QString> discoveries;
+    bool hasColorsKnown = false;
+    bool hasColors = false;
     QTimer *pixmapSaveTimer;
     QTimer *updateNotificationTimer;
     unsigned cacheSize;

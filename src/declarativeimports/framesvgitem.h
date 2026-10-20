@@ -292,7 +292,6 @@ private Q_SLOTS:
 private:
     void updateDevicePixelRatio();
     void applyPrefixes();
-    void updateImageSetHasColors();
 
     KSvg::FrameSvg *m_frameSvg;
     Kirigami::Platform::PlatformTheme *m_kirigamiTheme;
@@ -307,7 +306,6 @@ private:
     bool m_textureChanged;
     bool m_sizeChanged;
     bool m_fastPath;
-    bool m_imageSetHasColors;
 };
 
 }

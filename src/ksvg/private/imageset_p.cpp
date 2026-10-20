@@ -287,6 +287,7 @@ void ImageSetPrivate::discardCache(CacheTypes caches)
 
     if (caches & SvgElementsCache) {
         discoveries.clear();
+        hasColorsKnown = false;
     }
 }
 
@@ -697,6 +698,7 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     }
 
     imageSetName = theme;
+    hasColorsKnown = false;
 
     // load the color scheme config
     const QString colorsFile = QStandardPaths::locate(QStandardPaths::GenericDataLocation, basePath % theme % QLatin1String("/colors"));

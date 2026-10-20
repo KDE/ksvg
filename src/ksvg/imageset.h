@@ -157,6 +157,18 @@ public:
      */
     bool currentImageSetHasImage(const QString &name) const;
 
+    /*!
+     * \brief This method checks whether this theme has a colors file.
+     *
+     * This is similar to checking filePath("colors"), but the result is
+     * cached until the image set changes.
+     *
+     * Returns true if the theme ships its own colors
+     *
+     * \since 6.32
+     */
+    bool hasColors() const;
+
 #if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
      * \brief This method sets whether the theme should follow the global

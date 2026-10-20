@@ -217,6 +217,15 @@ QString ImageSet::filePath(const QString &name) const
     return path;
 }
 
+bool ImageSet::hasColors() const
+{
+    if (!d->hasColorsKnown) {
+        d->hasColors = !filePath(QStringLiteral("colors")).isEmpty();
+        d->hasColorsKnown = true;
+    }
+    return d->hasColors;
+}
+
 bool ImageSet::currentImageSetHasImage(const QString &name) const
 {
     if (name.contains(QLatin1String("../"))) {

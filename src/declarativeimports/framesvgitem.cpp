@@ -285,7 +285,6 @@ FrameSvgItem::FrameSvgItem(QQuickItem *parent)
     , m_textureChanged(false)
     , m_sizeChanged(false)
     , m_fastPath(true)
-    , m_imageSetHasColors(false)
 {
     m_frameSvg = new KSvg::FrameSvg(this);
 
@@ -690,14 +689,13 @@ void FrameSvgItem::componentComplete()
     }
 
     auto checkApplyTheme = [this]() {
-        updateImageSetHasColors();
-        if (m_imageSetHasColors) {
+        if (m_frameSvg->imageSet()->hasColors()) {
             m_frameSvg->clearCache();
             m_frameSvg->clearColorOverrides();
         }
     };
     auto applyTheme = [this]() {
-        if (m_imageSetHasColors) {
+        if (m_frameSvg->imageSet()->hasColors()) {
             m_frameSvg->clearCache();
             m_frameSvg->clearColorOverrides();
 
@@ -714,7 +712,6 @@ void FrameSvgItem::componentComplete()
              {Svg::Frame, KColorUtils::mix(m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->textColor(), KColorScheme::frameContrast())}});
     };
 
-    updateImageSetHasColors();
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
@@ -738,11 +735,6 @@ void FrameSvgItem::updateDevicePixelRatio()
         m_frameSvg->setDevicePixelRatio(newDevicePixelRatio);
         m_textureChanged = true;
     }
-}
-
-void FrameSvgItem::updateImageSetHasColors()
-{
-    m_imageSetHasColors = !m_frameSvg->imageSet()->filePath(QStringLiteral("colors")).isEmpty();
 }
 
 void FrameSvgItem::applyPrefixes()

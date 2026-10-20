@@ -27,7 +27,6 @@ namespace KSvg
 SvgItem::SvgItem(QQuickItem *parent)
     : QQuickItem(parent)
     , m_textureChanged(false)
-    , m_imageSetHasColors(false)
 {
     m_svg = new KSvg::Svg(this);
     setFlag(QQuickItem::ItemHasContents, true);
@@ -56,8 +55,7 @@ void SvgItem::componentComplete()
     }
 
     auto checkApplyTheme = [this]() {
-        updateImageSetHasColors();
-        if (m_imageSetHasColors) {
+        if (m_svg->imageSet()->hasColors()) {
             m_svg->clearColorOverrides();
         }
     };
@@ -65,7 +63,7 @@ void SvgItem::componentComplete()
         if (!m_svg) {
             return;
         }
-        if (m_imageSetHasColors) {
+        if (m_svg->imageSet()->hasColors()) {
             m_svg->clearColorOverrides();
             return;
         }
@@ -78,7 +76,6 @@ void SvgItem::componentComplete()
                           {Svg::NegativeText, m_kirigamiTheme->negativeTextColor()},
                           {Svg::Frame, KColorUtils::mix(m_kirigamiTheme->backgroundColor(), m_kirigamiTheme->textColor(), KColorScheme::frameContrast())}});
     };
-    updateImageSetHasColors();
     applyTheme();
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::frameContrastChanged, this, applyTheme);
     connect(m_kirigamiTheme, &Kirigami::Platform::PlatformTheme::colorsChanged, this, applyTheme);
@@ -141,9 +138,6 @@ void SvgItem::setSvg(KSvg::Svg *svg)
         disconnect(m_svg.data(), nullptr, this, nullptr);
     }
     m_svg = svg;
-    if (svg && isComponentComplete()) {
-        updateImageSetHasColors();
-    }
     updateDevicePixelRatio();
 
     if (svg) {
@@ -172,11 +166,6 @@ void SvgItem::setSvg(KSvg::Svg *svg)
 KSvg::Svg *SvgItem::svg() const
 {
     return m_svg.data();
-}
-
-void SvgItem::updateImageSetHasColors()
-{
-    m_imageSetHasColors = !m_svg->imageSet()->filePath(QStringLiteral("colors")).isEmpty();
 }
 
 QSizeF SvgItem::naturalSize() const
