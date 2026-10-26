@@ -210,6 +210,8 @@ bool ImageSetPrivate::useCache()
 
         if (cachesTooOld) {
             discardCache(PixmapCache | SvgElementsCache);
+            // Theme files changed on disk; image paths may have changed too.
+            discoveries.clear();
         }
     }
 
@@ -286,7 +288,6 @@ void ImageSetPrivate::discardCache(CacheTypes caches)
     cachedInactiveSvgStyleSheets.clear();
 
     if (caches & SvgElementsCache) {
-        discoveries.clear();
         hasColorsKnown = false;
     }
 }
@@ -698,6 +699,7 @@ void ImageSetPrivate::setImageSetName(const QString &tempImageSetName, bool emit
     }
 
     imageSetName = theme;
+    discoveries.clear();
     hasColorsKnown = false;
 
     // load the color scheme config

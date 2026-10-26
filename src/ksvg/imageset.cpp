@@ -100,6 +100,8 @@ void ImageSet::setBasePath(const QString &basePath)
     // we don't want in the client code to be setting things like the svg size right after thing just to
     // be reset right after in an async fashion
     d->discardCache(PixmapCache | SvgElementsCache);
+    // The base path influences where each image is looked up, so invalidate the discovery cache.
+    d->discoveries.clear();
     d->cachesToDiscard = NoCache;
 
     Q_EMIT basePathChanged(basePath);
@@ -114,6 +116,8 @@ QString ImageSet::basePath() const
 void ImageSet::setSelectors(const QStringList &selectors)
 {
     d->selectors = selectors;
+    // The selectors change where each image is looked up, so invalidate the discovery cache.
+    d->discoveries.clear();
     d->scheduleImageSetChangeNotification(PixmapCache | SvgElementsCache);
 }
 
