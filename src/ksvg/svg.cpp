@@ -188,6 +188,7 @@ void SvgRectsCache::insert(KSvg::SvgPrivate::CacheId cacheId, const QRectF &rect
 
 void SvgRectsCache::insert(size_t id, const QString &filePath, const QRectF &rect, unsigned int lastModified)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     const unsigned int savedTime = lastModifiedTimeFromCache(filePath);
 
     if (savedTime == lastModified && m_localRectCache.contains(id)) {
@@ -221,6 +222,7 @@ bool SvgRectsCache::findElementRect(KSvg::SvgPrivate::CacheId cacheId, QRectF &r
 
 bool SvgRectsCache::findElementRect(size_t id, QStringView filePath, QRectF &rect)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     auto it = m_localRectCache.find(id);
 
     if (it == m_localRectCache.end()) {
@@ -239,6 +241,7 @@ bool SvgRectsCache::findElementRect(size_t id, QStringView filePath, QRectF &rec
 
 bool SvgRectsCache::loadImageFromCache(const QString &path, uint lastModified)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     if (path.isEmpty()) {
         return false;
     }
@@ -273,6 +276,7 @@ bool SvgRectsCache::loadImageFromCache(const QString &path, uint lastModified)
 
 void SvgRectsCache::dropImageFromCache(const QString &path)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     KConfigGroup imageGroup(m_svgElementsCache, path);
     imageGroup.deleteGroup();
     QMetaObject::invokeMethod(m_configSyncTimer, qOverload<>(&QTimer::start));
@@ -280,6 +284,7 @@ void SvgRectsCache::dropImageFromCache(const QString &path)
 
 QList<QSizeF> SvgRectsCache::sizeHintsForId(const QString &path, const QString &id)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     const QString pathId = path % id;
 
     auto it = m_sizeHintsForId.constFind(pathId);
@@ -306,6 +311,7 @@ QList<QSizeF> SvgRectsCache::sizeHintsForId(const QString &path, const QString &
 
 void SvgRectsCache::insertSizeHintForId(const QString &path, const QString &id, const QSizeF &size)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     // TODO: need to make this more efficient
     auto sizeListToString = [](const QList<QSizeF> &list) {
         QString ret;
@@ -322,6 +328,7 @@ void SvgRectsCache::insertSizeHintForId(const QString &path, const QString &id, 
 
 QString SvgRectsCache::iconThemePath()
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     if (!m_iconThemePath.isEmpty()) {
         return m_iconThemePath;
     }
@@ -334,6 +341,7 @@ QString SvgRectsCache::iconThemePath()
 
 void SvgRectsCache::setIconThemePath(const QString &path)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     m_iconThemePath = path;
     KConfigGroup imageGroup(m_svgElementsCache, QStringLiteral("General"));
     imageGroup.writeEntry(QStringLiteral("IconThemePath"), path);
@@ -342,6 +350,7 @@ void SvgRectsCache::setIconThemePath(const QString &path)
 
 void SvgRectsCache::setNaturalSize(const QString &path, const QSizeF &size)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     KConfigGroup imageGroup(m_svgElementsCache, path);
 
     // FIXME: needs something faster, perhaps even sprintf
@@ -351,6 +360,7 @@ void SvgRectsCache::setNaturalSize(const QString &path, const QSizeF &size)
 
 QSizeF SvgRectsCache::naturalSize(const QString &path)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     KConfigGroup imageGroup(m_svgElementsCache, path);
 
     // FIXME: needs something faster, perhaps even sprintf
@@ -359,6 +369,7 @@ QSizeF SvgRectsCache::naturalSize(const QString &path)
 
 QStringList SvgRectsCache::cachedKeysForPath(const QString &path) const
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     KConfigGroup imageGroup(m_svgElementsCache, path);
     QStringList list = imageGroup.keyList();
     QStringList filtered;
@@ -373,6 +384,7 @@ QStringList SvgRectsCache::cachedKeysForPath(const QString &path) const
 
 unsigned int SvgRectsCache::lastModifiedTimeFromCache(const QString &filePath)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     const auto &i = m_lastModifiedTimes.constFind(filePath);
     if (i != m_lastModifiedTimes.constEnd()) {
         return i.value();
@@ -386,6 +398,7 @@ unsigned int SvgRectsCache::lastModifiedTimeFromCache(const QString &filePath)
 
 void SvgRectsCache::updateLastModified(const QString &filePath, unsigned int lastModified)
 {
+    QMutexLocker<QRecursiveMutex> locker(&m_mutex);
     KConfigGroup imageGroup(m_svgElementsCache, filePath);
     const unsigned int savedTime = lastModifiedTimeFromCache(filePath);
 

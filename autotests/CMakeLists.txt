@@ -28,5 +28,12 @@ KSVG_UNIT_TESTS(
     imagesettest
     svgtest
     itemtest
+    svgrectscachetest
 )
+
+# Multi-threaded stress test; run it alone so it doesn't race other tests over
+# the shared ksvg-elements cache.
+if (TARGET svgrectscachetest)
+    set_tests_properties(plasmasvg-svgrectscachetest PROPERTIES RUN_SERIAL TRUE TIMEOUT 600)
+endif()
 

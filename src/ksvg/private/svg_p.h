@@ -18,6 +18,7 @@
 #include <QObject>
 #include <QPalette>
 #include <QPointer>
+#include <QRecursiveMutex>
 #include <QSharedData>
 #include <QSvgRenderer>
 
@@ -162,6 +163,9 @@ private:
     QTimer *m_configSyncTimer = nullptr;
     QString m_iconThemePath;
     KSharedConfigPtr m_svgElementsCache;
+    // SvgRectsCache is a process-global singleton reached from both the GUI and
+    // render threads, so all access to the config and the caches must be locked.
+    mutable QRecursiveMutex m_mutex;
     /*
      * We are indexing in the hash cache ids by their "digested" size_t out of qHash(CacheId)
      * because we need to serialize it and unserialize it to a config file,
