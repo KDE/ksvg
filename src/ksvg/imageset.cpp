@@ -13,7 +13,6 @@
 #include <QFile>
 #include <QFileInfo>
 #include <QMutableListIterator>
-#include <QPair>
 #include <QStringBuilder>
 #include <QThread>
 #include <QTimer>
