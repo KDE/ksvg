@@ -46,10 +46,10 @@ find_package(Qt6 ${REQUIRED_QT_VERSION} REQUIRED NO_MODULE COMPONENTS Quick Gui 
 find_package(KF6 ${KF_DEP_VERSION} REQUIRED
     COMPONENTS
         Archive        # svgz
-        Config         # rects cache
+        Config         # colors and legacy theme metadata
         ColorScheme
         CoreAddons
-        GuiAddons      # KImageCache
+        GuiAddons       # KColorUtils
         KirigamiPlatform      # Kirigami.Theme
 )
 

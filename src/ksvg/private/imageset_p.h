@@ -11,11 +11,11 @@
 #include "imageset.h"
 #include "svg.h"
 #include <QHash>
+#include <QPixmapCache>
+#include <QSet>
 
 #include <KColorScheme>
-#include <KImageCache>
 #include <KPluginMetaData>
-#include <KSharedDataCache>
 #include <QDebug>
 #include <QTimer>
 
@@ -52,28 +52,12 @@ public:
     const QString svgStyleSheet(KSvg::Svg *svg);
 
     /*!
-     * Check if a pixmap already exists in the cache and compare the last modified
-     * timestamp of the file with the last modified date of the one in the cache to make sure
-     * the cache is still valid.
-     *
-     * On Linux systems only, if lastModified is not provided or set to 0, then this function
-     * uses the boot time as a reference instead. This is notably the case on ostree based
-     * systems such as Fedora Kinoite.
-     *
-     * TODO: timestamp shouldn't be user-provided
-     *
+     * Check whether a rendered pixmap is in the process-local cache.
      * \param key the name to use in the cache for this image
      * \param pix the pixmap object to populate with the resulting data if found
-     * \param lastModified the timestamp of the file which will be compared with the last
-     *                                           modified time of the entry in the cache
-     *
-     * @note Since KF 5.75, a lastModified value of 0 is deprecated on non-Linux systems. If
-     *              used, it will now always return false. Use a proper file timestamp instead
-     *              so modification can be properly tracked.
-     *
      * Returns true when pixmap was found and loaded from cache, false otherwise
      **/
-    bool findInCache(const QString &key, QPixmap &pix, unsigned int lastModified);
+    bool findInCache(const QString &key, QPixmap &pix);
 
     /*!
      * Insert specified pixmap into the cache.
@@ -98,9 +82,9 @@ public:
      * \param key the name to use in the cache for this pixmap
      * \param pix the pixmap data to store in the cache
      * \param id a name that identifies the caller class of this function in an unique fashion.
-     *           This is needed to limit disk writes of the cache.
+     *           This avoids storing intermediate sizes in the cache.
      *           If an image with the same id changes quickly,
-     *           only the last size where insertIntoCache was called is actually stored on disk
+     *           only the last size where insertIntoCache was called is stored.
      **/
     void insertIntoCache(const QString &key, const QPixmap &pix, const QString &id);
 
@@ -140,10 +124,10 @@ public:
     KColorScheme tooltipColorScheme;
     QStringList selectors;
     KConfigGroup cfg;
-    KImageCache *pixmapCache;
     QHash<QString, QPixmap> pixmapsToCache;
     QHash<QString, QString> keysToCache;
     QHash<QString, QString> idsToCache;
+    QSet<QString> cachedPixmapKeys;
     QHash<qint64, QString> cachedSvgStyleSheets;
     QHash<qint64, QString> cachedSelectedSvgStyleSheets;
     QHash<qint64, QString> cachedInactiveSvgStyleSheets;
@@ -152,15 +136,7 @@ public:
     bool hasColors = false;
     QTimer *pixmapSaveTimer;
     QTimer *updateNotificationTimer;
-    unsigned cacheSize;
     CacheTypes cachesToDiscard;
-    QString themeVersion;
-
-#if defined(Q_OS_LINUX)
-    // Store boot time to be able to compare it to the lastModifiedTime when the timestamp
-    // of files is the UNIX epoch.
-    time_t bootTime = 0;
-#endif
 
 #if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     bool useGlobal : 1;

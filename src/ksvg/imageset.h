@@ -196,10 +196,11 @@ public:
 
 #if KSVG_ENABLE_DEPRECATED_SINCE(6, 21)
     /*!
-     * \brief This method sets the maximum size of the cache (in kilobytes).
+     * \brief This method sets the maximum size of Qt's process-wide pixmap cache (in kilobytes).
      *
      * If cache gets bigger than the limit, then some entries are removed.
      * Setting cache limit to 0 disables automatic cache size limiting.
+     * This limit applies to all users of QPixmapCache in the application, not just this image set.
      *
      * Note that the cleanup might not be done immediately, so the cache might
      * temporarily (for a few seconds) grow bigger than the limit.

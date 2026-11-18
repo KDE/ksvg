@@ -562,14 +562,14 @@ void FrameSvgPrivate::generateBackground(const QSharedPointer<FrameData> &frame)
     const bool overlayAvailable = !frame->prefix.startsWith(QLatin1String("mask-")) && q->hasElement(frame->prefix % QLatin1String("overlay"));
     QPixmap overlay;
     if (q->isUsingRenderingCache()) {
-        frameCached = q->imageSet()->d->findInCache(QString::number(id), frame->cachedBackground, frame->lastModified) && !frame->cachedBackground.isNull();
+        frameCached = q->imageSet()->d->findInCache(QString::number(id), frame->cachedBackground) && !frame->cachedBackground.isNull();
         if (frameCached) {
             frame->cachedBackground.setDevicePixelRatio(q->devicePixelRatio());
         }
 
         if (overlayAvailable) {
             const size_t overlayId = qHash(cacheId(frame.data(), frame->prefix % QLatin1String("overlay")));
-            overlayCached = q->imageSet()->d->findInCache(QString::number(overlayId), overlay, frame->lastModified) && !overlay.isNull();
+            overlayCached = q->imageSet()->d->findInCache(QString::number(overlayId), overlay) && !overlay.isNull();
             if (overlayCached) {
                 overlay.setDevicePixelRatio(q->devicePixelRatio());
             }

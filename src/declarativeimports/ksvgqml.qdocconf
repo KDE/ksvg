@@ -1,7 +1,7 @@
 include($KDE_DOCS/global/qt-module-defaults.qdocconf)
 
 project = KSvgQml
-description = A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+description = A library for rendering SVG-based themes with stylesheet re-coloring and in-process caching.
 
 documentationinheaders = true
 

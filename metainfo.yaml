@@ -1,4 +1,4 @@
-description: A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching
+description: A library for rendering SVG-based themes with stylesheet re-coloring and in-process caching
 tier: 3
 type: solution
 platforms:

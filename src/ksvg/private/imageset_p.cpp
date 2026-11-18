@@ -12,21 +12,15 @@
 #include "svg_p.h"
 
 #include <QDir>
-#include <QFile>
 #include <QFileInfo>
 #include <QFontDatabase>
 #include <QGuiApplication>
 #include <QMetaEnum>
+#include <QThread>
 
 #include <KColorUtils>
 #include <KSharedConfig>
 #include <kpluginmetadata.h>
-
-#if defined(Q_OS_LINUX)
-#include <sys/sysinfo.h>
-#endif
-
-#define DEFAULT_CACHE_SIZE 16384 // value is from the old kconfigxt default value
 
 namespace KSvg
 {
@@ -35,17 +29,6 @@ const char ImageSetPrivate::defaultImageSet[] = "default";
 ImageSetPrivate *ImageSetPrivate::globalImageSet = nullptr;
 QHash<QString, ImageSetPrivate *> ImageSetPrivate::themes = QHash<QString, ImageSetPrivate *>();
 using QSP = QStandardPaths;
-
-QString configFileForImageSet(const QString &basePath, const QString &theme)
-{
-    const QString baseName = basePath % theme;
-    QString configPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/config"));
-    if (!configPath.isEmpty()) {
-        return configPath;
-    }
-    QString metadataPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/metadata.desktop"));
-    return metadataPath;
-}
 
 #if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 KPluginMetaData metaDataForImageSet(const QString &basePath, const QString &theme)
@@ -90,8 +73,6 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     , complementaryColorScheme(QPalette::Active, KColorScheme::Complementary, KSharedConfigPtr(nullptr))
     , headerColorScheme(QPalette::Active, KColorScheme::Header, KSharedConfigPtr(nullptr))
     , tooltipColorScheme(QPalette::Active, KColorScheme::Tooltip, KSharedConfigPtr(nullptr))
-    , pixmapCache(nullptr)
-    , cacheSize(DEFAULT_CACHE_SIZE)
     , cachesToDiscard(NoCache)
 #if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
     , useGlobal(true)
@@ -124,103 +105,24 @@ ImageSetPrivate::ImageSetPrivate(const QString &_basePath, QObject *parent)
     QObject::connect(updateNotificationTimer, &QTimer::timeout, this, &ImageSetPrivate::notifyOfChanged);
 
     QCoreApplication::instance()->installEventFilter(this);
-
-#if defined(Q_OS_LINUX)
-    struct sysinfo x;
-    if (sysinfo(&x) == 0) {
-        bootTime = QDateTime::currentSecsSinceEpoch() - x.uptime;
-        qCDebug(LOG_KSVG) << "ImageSetPrivate: Using boot time value" << bootTime;
-    } else {
-        // Should never happen, but just in case, fallback to a sane value
-        bootTime = QDateTime::currentSecsSinceEpoch();
-        qCWarning(LOG_KSVG) << "ImageSetPrivate: Failed to get uptime from sysinfo. Using current time as boot time" << bootTime;
-    }
-#endif
 }
 
 ImageSetPrivate::~ImageSetPrivate()
 {
     FrameSvgPrivate::s_sharedFrames.remove(this);
-    delete pixmapCache;
 }
 
 bool ImageSetPrivate::useCache()
 {
-    bool cachesTooOld = false;
-
-    if (cacheImageSet && !pixmapCache) {
-        if (cacheSize == 0) {
-            cacheSize = DEFAULT_CACHE_SIZE;
-        }
-        QString cacheFile = QLatin1String("plasma_theme_") + imageSetName;
-
-        // clear any cached values from the previous theme cache
-        themeVersion.clear();
-
-        const QString themeMetadataPath = configFileForImageSet(basePath, imageSetName);
-        const QString cacheFileBase = cacheFile + QLatin1String("*.kcache");
-
-        QString currentCacheFileName;
-        if (!themeMetadataPath.isEmpty()) {
-            // now we record the theme version, if we can
-            const KPluginMetaData data = metaDataForImageSet(basePath, imageSetName);
-            if (data.isValid()) {
-                themeVersion = data.version();
-            }
-            if (!themeVersion.isEmpty()) {
-                cacheFile += QLatin1String("_v") + themeVersion;
-                currentCacheFileName = cacheFile + QLatin1String(".kcache");
-            }
-        }
-
-        // now we check for, and remove if necessary, old caches
-        QDir cacheDir(QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation));
-        cacheDir.setNameFilters(QStringList({cacheFileBase}));
-
-        const auto files = cacheDir.entryInfoList();
-        for (const QFileInfo &file : files) {
-            if (currentCacheFileName.isEmpty() //
-                || !file.absoluteFilePath().endsWith(currentCacheFileName)) {
-                QFile::remove(file.absoluteFilePath());
-            }
-        }
-
-        // now we do a sanity check: if the metadata.desktop file is newer than the cache, drop the cache
-        if (!themeMetadataPath.isEmpty()) {
-            // now we check to see if the theme metadata file itself is newer than the pixmap cache
-            // this is done before creating the pixmapCache object since that can change the mtime
-            // on the cache file
-
-            // FIXME: when using the system colors, if they change while the application is not running
-            // the cache should be dropped; we need a way to detect system color change when the
-            // application is not running.
-            // check for expired cache
-            const QString cacheFilePath =
-                QStandardPaths::writableLocation(QStandardPaths::GenericCacheLocation) + QLatin1Char('/') + cacheFile + QLatin1String(".kcache");
-            if (!cacheFilePath.isEmpty()) {
-                const QFileInfo cacheFileInfo(cacheFilePath);
-                const QFileInfo metadataFileInfo(themeMetadataPath);
-
-                cachesTooOld = (cacheFileInfo.lastModified().toSecsSinceEpoch() < metadataFileInfo.lastModified().toSecsSinceEpoch());
-            }
-        }
-
-        pixmapCache = new KImageCache(cacheFile, cacheSize * 1024);
-        pixmapCache->setEvictionPolicy(KSharedDataCache::EvictLeastRecentlyUsed);
-
-        if (cachesTooOld) {
-            discardCache(PixmapCache | SvgElementsCache);
-        }
-    }
-
     return cacheImageSet;
 }
 
 void ImageSetPrivate::onAppExitCleanup()
 {
     pixmapsToCache.clear();
-    delete pixmapCache;
-    pixmapCache = nullptr;
+    keysToCache.clear();
+    idsToCache.clear();
+    pixmapSaveTimer->stop();
     cacheImageSet = false;
 }
 
@@ -272,13 +174,12 @@ void ImageSetPrivate::discardCache(CacheTypes caches)
     if (caches & PixmapCache) {
         pixmapsToCache.clear();
         pixmapSaveTimer->stop();
-        if (pixmapCache) {
-            pixmapCache->clear();
+        for (const QString &key : std::as_const(cachedPixmapKeys)) {
+            QPixmapCache::remove(QLatin1String("ksvg:") + key);
         }
-    } else {
-        // This deletes the object but keeps the on-disk cache for later use
-        delete pixmapCache;
-        pixmapCache = nullptr;
+        cachedPixmapKeys.clear();
+        keysToCache.clear();
+        idsToCache.clear();
     }
 
     cachedSvgStyleSheets.clear();
@@ -297,7 +198,10 @@ void ImageSetPrivate::scheduledCacheUpdate()
         QHashIterator<QString, QPixmap> it(pixmapsToCache);
         while (it.hasNext()) {
             it.next();
-            pixmapCache->insertPixmap(idsToCache[it.key()], it.value());
+            const QString key = idsToCache.value(it.key());
+            if (QPixmapCache::insert(QLatin1String("ksvg:") + key, it.value())) {
+                cachedPixmapKeys.insert(key);
+            }
         }
     }
 
@@ -605,32 +509,11 @@ const QString ImageSetPrivate::svgStyleSheet(KSvg::Svg *svg)
     return stylesheet;
 }
 
-bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int lastModified)
+bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix)
 {
-    if (!useCache()) {
+    if (!useCache() || QThread::currentThread() != QCoreApplication::instance()->thread()) {
         return false;
     }
-
-    qint64 cacheLastModifiedTime = uint(pixmapCache->lastModifiedTime().toSecsSinceEpoch());
-    if (lastModified > cacheLastModifiedTime) {
-        qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified > cacheLastModifiedTime for" << key;
-        return false;
-    }
-#if defined(Q_OS_LINUX)
-    // If the timestamp is the UNIX epoch (0)  then we compare against the boot time instead.
-    // This is notably the case on ostree based systems such as Fedora Kinoite.
-    if (lastModified == 0 && bootTime > cacheLastModifiedTime) {
-        qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: lastModified == 0 && bootTime > cacheLastModifiedTime for" << key;
-        return false;
-    }
-#else
-    if (lastModified == 0) {
-        qCWarning(LOG_KSVG) << "findInCache with a lastModified timestamp of 0 is deprecated";
-        return false;
-    }
-#endif
-
-    // qCDebug(LOG_KSVG) << "ImageSetPrivate::findInCache: using cache for" << key;
     const QString id = keysToCache.value(key);
     const auto it = pixmapsToCache.constFind(id);
     if (it != pixmapsToCache.constEnd()) {
@@ -639,7 +522,7 @@ bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int
     }
 
     QPixmap temp;
-    if (pixmapCache->findPixmap(key, &temp) && !temp.isNull()) {
+    if (QPixmapCache::find(QLatin1String("ksvg:") + key, &temp) && !temp.isNull()) {
         pix = temp;
         return true;
     }
@@ -649,13 +532,35 @@ bool ImageSetPrivate::findInCache(const QString &key, QPixmap &pix, unsigned int
 
 void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix)
 {
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(
+            this,
+            [this, key, pix]() {
+                insertIntoCache(key, pix);
+            },
+            Qt::QueuedConnection);
+        return;
+    }
+
     if (useCache()) {
-        pixmapCache->insertPixmap(key, pix);
+        if (QPixmapCache::insert(QLatin1String("ksvg:") + key, pix)) {
+            cachedPixmapKeys.insert(key);
+        }
     }
 }
 
 void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix, const QString &id)
 {
+    if (QThread::currentThread() != thread()) {
+        QMetaObject::invokeMethod(
+            this,
+            [this, key, pix, id]() {
+                insertIntoCache(key, pix, id);
+            },
+            Qt::QueuedConnection);
+        return;
+    }
+
     if (useCache()) {
         // Remove old key -> id mapping first
         if (auto key = idsToCache.find(id); key != idsToCache.end()) {
@@ -665,7 +570,7 @@ void ImageSetPrivate::insertIntoCache(const QString &key, const QPixmap &pix, co
         keysToCache[key] = id;
         idsToCache[id] = key;
 
-        // always start timer in pixmapSaveTimer's thread
+        // Always start the timer in its own thread.
         QMetaObject::invokeMethod(pixmapSaveTimer, "start", Qt::QueuedConnection);
     }
 }
