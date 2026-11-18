@@ -5,5 +5,5 @@
     \cmakepackage KF6
     \cmakecomponent Svg
 
-    \brief A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+    \brief A library for rendering SVG-based themes with stylesheet re-coloring and in-process caching.
 */

@@ -17,10 +17,8 @@
 #include <QThread>
 #include <QTimer>
 
-#include <KConfigGroup>
-#include <KImageCache>
-
 #include "debug_p.h"
+#include <KConfigGroup>
 
 namespace KSvg
 {
@@ -53,9 +51,6 @@ ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject
     priv->ref.ref();
     d = priv;
 
-    // turn off caching so we don't accidentally trigger unnecessary disk activity at this point
-    bool useCache = d->cacheImageSet;
-    d->cacheImageSet = false;
     if (!basePath.isEmpty()) {
         d->basePath = basePath;
         if (!d->basePath.endsWith(u'/')) {
@@ -63,7 +58,6 @@ ImageSet::ImageSet(const QString &imageSetName, const QString &basePath, QObject
         }
     }
     d->setImageSetName(imageSetName, false);
-    d->cacheImageSet = useCache;
     connect(d, &ImageSetPrivate::imageSetChanged, this, &ImageSet::imageSetChanged);
 }
 
@@ -262,9 +256,7 @@ bool ImageSet::useGlobalSettings() const
 #if KSVG_BUILD_DEPRECATED_SINCE(6, 21)
 void ImageSet::setCacheLimit(int kbytes)
 {
-    d->cacheSize = kbytes;
-    delete d->pixmapCache;
-    d->pixmapCache = nullptr;
+    Q_UNUSED(kbytes);
 }
 #endif
 

@@ -2,7 +2,7 @@
     \page ksvg-index.html
     \title KSvg
 
-    A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+    A library for rendering SVG-based themes with stylesheet re-coloring and in-process caching.
 
     \section1 Using the Module
 

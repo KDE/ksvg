@@ -129,14 +129,13 @@ public:
 
     static SvgRectsCache *instance();
 
-    void insert(SvgPrivate::CacheId cacheId, const QRectF &rect, unsigned int lastModified);
-    void insert(size_t id, const QString &filePath, const QRectF &rect, unsigned int lastModified);
+    void insert(SvgPrivate::CacheId cacheId, const QRectF &rect);
+    void insert(size_t id, const QString &filePath, const QRectF &rect);
     // Those 2 methods are the same, the second uses the integer id produced by hashed CacheId
     bool findElementRect(SvgPrivate::CacheId cacheId, QRectF &rect);
     bool findElementRect(size_t id, QStringView filePath, QRectF &rect);
 
-    bool loadImageFromCache(const QString &path, uint lastModified);
-    void dropImageFromCache(const QString &path);
+    bool imageChanged(const QString &path, uint lastModified);
 
     void setNaturalSize(const QString &path, const QSizeF &size);
     QSizeF naturalSize(const QString &path);
@@ -144,32 +143,12 @@ public:
     QList<QSizeF> sizeHintsForId(const QString &path, const QString &id);
     void insertSizeHintForId(const QString &path, const QString &id, const QSizeF &size);
 
-    QString iconThemePath();
-    void setIconThemePath(const QString &path);
-
-    QStringList cachedKeysForPath(const QString &path) const;
-
-    unsigned int lastModifiedTimeFromCache(const QString &filePath);
-
-    void updateLastModified(const QString &filePath, unsigned int lastModified);
-
     static const size_t s_seed;
 
-Q_SIGNALS:
-    void lastModifiedChanged(const QString &filePath, unsigned int lastModified);
-
 private:
-    QTimer *m_configSyncTimer = nullptr;
-    QString m_iconThemePath;
-    KSharedConfigPtr m_svgElementsCache;
-    /*
-     * We are indexing in the hash cache ids by their "digested" size_t out of qHash(CacheId)
-     * because we need to serialize it and unserialize it to a config file,
-     * which is more efficient to do that with the size_t directly rather than a CacheId struct serialization
-     */
-    QHash<size_t, QRectF> m_localRectCache;
-    QHash<QString, QSet<unsigned int>> m_invalidElements;
-    QHash<QString, QList<QSizeF>> m_sizeHintsForId;
+    QHash<QString, QHash<size_t, QRectF>> m_localRectCache;
+    QHash<QString, QHash<QString, QList<QSizeF>>> m_sizeHintsForId;
+    QHash<QString, QSizeF> m_naturalSizes;
     QHash<QString, unsigned int> m_lastModifiedTimes;
 };
 }

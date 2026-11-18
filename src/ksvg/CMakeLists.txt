@@ -49,7 +49,7 @@ PRIVATE
     Qt6::Svg
     KF6::Archive
     KF6::CoreAddons
-    KF6::GuiAddons #kimagecache
+    KF6::GuiAddons # KColorUtils
     KF6::ConfigCore
     KF6::ColorScheme
 )

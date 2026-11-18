@@ -2,5 +2,5 @@
     \qmlmodule org.kde.ksvg
     \title KSvg QML Types
     \ingroup qmlmodules
-    \brief A QML module for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+    \brief A QML module for rendering SVG-based themes with stylesheet re-coloring and in-process caching.
 */

@@ -198,11 +198,7 @@ public:
     /*!
      * \brief This method sets the maximum size of the cache (in kilobytes).
      *
-     * If cache gets bigger than the limit, then some entries are removed.
-     * Setting cache limit to 0 disables automatic cache size limiting.
-     *
-     * Note that the cleanup might not be done immediately, so the cache might
-     * temporarily (for a few seconds) grow bigger than the limit.
+     * It no longer has any effect.
      *
      * \deprecated[6.21] Not used
      **/

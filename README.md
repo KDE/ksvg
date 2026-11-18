@@ -1,9 +1,9 @@
 # KSvg
-A library for rendering SVG-based themes with stylesheet re-coloring and on-disk caching.
+A library for rendering SVG-based themes with stylesheet re-coloring and in-process caching.
 
 ## Introduction
 KSvg provides both C++ classes and QtQuick components to render svgs based on image packs.
-Compared to plain QSvg, it caches the rendered images on disk with KImageCache, and can re-color
+Compared to plain QSvg, it caches rendered images in memory with QPixmapCache, and can re-color
 properly crafted svg shapes that include internal stylesheets.
 
 The default behavior is to re-color with the application palette, making it possible to create UI elements in SVG.
