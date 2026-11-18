@@ -20,6 +20,7 @@
 #include <QPainter>
 #include <QRegularExpression>
 #include <QStringBuilder>
+#include <QTimeZone>
 #include <QXmlStreamReader>
 #include <QXmlStreamWriter>
 
@@ -516,7 +517,7 @@ bool SvgPrivate::setImagePath(const QString &imagePath)
     QDateTime lastModifiedDate;
     if (!path.isEmpty()) {
         const QFileInfo info(path);
-        lastModifiedDate = info.lastModified();
+        lastModifiedDate = info.lastModified(QTimeZone::utc());
 
         lastModified = lastModifiedDate.toSecsSinceEpoch();
 
