@@ -275,13 +275,6 @@ void ImageSetPrivate::discardCache(CacheTypes caches)
     if (caches & PixmapCache) {
         pixmapsToCache.clear();
         pixmapSaveTimer->stop();
-        if (pixmapCache) {
-            pixmapCache->clear();
-        }
-    } else {
-        // This deletes the object but keeps the on-disk cache for later use
-        delete pixmapCache;
-        pixmapCache = nullptr;
     }
 
     cachedSvgStyleSheets.clear();
