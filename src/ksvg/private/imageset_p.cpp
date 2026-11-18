@@ -43,7 +43,10 @@ QString configFileForImageSet(const QString &basePath, const QString &theme)
     if (!configPath.isEmpty()) {
         return configPath;
     }
-    QString metadataPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/metadata.desktop"));
+    QString metadataPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/metadata.json"));
+    if (metadataPath.isEmpty()) {
+        QString metadataPath = QSP::locate(QSP::GenericDataLocation, baseName + QLatin1String("/metadata.desktop"));
+    }
     return metadataPath;
 }
 
